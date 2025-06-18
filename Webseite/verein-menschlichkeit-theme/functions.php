@@ -111,9 +111,9 @@ add_action('wp_head', 'verein_menschlichkeit_site_icon');
 // Cookie-Hinweis (einfach)
 function verein_menschlichkeit_cookie_notice() {
   if (!isset($_COOKIE['verein_cookie_ok'])) {
-    echo '<div id="cookie-notice" style="position:fixed;bottom:0;left:0;right:0;background:#2563eb;color:#fff;padding:1rem;text-align:center;z-index:9999;">'
+    echo '<div id="cookie-notice" style="position:fixed;bottom:0;left:0;right:0;background:var(--color-primary-600);color:var(--neutral-0);padding:1rem;text-align:center;z-index:9999;">'
       . esc_html__('Diese Website verwendet Cookies. Mit der Nutzung stimmen Sie zu.', 'verein-menschlichkeit')
-      . ' <button onclick="document.cookie=\'verein_cookie_ok=1;path=/\';document.getElementById(\'cookie-notice\').remove();" style="margin-left:1rem;padding:0.3rem 1rem;border:none;border-radius:0.3rem;background:#fff;color:#2563eb;cursor:pointer;">OK</button></div>';
+      . ' <button onclick="document.cookie=\'verein_cookie_ok=1;path=/\';document.getElementById(\'cookie-notice\').remove();" style="margin-left:1rem;padding:0.3rem 1rem;border:none;border-radius:0.3rem;background:var(--neutral-0);color:var(--color-primary-600);cursor:pointer;">OK</button></div>';
   }
 }
 add_action('wp_footer', 'verein_menschlichkeit_cookie_notice');
@@ -165,7 +165,7 @@ add_shortcode('verein_sitemap', 'verein_sitemap_shortcode');
 // Schriftgrößenumschaltung (Barrierefreiheit)
 add_action('wp_footer', function() {
   ?>
-  <div id="font-size-switcher" style="position:fixed;bottom:1rem;left:1rem;z-index:9999;background:#fff;border:1px solid #2563eb;padding:0.5rem 1rem;border-radius:0.7rem;box-shadow:0 2px 8px #0001;">
+  <div id="font-size-switcher" style="position:fixed;bottom:1rem;left:1rem;z-index:9999;background:var(--neutral-0);border:1px solid var(--color-primary-600);padding:0.5rem 1rem;border-radius:0.7rem;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
     <button onclick="document.body.style.fontSize='1em'">A</button>
     <button onclick="document.body.style.fontSize='1.2em'">A+</button>
     <button onclick="document.body.style.fontSize='1.4em'">A++</button>

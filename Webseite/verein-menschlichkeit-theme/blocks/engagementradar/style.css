@@ -1,6 +1,6 @@
 .engagementradar-block {
-    background: #e3f6fc;
-    border-left: 4px solid #00b4d8;
+    background: var(--gray-50);
+    border-left: 4px solid var(--color-secondary-500);
     padding: 1.2em 1em;
     margin: 1em 0;
     border-radius: 6px;
@@ -16,10 +16,10 @@
 }
 .engagementradar-label {
     font-weight: bold;
-    color: #007cba;
+    color: var(--color-primary-600);
     margin-right: 0.7em;
 }
 .engagementradar-value {
     font-size: 1.1em;
-    color: #222;
+    color: var(--gray-800);
 }

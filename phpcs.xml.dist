@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<ruleset name="VereinMenschlichkeit">
+  <config name="installed_paths" value="vendor/wp-coding-standards/wpcs"/>
+  <rule ref="WordPress-Core"/>
+  <rule ref="WordPress-Docs"/>
+  <rule ref="WordPress-Extra"/>
+  <severity>1</severity>
+</ruleset>
