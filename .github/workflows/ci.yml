@@ -1,0 +1,41 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: [8.1, 8.2, 8.3]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Composer deps
+        run: composer install --prefer-dist --no-progress --no-suggest
+      - name: Static Analysis
+        run: |
+          set -e
+          vendor/bin/phpcs src/
+          vendor/bin/php-cs-fixer fix --dry-run
+          vendor/bin/phpstan analyse src/ --level=max
+          vendor/bin/psalm --no-progress
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit --coverage-html coverage-report
+      - name: Cypress Tests
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: ./
+      - name: Accessibility
+        run: npx pa11y-ci
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report.html
+          path: coverage-report/index.html
+
