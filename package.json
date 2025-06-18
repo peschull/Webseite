@@ -1,0 +1,23 @@
+{
+  "name": "verein-menschlichkeit-theme",
+  "private": true,
+  "scripts": {
+    "lint": "eslint \"blocks/**/*.{js,jsx,ts,tsx}\"",
+    "lint:a11y": "eslint --ext .js,.jsx,.ts,.tsx --max-warnings=0 blocks",
+    "test:a11y": "cypress run",
+    "test:visual": "playwright test",
+    "ci:lh": "lhci autorun --upload.target=temporary-public-storage",
+    "ci": "npm run lint && npm run lint:a11y && npm run test:a11y && npm run test:visual && npm run ci:lh"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^2.0.0",
+    "@lhci/cli": "^0.15.0",
+    "axe-core": "^5.8.0",
+    "cypress": "^15.2.0",
+    "cypress-axe": "^1.8.0",
+    "eslint-plugin-jsx-a11y": "^7.32.1",
+    "eslint-plugin-wpcalypso": "^3.2.0",
+    "lighthouse": "^12.0.0",
+    "playwright": "^1.46.1"
+  }
+}
