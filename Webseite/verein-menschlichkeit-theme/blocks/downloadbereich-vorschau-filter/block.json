@@ -1,0 +1,11 @@
+{
+  "apiVersion": 2,
+  "name": "verein/downloadbereich-vorschau-filter",
+  "title": "Downloadbereich Vorschau Filter",
+  "category": "widgets",
+  "icon": "filter",
+  "description": "Ein Downloadbereich mit Vorschau und Filterfunktion.",
+  "editorScript": "file:./block.js",
+  "style": "file:./style.css",
+  "editorStyle": "file:./editor.css"
+}

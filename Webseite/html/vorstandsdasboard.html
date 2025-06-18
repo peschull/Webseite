@@ -1,0 +1,178 @@
+<html><head>
+<meta charset="utf-8"/>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Public+Sans%3Awght%40400%3B500%3B600%3B700%3B800" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<title>Verein Menschlichkeit – Vorstandsdashboard</title>
+<link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+  /* Fehlerhafte @apply-Regeln entfernt. Tailwind-Klassen bitte direkt im HTML verwenden. */
+</style>
+</head>
+<body class="bg-[var(--surface-background)]" style='font-family: "Public Sans", "Noto Sans", sans-serif;'>
+<div class="relative flex size-full min-h-screen flex-col group/design-root overflow-x-hidden">
+<div class="flex h-full grow">
+<aside class="layout-container flex flex-col w-72 bg-[var(--sidebar-background)] border-r border-[var(--border-color)] shadow-sm">
+<div class="flex h-full flex-col justify-between p-4">
+<div class="flex flex-col gap-6">
+<div class="flex items-center gap-2 px-2 pt-2">
+<svg fill="var(--accent-color)" height="28px" viewBox="0 0 256 256" width="28px" xmlns="http://www.w3.org/2000/svg"><path d="M207.27,88.87a8,8,0,0,0-6.4,1.2L160,118.09V48a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v70.09l-40.87-28.02a8,8,0,0,0-9.86-.66L14.4,112.8A8,8,0,0,0,8.83,124.4l112,76.8a8,8,0,0,0,9.86.66l30.87-21.17a8,8,0,0,0,4.57-7.2V136.2l35.2-24.14A8,8,0,0,0,207.27,88.87ZM112,48h32v74.37l-16,10.97L112,122.37Zm16,147.7L25.64,118.65,48,102.09,88.87,130.1a8,8,0,0,0,9.86.66L128,115.74l20.4,14a8,8,0,0,0,7.82-.53l26.8-18.4V171.6a8,8,0,0,0,2.93,6.13l-34.82,23.88A16,16,0,0,1,128,206.27ZM200.13,99.4,168,121.55V128a8,8,0,0,0,4.58,7.2L193.42,149l11.28-7.73Z"></path></svg>
+<h1 class="text-[var(--text-primary)] text-lg font-semibold leading-normal">Verein Menschlichkeit</h1>
+</div>
+<nav class="flex flex-col gap-1.5">
+<a class="nav-item active" href="#">
+<div data-icon="House" data-size="24px" data-weight="fill">
+<svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg">
+<path d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z"></path>
+</svg>
+</div>
+<p class="text-sm leading-normal">Dashboard</p>
+</a>
+<a class="nav-item" href="#">
+<div data-icon="FileText" data-size="24px" data-weight="regular">
+<svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg"><path d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31L188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Zm-40-64a8,8,0,0,1-8,8H104a8,8,0,0,1,0-16h48A8,8,0,0,1,160,152Zm0-32a8,8,0,0,1-8,8H104a8,8,0,0,1,0-16h48A8,8,0,0,1,160,120Z"></path></svg>
+</div>
+<p class="text-sm leading-normal">Dokumente</p>
+</a>
+<a class="nav-item" href="#">
+<div data-icon="ChartBar" data-size="24px" data-weight="regular">
+<svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg"><path d="M240,208a8,8,0,0,1-8,8H32a8,8,0,0,1-8-8V48a8,8,0,0,1,16,0v40h0V200H232V48a8,8,0,0,1,16,0ZM96,152a8,8,0,0,0,8,8h32a8,8,0,0,0,0-16H104A8,8,0,0,0,96,152Zm-48,0a8,8,0,0,0,8,8H72a8,8,0,0,0,0-16H56A8,8,0,0,0,48,152Zm112-56a8,8,0,0,0-8-8H48a8,8,0,0,0,0,16H152A8,8,0,0,0,160,96Zm32,56a8,8,0,0,0,8,8h16a8,8,0,0,0,0-16H200A8,8,0,0,0,192,152Z"></path></svg>
+</div>
+<p class="text-sm leading-normal">Abstimmungen</p>
+</a>
+<a class="nav-item" href="#">
+<div data-icon="CheckSquareOffset" data-size="24px" data-weight="regular">
+<svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg"><path d="M224,48H48A16,16,0,0,0,32,64V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V64A16,16,0,0,0,208,48Zm0,16V80H48V64ZM48,208V96H208l.06,112Z"></path></svg>
+</div>
+<p class="text-sm leading-normal">Aufgaben</p>
+</a>
+<a class="nav-item" href="#">
+<div data-icon="ChatCircleDots" data-size="24px" data-weight="regular">
+<svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg">
+<path d="M140,128a12,12,0,1,1-12-12A12,12,0,0,1,140,128ZM84,116a12,12,0,1,0,12,12A12,12,0,0,0,84,116Zm88,0a12,12,0,1,0,12,12A12,12,0,0,0,172,116Zm60,12A104,104,0,0,1,79.12,219.82L45.07,231.17a16,16,0,0,1-20.24-20.24l11.35-34.05A104,104,0,1,1,232,128Zm-16,0A88,88,0,1,0,51.81,172.06a8,8,0,0,1,.66,6.54L40,216,77.4,203.53a7.85,7.85,0,0,1,2.53-.42,8,8,0,0,1,4,1.08A88,88,0,0,0,216,128Z"></path>
+</svg>
+</div>
+<p class="text-sm leading-normal">Kommunikation</p>
+</a>
+<a class="nav-item" href="#">
+<div data-icon="ShieldCheck" data-size="24px" data-weight="regular">
+<svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg"><path d="M208,40H48A16,16,0,0,0,32,56V125.78A104.31,104.31,0,0,0,124.22,223.9a8,8,0,0,0,7.56,0C180.53,213.3,224,173.21,224,125.78V56A16,16,0,0,0,208,40Zm0,85.78c0,38.44-34.57,69.71-80,79.94C82.57,195.49,48,164.22,48,125.78V56H208ZM165.66,114.34a8,8,0,0,1-11.32,11.32L120,113.31l-18.34,18.35a8,8,0,0,1-11.32-11.32L108.69,102l-18.35-18.34a8,8,0,0,1,11.32-11.32L120,90.69l18.34-18.35a8,8,0,0,1,11.32,11.32L131.31,102Z"></path></svg>
+</div>
+<p class="text-sm leading-normal">Compliance &amp; DSGVO</p>
+</a>
+</nav>
+</div>
+<div class="flex flex-col gap-1 pt-4 border-t border-[var(--border-color)]">
+<a class="nav-item" href="#">
+<div data-icon="Gear" data-size="24px" data-weight="regular">
+<svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg">
+<path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"></path>
+</svg>
+</div>
+<p class="text-sm leading-normal">Einstellungen</p>
+</a>
+<a class="nav-item" href="#">
+<div data-icon="SignOut" data-size="24px" data-weight="regular">
+<svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg"><path d="M112,216a8,8,0,0,1-8,8H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32h56a8,8,0,0,1,0,16H48V208h56A8,8,0,0,1,112,216Zm115.06-92.69-48-40a8,8,0,0,0-11.17,10.12L192.36,112H104a8,8,0,0,0,0,16h88.36l-24.47,28.55a8,8,0,1,0,11.17,10.12l48-40A8,8,0,0,0,227.06,123.31Z"></path></svg>
+</div>
+<p class="text-sm leading-normal">Logout</p>
+</a>
+</div>
+</div>
+</aside>
+<main class="layout-content-container flex flex-col flex-1 p-6 md:p-8">
+<header class="flex items-center justify-between border-b px-6 py-4 bg-white shadow-sm">
+  <div class="flex items-center gap-3">
+    <div class="size-7 text-blue-600">
+      <!-- Logo SVG -->
+    </div>
+    <h1 class="text-xl font-bold tracking-tight text-slate-900">Verein Menschlichkeit</h1>
+  </div>
+  <nav class="hidden md:flex items-center gap-x-6">
+    <a class="text-sm font-medium hover:text-blue-600" href="index.html">Startseite</a>
+    <a class="text-sm font-medium hover:text-blue-600" href="uberuns.html">Über uns</a>
+    <a class="text-sm font-medium hover:text-blue-600" href="aktuelles.html">Aktuelles</a>
+    <a class="text-sm font-medium hover:text-blue-600" href="veranstaltung.html">Veranstaltungen</a>
+    <a class="text-sm font-medium hover:text-blue-600" href="mach-mit.html">Mitmachen</a>
+    <a class="text-sm font-medium hover:text-blue-600" href="spenden.html">Spenden</a>
+    <a class="text-sm font-medium hover:text-blue-600" href="kontakt.html">Kontakt</a>
+  </nav>
+</header>
+<section class="py-6">
+<h2 class="text-[var(--text-primary)] text-xl font-semibold leading-tight mb-4">Aktuelle Informationen</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+<div class="card p-6">
+<p class="text-[var(--text-secondary)] text-sm font-medium leading-normal mb-1">Neue Dokumente</p>
+<p class="text-[var(--text-primary)] text-3xl font-bold leading-tight">3</p>
+</div>
+<div class="card p-6">
+<p class="text-[var(--text-secondary)] text-sm font-medium leading-normal mb-1">Offene Abstimmungen</p>
+<p class="text-[var(--text-primary)] text-3xl font-bold leading-tight">1</p>
+</div>
+<div class="card p-6">
+<p class="text-[var(--text-secondary)] text-sm font-medium leading-normal mb-1">Fällige Aufgaben</p>
+<p class="text-[var(--text-primary)] text-3xl font-bold leading-tight">2</p>
+</div>
+</div>
+</section>
+<section class="py-6">
+<h2 class="text-[var(--text-primary)] text-xl font-semibold leading-tight mb-4">Schnellzugriff</h2>
+<div class="flex flex-wrap gap-3">
+<button class="btn-primary">
+<svg class="mr-2" fill="currentColor" height="20" viewBox="0 0 256 256" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31L188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Zm-40-88H136V104a8,8,0,0,0-16,0v24H96a8,8,0,0,0,0,16h24v24a8,8,0,0,0,16,0V144h24a8,8,0,0,0,0-16Z"></path></svg>
+<span class="truncate">Neues Dokument hochladen</span>
+</button>
+<button class="btn-secondary">
+<svg class="mr-2" fill="currentColor" height="20" viewBox="0 0 256 256" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M160,24H96A16,16,0,0,0,80,40V64H40A16,16,0,0,0,24,80v72a16,16,0,0,0,16,16h7.31l-7,7a8,8,0,0,0,11.32,11.32L64,168.69V200a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V96A16,16,0,0,0,200,80H176V40A16,16,0,0,0,160,24ZM96,40h64V80H96ZM200,200H80V176a16,16,0,0,0-16-16H40V80H176a16,16,0,0,0,16,16v88a16,16,0,0,0,8,14.45ZM184,112H120a8,8,0,0,1,0-16h64a8,8,0,0,1,0,16Zm0,32H120a8,8,0,0,1,0-16h64a8,8,0,0,1,0,16Z"></path></svg>
+<span class="truncate">Neue Abstimmung starten</span>
+</button>
+</div>
+</section>
+<section class="py-6">
+<h2 class="text-[var(--text-primary)] text-xl font-semibold leading-tight mb-4">Letzte Aktivitäten</h2>
+<div class="card p-2 sm:p-4">
+<ul class="divide-y divide-[var(--border-color)]">
+<li class="flex items-start gap-4 p-3 sm:p-4">
+<div class="bg-blue-100 text-blue-600 rounded-full p-2.5 mt-1">
+<svg fill="currentColor" height="20px" viewBox="0 0 256 256" width="20px" xmlns="http://www.w3.org/2000/svg">
+<path d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Z"></path>
+</svg>
+</div>
+<div>
+<p class="text-[var(--text-primary)] text-sm font-medium leading-normal">Dokument 'Budget 2024' hochgeladen</p>
+<p class="text-[var(--text-secondary)] text-xs leading-normal">Vorstand A - <time datetime="2024-03-10T10:30:00">vor 2 Stunden</time></p>
+</div>
+</li>
+<li class="flex items-start gap-4 p-3 sm:p-4">
+<div class="bg-green-100 text-green-600 rounded-full p-2.5 mt-1">
+<svg fill="currentColor" height="20px" viewBox="0 0 256 256" width="20px" xmlns="http://www.w3.org/2000/svg">
+<path d="M239.82,157l-12-96A24,24,0,0,0,204,40H32A16,16,0,0,0,16,56v88a16,16,0,0,0,16,16H75.06l37.78,75.58A8,8,0,0,0,120,240a40,40,0,0,0,40-40V184h56a24,24,0,0,0,23.82-27ZM72,144H32V56H72Zm150,21.29a7.88,7.88,0,0,1-6,2.71H152a8,8,0,0,0-8,8v24a24,24,0,0,1-19.29,23.54L88,150.11V56H204a8,8,0,0,1,7.94,7l12,96A7.87,7.87,0,0,1,222,165.29Z"></path>
+</svg>
+</div>
+<div>
+<p class="text-[var(--text-primary)] text-sm font-medium leading-normal">Abstimmung 'Projekt X' gestartet</p>
+<p class="text-[var(--text-secondary)] text-xs leading-normal">Vorstand B - <time datetime="2024-03-10T09:15:00">vor 3 Stunden</time></p>
+</div>
+</li>
+<li class="flex items-start gap-4 p-3 sm:p-4">
+<div class="bg-yellow-100 text-yellow-600 rounded-full p-2.5 mt-1">
+<svg fill="currentColor" height="20px" viewBox="0 0 256 256" width="20px" xmlns="http://www.w3.org/2000/svg">
+<path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM224,48V208a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32H208A16,16,0,0,1,224,48ZM208,208V48H48V208H208Z"></path>
+</svg>
+</div>
+<div>
+<p class="text-[var(--text-primary)] text-sm font-medium leading-normal">Aufgabe 'Bericht erstellen' fällig</p>
+<p class="text-[var(--text-secondary)] text-xs leading-normal">Vorstand C - <time datetime="2024-03-09T17:00:00">Gestern</time></p>
+</div>
+</li>
+</ul>
+</div>
+</section>
+<footer class="mt-10 border-t py-4 text-center text-sm text-slate-500 bg-white">
+  <a href="rechtliches.html" class="hover:underline">Impressum & Datenschutz</a>
+</footer>
+</main>
+</div>
+</div>
+
+</body></html>

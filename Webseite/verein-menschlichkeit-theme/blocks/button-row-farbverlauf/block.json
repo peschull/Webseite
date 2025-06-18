@@ -1,0 +1,11 @@
+{
+  "apiVersion": 2,
+  "name": "verein/button-row-farbverlauf",
+  "title": "Button Row Farbverlauf",
+  "category": "design",
+  "icon": "button",
+  "description": "Eine Reihe von Buttons mit Farbverlauf.",
+  "editorScript": "file:./block.js",
+  "style": "file:./style.css",
+  "editorStyle": "file:./editor.css"
+}

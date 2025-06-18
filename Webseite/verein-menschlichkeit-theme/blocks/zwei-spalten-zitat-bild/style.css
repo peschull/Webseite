@@ -1,0 +1,26 @@
+/* Grundlegendes CSS für den Zwei-Spalten-Zitat-Bild-Block */
+.block-zwei-spalten-zitat-bild {
+    display: flex;
+    gap: 2em;
+    background: #f8f8f8;
+    padding: 1em;
+    border-radius: 8px;
+}
+.block-zwei-spalten-zitat-bild .spalte {
+    flex: 1 1 50%;
+}
+.block-zwei-spalten-zitat-bild .spalte.bild img {
+    max-width: 100%;
+    border-radius: 4px;
+}
+.block-zwei-spalten-zitat-bild blockquote {
+    font-size: 1.2em;
+    font-style: italic;
+    margin: 0 0 0.5em 0;
+}
+.block-zwei-spalten-zitat-bild cite {
+    display: block;
+    text-align: right;
+    color: #555;
+    font-size: 1em;
+}

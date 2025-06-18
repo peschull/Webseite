@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/so-kannst-du-helfen",
+  "title": "So kannst du helfen-Modul",
+  "category": "widgets",
+  "icon": "heart",
+  "description": "Icons + Call-to-Action für Mitmachmöglichkeiten.",
+  "attributes": {"hilfen": {"type": "array"}},
+  "editorScript": "verein-block-so-kannst-du-helfen"
+}

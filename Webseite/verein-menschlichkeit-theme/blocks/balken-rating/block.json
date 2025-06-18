@@ -1,0 +1,13 @@
+{
+  "apiVersion": 2,
+  "name": "verein/balken-rating",
+  "title": "Balken-Rating",
+  "category": "widgets",
+  "icon": "star-half",
+  "description": "Ein Block für ein Balken-Rating.",
+  "supports": {
+    "html": false
+  },
+  "editorScript": "file:./block.js",
+  "style": "file:./style.css"
+}

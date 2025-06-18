@@ -1,0 +1,22 @@
+/* Basis-Styles für den Textsplitter-Block */
+.textsplitter-block {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+.textsplitter-block h2 {
+  font-size: clamp(1.5rem, 2vw, 2.5rem);
+  margin-bottom: 1.2rem;
+  color: #222;
+}
+.splitter-abschnitte {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+.splitter-abschnitt p {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #444;
+}

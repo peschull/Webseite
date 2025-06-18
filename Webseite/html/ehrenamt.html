@@ -1,0 +1,154 @@
+<html><head>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Public+Sans%3Awght%40400%3B500%3B600%3B700%3B900" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<meta charset="utf-8"/>
+<title>Verein Menschlichkeit - Ehrenamt</title>
+<link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style type="text/tailwindcss">
+      :root {
+        --primary-color: #0b79ee;
+        --secondary-color: #e7edf4;
+        --text-primary: #0d141c;
+        --text-secondary: #49719c;
+        --text-on-primary: #ffffff;
+      }
+      body {
+        font-family: "Public Sans", "Noto Sans", sans-serif;
+      }
+      .btn-primary {
+        @apply bg-[var(--primary-color)] text-[var(--text-on-primary)] hover:bg-opacity-90 transition-colors duration-200;
+      }
+      .btn-secondary {
+        @apply bg-[var(--secondary-color)] text-[var(--text-primary)] hover:bg-opacity-80 transition-colors duration-200;
+      }
+      .nav-link-active {
+        @apply text-[var(--primary-color)] font-semibold;
+      }
+    </style>
+</head>
+<body class="bg-slate-50 text-[var(--text-primary)]">
+<div class="relative flex size-full min-h-screen flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<header class="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md shadow-sm">
+<div class="container mx-auto flex items-center justify-between whitespace-nowrap px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-7 text-[var(--primary-color)]">
+<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M36.7273 44C33.9891 44 31.6043 39.8386 30.3636 33.69C29.123 39.8386 26.7382 44 24 44C21.2618 44 18.877 39.8386 17.6364 33.69C16.3957 39.8386 14.0109 44 11.2727 44C7.25611 44 4 35.0457 4 24C4 12.9543 7.25611 4 11.2727 4C14.0109 4 16.3957 8.16144 17.6364 14.31C18.877 8.16144 21.2618 4 24 4C26.7382 4 29.123 8.16144 30.3636 14.31C31.6043 8.16144 33.9891 4 36.7273 4C40.7439 4 44 12.9543 44 24C44 35.0457 40.7439 44 36.7273 44Z" fill="currentColor"></path>
+</svg>
+</div>
+<h1 class="text-xl font-bold leading-tight tracking-tight">Verein Menschlichkeit</h1>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium hover:text-[var(--primary-color)] transition-colors" href="#">Über uns</a>
+<a class="text-sm font-medium hover:text-[var(--primary-color)] transition-colors" href="#">Projekte</a>
+<a class="text-sm font-medium hover:text-[var(--primary-color)] transition-colors" href="#">Spenden</a>
+<a class="text-sm font-medium nav-link-active" href="#">Mitmachen</a>
+</nav>
+<div class="hidden md:flex items-center gap-3">
+<button class="btn-primary flex min-w-[90px] items-center justify-center overflow-hidden rounded-full h-10 px-5 text-sm font-semibold tracking-wide">
+<span class="truncate">Spenden</span>
+</button>
+<button class="btn-secondary flex min-w-[140px] items-center justify-center overflow-hidden rounded-full h-10 px-5 text-sm font-semibold tracking-wide">
+<span class="truncate">Mitglied werden</span>
+</button>
+</div>
+<button class="md:hidden text-[var(--text-primary)]">
+<svg fill="currentColor" height="28" viewBox="0 0 256 256" width="28" xmlns="http://www.w3.org/2000/svg">
+<path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,88H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path>
+</svg>
+</button>
+</div>
+</header>
+<main class="flex-1 py-12 md:py-20">
+<div class="container mx-auto px-6">
+<section class="mb-16 md:mb-24 text-center max-w-3xl mx-auto">
+<h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-6">Engagiere dich ehrenamtlich</h1>
+<p class="text-lg md:text-xl text-[var(--text-secondary)] leading-relaxed">
+                Werde Teil unseres Teams und gestalte aktiv mit. Wir bieten vielfältige Möglichkeiten, deine Fähigkeiten und Interessen einzubringen und gemeinsam Gutes zu bewirken.
+              </p>
+</section>
+<section class="mb-16 md:mb-24">
+<h2 class="text-3xl font-bold tracking-tight mb-10 text-center">Möglichkeiten des Engagements</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+<div class="flex flex-col gap-4 rounded-xl border border-[var(--secondary-color)] bg-white p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+<div class="text-[var(--primary-color)]" data-icon="Users" data-size="32px" data-weight="regular">
+<svg fill="currentColor" height="32px" viewBox="0 0 256 256" width="32px" xmlns="http://www.w3.org/2000/svg">
+<path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"></path>
+</svg>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="text-xl font-semibold leading-tight">Unterstützung in Projekten</h3>
+<p class="text-sm text-[var(--text-secondary)] leading-normal">Hilf bei der Umsetzung unserer Projekte vor Ort oder aus der Ferne.</p>
+</div>
+</div>
+<div class="flex flex-col gap-4 rounded-xl border border-[var(--secondary-color)] bg-white p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+<div class="text-[var(--primary-color)]" data-icon="HandsClapping" data-size="32px" data-weight="regular">
+<svg fill="currentColor" height="32px" viewBox="0 0 256 256" width="32px" xmlns="http://www.w3.org/2000/svg">
+<path d="M168,24V8a8,8,0,0,1,16,0V24a8,8,0,0,1-16,0Zm35.83,17A7.9,7.9,0,0,0,208,42.13a8,8,0,0,0,6.84-3.83l8-13.11a8,8,0,1,0-13.66-8.33l-8,13.1A8,8,0,0,0,203.83,41Zm47.44,12.59a8,8,0,0,0-10.07-5.16l-15,4.85a8,8,0,0,0,2.45,15.62,8.15,8.15,0,0,0,2.46-.39l15-4.85A8,8,0,0,0,251.27,53.55Zm-30,39.94A79.71,79.71,0,0,1,208.68,190,80,80,0,0,1,62.49,208l-35-60.63A26,26,0,0,1,46.67,108.6l-4-6.94A26,26,0,0,1,61,63,26,26,0,0,1,72.4,31.63a26.05,26.05,0,0,1,30.81,3.58A26,26,0,0,1,147.09,37l12,20.79a26,26,0,0,1,43.18,2.78ZM115.92,55h0l5.93,10.27a25.87,25.87,0,0,1,5,6.24l12,20.75a26.2,26.2,0,0,1,16-9.78L133.24,45a10,10,0,0,0-13.66-3.66A10,10,0,0,0,115.92,55ZM76.74,59.15l5.93,10.28.32.29A25.93,25.93,0,0,1,99.71,58.94l-5.65-9.79a10,10,0,0,0-18.32,2.41A9.92,9.92,0,0,0,76.74,59.15ZM193.59,184.57a63.61,63.61,0,0,0-6.4-48.57l-19-32.91a10,10,0,0,0-17.74,9.18L161.87,132A8,8,0,1,1,148,140L113,79.53A10,10,0,0,0,95.63,89.4L120.26,132a8,8,0,1,1-13.85,8L73.84,83.66a10,10,0,1,0-17.32,10l36,62.36a8,8,0,1,1-13.86,8l-20-34.64a10,10,0,0,0-17.32,10l35,60.63a64,64,0,0,0,117.25-15.44Zm13.82-83.08-19-32.91a10,10,0,0,0-17.32,10h0L177,88.83a26.06,26.06,0,0,1,5,6.26l19,32.91a80.13,80.13,0,0,1,10.13,30A63.82,63.82,0,0,0,207.41,101.49Z"></path>
+</svg>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="text-xl font-semibold leading-tight">Veranstaltungen</h3>
+<p class="text-sm text-[var(--text-secondary)] leading-normal">Unterstütze uns bei der Organisation und Durchführung von Veranstaltungen.</p>
+</div>
+</div>
+<div class="flex flex-col gap-4 rounded-xl border border-[var(--secondary-color)] bg-white p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+<div class="text-[var(--primary-color)]" data-icon="Heart" data-size="32px" data-weight="regular">
+<svg fill="currentColor" height="32px" viewBox="0 0 256 256" width="32px" xmlns="http://www.w3.org/2000/svg">
+<path d="M178,32c-20.65,0-38.73,8.88-50,23.89C116.73,40.88,98.65,32,78,32A62.07,62.07,0,0,0,16,94c0,70,103.79,126.66,108.21,129a8,8,0,0,0,7.58,0C136.21,220.66,240,164,240,94A62.07,62.07,0,0,0,178,32ZM128,206.8C109.74,196.16,32,147.69,32,94A46.06,46.06,0,0,1,78,48c19.45,0,35.78,10.36,42.6,27a8,8,0,0,0,14.8,0c6.82-16.67,23.15-27,42.6-27a46.06,46.06,0,0,1,46,46C224,147.61,146.24,196.15,128,206.8Z"></path>
+</svg>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="text-xl font-semibold leading-tight">Administrative Aufgaben</h3>
+<p class="text-sm text-[var(--text-secondary)] leading-normal">Hilf uns bei der Organisation und Verwaltung des Vereins.</p>
+</div>
+</div>
+</div>
+</section>
+<section class="mb-16 md:mb-24 bg-white p-8 md:p-12 rounded-xl shadow-lg">
+<h2 class="text-3xl font-bold tracking-tight mb-6">Deine Vorteile</h2>
+<p class="text-lg text-[var(--text-secondary)] leading-relaxed">
+                Ehrenamtliches Engagement bietet nicht nur die Möglichkeit, etwas Gutes zu tun, sondern auch persönliche Bereicherung. Du kannst neue Fähigkeiten erlernen, dein Netzwerk erweitern und Teil einer Gemeinschaft werden, die sich für eine bessere Welt einsetzt.
+              </p>
+</section>
+<section class="bg-white p-8 md:p-12 rounded-xl shadow-lg">
+<div class="max-w-xl mx-auto">
+<h2 class="text-3xl font-bold tracking-tight mb-4 text-center">Interesse geweckt?</h2>
+<p class="text-lg text-[var(--text-secondary)] leading-relaxed mb-8 text-center">
+                  Wenn du Interesse an einem ehrenamtlichen Engagement hast, melde dich gerne bei uns. Wir freuen uns auf deine Nachricht!
+                </p>
+<form class="space-y-6">
+<div>
+<label class="block text-sm font-medium text-[var(--text-primary)] mb-1" for="name">Name</label>
+<input class="form-input w-full rounded-lg border-[var(--secondary-color)] focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)] transition-colors duration-200 p-3 bg-slate-50 placeholder:text-slate-400" id="name" name="name" placeholder="Dein Name" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-medium text-[var(--text-primary)] mb-1" for="email">E-Mail</label>
+<input class="form-input w-full rounded-lg border-[var(--secondary-color)] focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)] transition-colors duration-200 p-3 bg-slate-50 placeholder:text-slate-400" id="email" name="email" placeholder="Deine E-Mail-Adresse" type="email"/>
+</div>
+<div>
+<label class="block text-sm font-medium text-[var(--text-primary)] mb-1" for="message">Nachricht</label>
+<textarea class="form-textarea w-full rounded-lg border-[var(--secondary-color)] focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)] transition-colors duration-200 p-3 bg-slate-50 placeholder:text-slate-400" id="message" name="message" placeholder="Deine Nachricht an uns..." rows="4"></textarea>
+</div>
+<div class="text-center">
+<button class="btn-primary flex items-center justify-center overflow-hidden rounded-full h-12 px-8 text-base font-semibold tracking-wide w-full sm:w-auto" type="submit">
+<span class="truncate">Nachricht absenden</span>
+</button>
+</div>
+</form>
+</div>
+</section>
+</div>
+</main>
+<footer class="bg-[var(--text-primary)] text-slate-300 py-12">
+<div class="container mx-auto px-6 text-center">
+<p class="text-sm">© 2024 Verein Menschlichkeit. Alle Rechte vorbehalten.</p>
+<p class="text-xs mt-2">Impressum | Datenschutz</p>
+</div>
+</footer>
+</div>
+</div>
+
+</body></html>

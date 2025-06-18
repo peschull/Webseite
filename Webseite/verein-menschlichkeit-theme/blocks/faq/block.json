@@ -1,0 +1,12 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/faq",
+  "title": "FAQ Akkordeon",
+  "category": "widgets",
+  "icon": "editor-help",
+  "description": "Häufige Fragen als aufklappbares Akkordeon.",
+  "attributes": {
+    "fragen": { "type": "array", "default": [] }
+  },
+  "editorScript": "verein-block-faq"
+}

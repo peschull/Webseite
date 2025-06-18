@@ -1,0 +1,10 @@
+/* Verein Menschlichkeit Animationen */
+.card, .gallery img, .btn-primary, .btn-secondary {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1);
+}
+.card.visible, .gallery img.visible, .btn-primary.visible, .btn-secondary.visible {
+  opacity: 1;
+  transform: none;
+}

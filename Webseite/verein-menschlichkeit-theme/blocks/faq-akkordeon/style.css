@@ -1,0 +1,58 @@
+.faq-akkordeon {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+.faq-titel {
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 2rem;
+    color: #333;
+}
+.faq-akkordeon-liste {
+    max-width: 700px;
+    margin: 0 auto;
+}
+.faq-item {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 0.5rem;
+}
+.faq-frage {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    font-size: 1.1em;
+    font-weight: bold;
+    padding: 1rem 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #222;
+    transition: color 0.2s;
+}
+.faq-frage:focus {
+    outline: 2px solid var(--wp--preset--color--primary, #007cba);
+}
+.faq-toggle {
+    font-size: 1.5em;
+    margin-left: 1rem;
+    color: var(--wp--preset--color--primary, #007cba);
+    transition: transform 0.2s;
+}
+.faq-antwort {
+    padding: 0 0 1rem 0;
+    color: #555;
+    display: block;
+}
+@media (max-width: 600px) {
+    .faq-akkordeon {
+        padding: 0.5rem;
+    }
+    .faq-titel {
+        font-size: 1.3em;
+    }
+}

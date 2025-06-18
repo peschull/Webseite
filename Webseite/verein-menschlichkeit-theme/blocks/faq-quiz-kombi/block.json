@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/faq-quiz-kombi",
+  "title": "FAQ-Quiz-Kombiblock",
+  "category": "widgets",
+  "icon": "editor-help",
+  "description": "Kombiblock aus FAQ und Quiz (z. B. Vereinsrecht).",
+  "attributes": {"fragen": {"type": "array"}},
+  "editorScript": "verein-block-faq-quiz-kombi"
+}

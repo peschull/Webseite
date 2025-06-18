@@ -1,0 +1,21 @@
+/* Grundlegendes CSS für den Social Media Grid-Block */
+.block-social-media-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+    background: #f8f8f8;
+    padding: 1em;
+    border-radius: 8px;
+}
+.block-social-media-grid a {
+    display: inline-block;
+    padding: 0.5em 1em;
+    background: #0073aa;
+    color: #fff;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+.block-social-media-grid a:hover {
+    background: #005f8d;
+}

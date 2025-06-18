@@ -1,0 +1,177 @@
+<html><head>
+<meta charset="utf-8"/>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Public+Sans%3Awght%40400%3B500%3B700%3B900" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<title>Verein Menschlichkeit - Mitglied werden</title>
+<link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style type="text/tailwindcss">
+      :root {
+        --primary-color: #0b79ee;
+        --primary-color-hover: #0063c6;
+        --text-primary: #0d141c;
+        --text-secondary: #49719c;
+        --border-color: #cedbe8;
+        --background-light: #f8fafc;
+        --background-form: #ffffff;
+      }
+      body {
+        font-family: 'Public Sans', 'Noto Sans', sans-serif;
+      }
+      .form-input {
+        border-color: var(--border-color);
+        background-color: var(--background-form);
+        color: var(--text-primary);
+      }
+      .form-input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(11, 121, 238, 0.2);}
+      .btn-primary {
+        background-color: var(--primary-color);
+        color: var(--background-light);
+      }
+      .btn-primary:hover {
+        background-color: var(--primary-color-hover);
+      }
+      .nav-link {
+        color: var(--text-primary);
+        transition: color 0.2s ease-in-out;
+      }
+      .nav-link:hover {
+        color: var(--primary-color);
+      }
+      .form-label-text {
+        color: var(--text-primary);
+      }
+      .placeholder-text {
+        color: var(--text-secondary);
+      }
+    </style>
+</head>
+<body class="bg-background-light text-text-primary">
+<div class="relative flex size-full min-h-screen flex-col group/design-root overflow-x-hidden" style="--checkbox-tick-svg: url('data:image/svg+xml,%3csvg viewBox=%270 0 16 16%27 fill='%23ffffff'%20xmlns=%27http://www.w3.org/2000/svg%27%3e%3cpath d=%27M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z%27/%3e%3c/svg%3e'); --radio-dot-svg: url('data:image/svg+xml,%3csvg viewBox=%270 0 16 16%27 fill='%230b79ee'%20xmlns=%27http://www.w3.org/2000/svg%27%3e%3ccircle cx=%278%27 cy=%278%27 r=%273%27/%3e%3c/svg%3e'); --select-button-svg: url('data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724px%27 height=%2724px%27 fill='%2349719c'%20viewBox=%270 0 256 256%27%3e%3cpath d=%27M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z%27%3e%3c/path%3e%3c/svg%3e');">
+<div class="layout-container flex h-full grow flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-border-color px-6 sm:px-10 py-4 bg-white shadow-sm">
+<div class="flex items-center gap-3">
+<div class="size-7 text-[var(--primary-color)]">
+<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M36.7273 44C33.9891 44 31.6043 39.8386 30.3636 33.69C29.123 39.8386 26.7382 44 24 44C21.2618 44 18.877 39.8386 17.6364 33.69C16.3957 39.8386 14.0109 44 11.2727 44C7.25611 44 4 35.0457 4 24C4 12.9543 7.25611 4 11.2727 4C14.0109 4 16.3957 8.16144 17.6364 14.31C18.877 8.16144 21.2618 4 24 4C26.7382 4 29.123 8.16144 30.3636 14.31C31.6043 8.16144 33.9891 4 36.7273 4C40.7439 4 44 12.9543 44 24C44 35.0457 40.7439 44 36.7273 44Z" fill="currentColor"></path>
+</svg>
+</div>
+<h1 class="text-text-primary text-xl font-bold tracking-tight">Verein Menschlichkeit</h1>
+</div>
+<nav class="hidden md:flex items-center gap-x-6 lg:gap-x-8">
+<a class="nav-link text-sm font-medium" href="#">Über uns</a>
+<a class="nav-link text-sm font-medium" href="#">Projekte</a>
+<a class="nav-link text-sm font-medium" href="#">Spenden</a>
+<a class="nav-link text-sm font-medium" href="#">Blog</a>
+<a class="nav-link text-sm font-medium" href="#">Kontakt</a>
+<a class="btn-primary flex min-w-[100px] items-center justify-center rounded-full h-10 px-5 text-sm font-semibold tracking-wide shadow-sm transition-colors duration-200 ease-in-out" href="/mitmachen">
+              Mitglied werden
+            </a>
+</nav>
+<button class="md:hidden text-text-primary">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 6h16M4 12h16m-7 6h7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</header>
+<main class="flex flex-1 justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+<div class="layout-content-container w-full max-w-2xl bg-white p-6 sm:p-8 md:p-10 rounded-xl shadow-lg">
+<div class="mb-8 text-center">
+<h2 class="text-text-primary text-3xl sm:text-4xl font-bold tracking-tight">Mitglied werden</h2>
+<p class="text-text-secondary text-base sm:text-lg mt-3">
+                Unterstützen Sie unsere Arbeit für eine gerechtere Welt. Werden Sie Teil der Gemeinschaft und gestalten Sie mit uns eine bessere Zukunft. Füllen Sie das Formular aus,
+                um Mitglied zu werden.
+              </p>
+</div>
+<form class="space-y-6">
+<div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+<div>
+<label class="block text-sm font-medium form-label-text pb-1.5" for="vorname">Vorname</label>
+<input class="form-input block w-full rounded-lg border h-12 p-3 text-sm placeholder-text focus:ring-1" id="vorname" name="vorname" placeholder="Max" required="" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-medium form-label-text pb-1.5" for="nachname">Nachname</label>
+<input class="form-input block w-full rounded-lg border h-12 p-3 text-sm placeholder-text focus:ring-1" id="nachname" name="nachname" placeholder="Mustermann" required="" type="text"/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium form-label-text pb-1.5" for="email">E-Mail</label>
+<input class="form-input block w-full rounded-lg border h-12 p-3 text-sm placeholder-text focus:ring-1" id="email" name="email" placeholder="max.mustermann@example.com" required="" type="email"/>
+</div>
+<div>
+<label class="block text-sm font-medium form-label-text pb-1.5" for="telefon">Telefonnummer (optional)</label>
+<input class="form-input block w-full rounded-lg border h-12 p-3 text-sm placeholder-text focus:ring-1" id="telefon" name="telefon" placeholder="+49 123 456789" type="tel"/>
+</div>
+<div>
+<label class="block text-sm font-medium form-label-text pb-1.5" for="adresse">Adresse</label>
+<input class="form-input block w-full rounded-lg border h-12 p-3 text-sm placeholder-text focus:ring-1" id="adresse" name="adresse" placeholder="Musterstraße 1" required="" type="text"/>
+</div>
+<div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-3">
+<div class="sm:col-span-1">
+<label class="block text-sm font-medium form-label-text pb-1.5" for="postleitzahl">Postleitzahl</label>
+<input class="form-input block w-full rounded-lg border h-12 p-3 text-sm placeholder-text focus:ring-1" id="postleitzahl" name="postleitzahl" placeholder="12345" required="" type="text"/>
+</div>
+<div class="sm:col-span-2">
+<label class="block text-sm font-medium form-label-text pb-1.5" for="stadt">Stadt</label>
+<input class="form-input block w-full rounded-lg border h-12 p-3 text-sm placeholder-text focus:ring-1" id="stadt" name="stadt" placeholder="Musterstadt" required="" type="text"/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium form-label-text pb-1.5" for="land">Land</label>
+<select class="form-input block w-full rounded-lg border h-12 p-3 text-sm bg-[image:--select-button-svg] bg-no-repeat bg-[center_right_0.75rem] appearance-none focus:ring-1" id="land" name="land" required="">
+<option value="DE">Deutschland</option>
+<option value="AT">Österreich</option>
+<option value="CH">Schweiz</option>
+<option value="OTHER">Anderes Land</option>
+</select>
+</div>
+<div>
+<label class="block text-sm font-medium form-label-text pb-1.5" for="geburtsdatum">Geburtsdatum</label>
+<input class="form-input block w-full rounded-lg border h-12 p-3 text-sm placeholder-text focus:ring-1" id="geburtsdatum" name="geburtsdatum" required="" type="date"/>
+</div>
+<fieldset class="pt-4">
+<legend class="text-sm font-medium form-label-text pb-2">Mitgliedsbeitrag</legend>
+<div class="space-y-3">
+<label class="flex items-center gap-x-3 rounded-lg border border-solid border-border-color p-3.5 hover:border-[var(--primary-color)] transition-colors cursor-pointer">
+<input checked="" class="h-4 w-4 border-2 border-border-color text-transparent checked:border-[var(--primary-color)] checked:bg-[image:--radio-dot-svg] focus:ring-0 focus:ring-offset-0" name="mitgliedsbeitrag" type="radio" value="jaehrlich"/>
+<span class="text-sm form-label-text">Jährlicher Mitgliedsbeitrag</span>
+</label>
+<label class="flex items-center gap-x-3 rounded-lg border border-solid border-border-color p-3.5 hover:border-[var(--primary-color)] transition-colors cursor-pointer">
+<input class="h-4 w-4 border-2 border-border-color text-transparent checked:border-[var(--primary-color)] checked:bg-[image:--radio-dot-svg] focus:ring-0 focus:ring-offset-0" name="mitgliedsbeitrag" type="radio" value="halbjaehrlich"/>
+<span class="text-sm form-label-text">Halb-jährlicher Mitgliedsbeitrag</span>
+</label>
+<label class="flex items-center gap-x-3 rounded-lg border border-solid border-border-color p-3.5 hover:border-[var(--primary-color)] transition-colors cursor-pointer">
+<input class="h-4 w-4 border-2 border-border-color text-transparent checked:border-[var(--primary-color)] checked:bg-[image:--radio-dot-svg] focus:ring-0 focus:ring-offset-0" name="mitgliedsbeitrag" type="radio" value="vierteljaehrlich"/>
+<span class="text-sm form-label-text">Viertel-jährlicher Mitgliedsbeitrag</span>
+</label>
+</div>
+</fieldset>
+<div class="pt-2">
+<label class="flex items-start gap-x-3">
+<input class="h-5 w-5 mt-0.5 rounded border-border-color border-2 text-[var(--primary-color)] checked:bg-[var(--primary-color)] checked:border-[var(--primary-color)] checked:bg-[image:--checkbox-tick-svg] focus:ring-0 focus:ring-offset-0 focus:border-border-color" name="datenschutz" required="" type="checkbox"/>
+<p class="text-text-secondary text-sm">
+                    Ich stimme den <a class="text-[var(--primary-color)] hover:underline" href="/datenschutz">Datenschutzbestimmungen</a> zu und bin damit einverstanden, dass meine Daten verarbeitet werden.
+                  </p>
+</label>
+</div>
+<div class="pt-4">
+<button class="btn-primary w-full flex justify-center rounded-full py-3 px-4 text-base font-semibold shadow-md transition-colors duration-200 ease-in-out" type="submit">
+                  Jetzt Mitglied werden
+                </button>
+</div>
+</form>
+</div>
+</main>
+<footer class="bg-slate-100 border-t border-solid border-border-color py-8 text-center">
+<p class="text-sm text-text-secondary">© 2024 Verein Menschlichkeit. Alle Rechte vorbehalten.</p>
+<div class="mt-2">
+<a class="text-sm text-[var(--primary-color)] hover:underline px-2" href="/impressum">Impressum</a>
+<a class="text-sm text-[var(--primary-color)] hover:underline px-2" href="/datenschutz">Datenschutz</a>
+</div>
+</footer>
+</div>
+</div>
+
+</body></html>

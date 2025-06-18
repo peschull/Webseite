@@ -1,0 +1,20 @@
+/* Grundlegendes CSS für den Was uns antreibt Slider-Block */
+.block-was-uns-antreibt-slider {
+    background: #f8f8f8;
+    padding: 1em;
+    border-radius: 8px;
+}
+.block-was-uns-antreibt-slider .slide {
+    margin-bottom: 1em;
+}
+.block-was-uns-antreibt-slider blockquote {
+    font-size: 1.2em;
+    font-style: italic;
+    margin: 0 0 0.5em 0;
+}
+.block-was-uns-antreibt-slider cite {
+    display: block;
+    text-align: right;
+    color: #555;
+    font-size: 1em;
+}

@@ -1,0 +1,13 @@
+{
+  "key": "group_veranstaltungen",
+  "title": "Veranstaltungen",
+  "fields": [
+    { "key": "field_datum", "label": "Datum", "name": "datum", "type": "date_picker" },
+    { "key": "field_ort", "label": "Ort", "name": "ort", "type": "text" }
+  ],
+  "location": [
+    [
+      { "param": "post_type", "operator": "==", "value": "event" }
+    ]
+  ]
+}

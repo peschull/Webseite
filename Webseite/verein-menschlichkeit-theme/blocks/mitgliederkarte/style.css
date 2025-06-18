@@ -1,0 +1,12 @@
+/* Grundlegendes CSS für den Mitgliederkarte-Block */
+.block-mitgliederkarte {
+    padding: 1em;
+    background: #eaf6fb;
+    border-radius: 8px;
+}
+.block-mitgliederkarte .karte {
+    min-height: 200px;
+    background: #fff;
+    border: 1px solid #b3d4fc;
+    border-radius: 4px;
+}

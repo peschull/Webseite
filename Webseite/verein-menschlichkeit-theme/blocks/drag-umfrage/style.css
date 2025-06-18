@@ -1,0 +1,29 @@
+.drag-umfrage-block {
+    background: #e3f6fc;
+    border-left: 4px solid #00b4d8;
+    padding: 1.2em 1em;
+    margin: 1em 0;
+    border-radius: 6px;
+}
+.drag-items, .drop-zones {
+    min-height: 40px;
+    margin-bottom: 1em;
+}
+.drag-item {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 0.7em 1em;
+    margin-bottom: 0.5em;
+    cursor: grab;
+}
+.drop-zone {
+    background: #e0e0e0;
+    border-radius: 4px;
+    padding: 0.7em 1em;
+    margin-bottom: 0.5em;
+}
+.drop-zone-label {
+    font-weight: bold;
+    color: #007cba;
+}

@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/auszeichnungen",
+  "title": "Auszeichnungen als Medaillenreihe",
+  "category": "widgets",
+  "icon": "awards",
+  "description": "Auszeichnungen als Medaillenreihe.",
+  "attributes": {"medaillen": {"type": "array"}},
+  "editorScript": "verein-block-auszeichnungen"
+}

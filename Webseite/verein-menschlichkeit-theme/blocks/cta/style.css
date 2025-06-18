@@ -1,0 +1,17 @@
+/* CTA Block Frontend Styles */
+.wp-block-verein-menschlichkeit-cta .cta-btn {
+  display: inline-block;
+  background: #fff;
+  color: #2563eb;
+  padding: 0.75em 2em;
+  border-radius: 2em;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.2em;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+  transition: background 0.2s, color 0.2s;
+}
+.wp-block-verein-menschlichkeit-cta .cta-btn:hover {
+  background: #2563eb;
+  color: #fff;
+}

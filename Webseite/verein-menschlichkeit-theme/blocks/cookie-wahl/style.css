@@ -1,0 +1,29 @@
+.cookie-wahl-block {
+    background: #fffbe7;
+    border: 1px solid #ffe082;
+    padding: 1.2em 1em;
+    margin: 1em 0;
+    border-radius: 6px;
+}
+.cookie-text {
+    margin-bottom: 1em;
+    color: #333;
+}
+.cookie-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+}
+.cookie-option {
+    background: linear-gradient(90deg, #ffe082 0%, #ffd54f 100%);
+    border: none;
+    border-radius: 4px;
+    padding: 0.5em 1.2em;
+    cursor: pointer;
+    font-weight: bold;
+    color: #7a5c00;
+    transition: background 0.2s;
+}
+.cookie-option:hover {
+    background: #ffd54f;
+}

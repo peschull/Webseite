@@ -1,0 +1,22 @@
+name: Release Build
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Zip Theme
+        run: |
+          cd ..
+          zip -r verein-menschlichkeit-theme.zip verein-menschlichkeit-theme -x "*.git*" -x "node_modules/*" -x "acf-json/*"
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ../verein-menschlichkeit-theme.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

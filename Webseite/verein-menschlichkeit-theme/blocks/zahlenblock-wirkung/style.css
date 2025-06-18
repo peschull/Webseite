@@ -1,0 +1,20 @@
+/* Grundlegendes CSS für den Zahlenblock Wirkung-Block */
+.block-zahlenblock-wirkung {
+    display: flex;
+    gap: 2em;
+    background: #f8f8f8;
+    padding: 1em;
+    border-radius: 8px;
+}
+.block-zahlenblock-wirkung .zahl {
+    text-align: center;
+}
+.block-zahlenblock-wirkung .wert {
+    font-size: 2em;
+    font-weight: bold;
+    color: #0073aa;
+}
+.block-zahlenblock-wirkung .beschreibung {
+    display: block;
+    color: #555;
+}

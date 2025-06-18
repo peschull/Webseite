@@ -1,0 +1,17 @@
+{
+  "key": "group_galerie",
+  "title": "Galerie Bilder",
+  "fields": [
+    {
+      "key": "field_galerie_bilder",
+      "label": "Galerie Bilder",
+      "name": "galerie_bilder",
+      "type": "gallery"
+    }
+  ],
+  "location": [
+    [
+      { "param": "page_template", "operator": "==", "value": "galerie.php" }
+    ]
+  ]
+}

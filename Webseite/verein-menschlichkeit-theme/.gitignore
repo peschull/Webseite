@@ -1,0 +1,15 @@
+# WordPress
+wp-content/uploads/
+wp-content/cache/
+wp-content/upgrade/
+wp-content/backup-*/
+
+# Theme/Plugin Build
+/node_modules/
+/dist/
+/.sass-cache/
+/.vscode/
+.DS_Store
+Thumbs.db
+.idea/
+.env

@@ -1,0 +1,17 @@
+/* Grundlegendes CSS für den Video-Galerie-Block */
+.block-video-galerie {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+    background: #f8f8f8;
+    padding: 1em;
+    border-radius: 8px;
+}
+.block-video-galerie .video-item {
+    flex: 1 1 300px;
+    max-width: 400px;
+}
+.block-video-galerie video {
+    width: 100%;
+    border-radius: 4px;
+}

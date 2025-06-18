@@ -1,0 +1,12 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/slider",
+  "title": "Slider (Bilder/Text)",
+  "category": "media",
+  "icon": "images-alt2",
+  "description": "Slider für Bilder oder Textblöcke.",
+  "attributes": {
+    "slides": { "type": "array", "default": [] }
+  },
+  "editorScript": "verein-block-slider"
+}

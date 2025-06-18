@@ -1,0 +1,218 @@
+/* Projekt Grid mit Filter Styles */
+.projekt-grid-module {
+    padding: 4rem 0;
+}
+
+.projekt-grid-header {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto 3rem;
+    padding: 0 1rem;
+}
+
+.projekt-heading {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.projekt-subheading {
+    font-size: 1.1rem;
+    color: #666;
+    line-height: 1.6;
+}
+
+.projekt-filter-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    padding: 0 1rem;
+}
+
+.filter-button {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #ddd;
+    border-radius: 30px;
+    background: transparent;
+    color: #666;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-button:hover {
+    background: #f5f5f5;
+    color: #333;
+}
+
+.filter-button.active {
+    background: #4CAF50;
+    border-color: #4CAF50;
+    color: white;
+}
+
+.projekt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.projekt-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    opacity: 1;
+    transform: scale(1);
+}
+
+.projekt-card.hidden {
+    display: none;
+}
+
+.projekt-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.projekt-image {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.projekt-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.projekt-card:hover .projekt-image img {
+    transform: scale(1.05);
+}
+
+.projekt-status {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: white;
+}
+
+.projekt-status.aktiv {
+    background: #4CAF50;
+}
+
+.projekt-status.geplant {
+    background: #FFA000;
+}
+
+.projekt-status.abgeschlossen {
+    background: #9E9E9E;
+}
+
+.projekt-content {
+    padding: 1.5rem;
+}
+
+.projekt-title {
+    margin: 0 0 0.5rem;
+    font-size: 1.3rem;
+    line-height: 1.4;
+}
+
+.projekt-title a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.projekt-title a:hover {
+    color: #4CAF50;
+}
+
+.projekt-category {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    background: #f5f5f5;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.projekt-excerpt {
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.projekt-link {
+    display: inline-flex;
+    align-items: center;
+    color: #4CAF50;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: color 0.3s ease;
+}
+
+.projekt-link:hover {
+    color: #2E7D32;
+}
+
+.no-projects {
+    text-align: center;
+    color: #666;
+    font-size: 1.1rem;
+    padding: 2rem;
+}
+
+/* Animation für Filterung */
+.projekt-card {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .projekt-grid-header {
+        margin-bottom: 2rem;
+    }
+    
+    .projekt-heading {
+        font-size: 2rem;
+    }
+    
+    .filter-button {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+    
+    .projekt-grid {
+        gap: 1.5rem;
+    }
+}

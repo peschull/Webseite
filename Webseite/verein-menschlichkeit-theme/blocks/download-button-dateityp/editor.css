@@ -1,0 +1,23 @@
+.download-button-dateityp {
+    background: #f7fafd;
+    border-left: 4px solid #00b4d8;
+    padding: 1.2em 1em;
+    margin: 1em 0;
+    text-align: left;
+}
+.download-btn {
+    display: inline-block;
+    background: #e0e0e0;
+    color: #007cba;
+    padding: 0.7em 2em;
+    border-radius: 2em;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-right: 0.7em;
+}
+.download-type {
+    font-size: 0.9em;
+    color: #888;
+    margin-left: 0.5em;
+}

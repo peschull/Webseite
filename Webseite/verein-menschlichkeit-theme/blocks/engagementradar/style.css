@@ -1,0 +1,25 @@
+.engagementradar-block {
+    background: #e3f6fc;
+    border-left: 4px solid #00b4d8;
+    padding: 1.2em 1em;
+    margin: 1em 0;
+    border-radius: 6px;
+}
+.engagementradar-liste {
+    list-style: none;
+    padding: 0;
+}
+.engagementradar-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5em;
+}
+.engagementradar-label {
+    font-weight: bold;
+    color: #007cba;
+    margin-right: 0.7em;
+}
+.engagementradar-value {
+    font-size: 1.1em;
+    color: #222;
+}

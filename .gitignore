@@ -1,0 +1,7 @@
+# Editor- und Systemdateien
+.vscode/
+*.log
+.DS_Store
+Thumbs.db
+# Abhängigkeiten
+**/node_modules/

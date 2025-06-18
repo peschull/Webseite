@@ -1,0 +1,53 @@
+.zitate-mauer {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+.zitate-titel {
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 2rem;
+    color: #333;
+}
+.zitate-mauer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+.zitat-item {
+    background: #f7f7f7;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    padding: 1.2rem 1rem;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.5s cubic-bezier(.4,0,.2,1);
+}
+.zitat-item.visible {
+    opacity: 1;
+    transform: none;
+}
+.zitat-text {
+    font-size: 1.1em;
+    color: #222;
+    margin: 0 0 0.7rem 0;
+    font-style: italic;
+}
+.zitat-autor {
+    color: #555;
+    font-size: 0.95em;
+    text-align: right;
+}
+@media (max-width: 600px) {
+    .zitate-mauer {
+        padding: 0.5rem;
+    }
+    .zitate-titel {
+        font-size: 1.3em;
+    }
+    .zitate-mauer-grid {
+        grid-template-columns: 1fr;
+    }
+}

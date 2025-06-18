@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/statistikblock",
+  "title": "Statistikblock mit animierten Zahlen",
+  "category": "widgets",
+  "icon": "chart-line",
+  "description": "Animierte Zahlen und Icons für Statistiken.",
+  "attributes": {"zahlen": {"type": "array"}},
+  "editorScript": "verein-block-statistikblock"
+}
