@@ -5,3 +5,4 @@
 Thumbs.db
 # Abhängigkeiten
 **/node_modules/
+**/test-results/
