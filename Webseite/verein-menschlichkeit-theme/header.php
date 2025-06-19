@@ -3,8 +3,7 @@
 <head>
   <meta charset="<?php bloginfo('charset'); ?>">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><?php wp_title('–', true, 'right'); ?> <?php bloginfo('name'); ?></title>
-  <link rel="stylesheet" href="<?php bloginfo('stylesheet_url'); ?>">
+  <?php // Title tag is handled via add_theme_support( 'title-tag' ) ?>
   <?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
@@ -31,7 +30,7 @@
       <form role="search" method="get" class="search-form" action="<?php echo esc_url(home_url('/')); ?>">
         <label>
           <span class="screen-reader-text"><?php esc_html_e('Suche nach:', 'verein-menschlichkeit'); ?></span>
-          <input type="search" class="search-field" placeholder="<?php esc_attr_e('Suche …', 'verein-menschlichkeit'); ?>" value="<?php echo get_search_query(); ?>" name="s" />
+          <input type="search" class="search-field" placeholder="<?php esc_attr_e('Suche …', 'verein-menschlichkeit'); ?>" value="<?php echo esc_attr( get_search_query() ); ?>" name="s" />
         </label>
         <button type="submit" class="search-submit"><?php esc_html_e('Suchen', 'verein-menschlichkeit'); ?></button>
       </form>
