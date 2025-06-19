@@ -1,1 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600&family=Noto+Sans:wght@400;700&display=swap');
+@font-face {
+    font-family: 'Public Sans';
+    src: url('PublicSans-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Noto Sans';
+    src: url('NotoSans-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-display: swap;
+}

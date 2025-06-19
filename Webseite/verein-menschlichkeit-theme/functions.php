@@ -1,7 +1,6 @@
 <?php
 // Modularisierung: Setup und Enqueue auslagern
 require_once get_template_directory() . '/inc/theme-setup.php';
-require_once get_template_directory() . '/inc/enqueue.php';
 require_once get_template_directory() . '/inc/custom-post-types.php';
 require_once get_template_directory() . '/inc/customizer.php';
 require_once get_template_directory() . '/inc/shortcodes.php';
@@ -90,12 +89,7 @@ add_editor_style('style.css');
 // Lazy Load für Bilder (Performance)
 add_filter('wp_lazy_loading_enabled', '__return_true');
 
-// SVG-Upload erlauben
-function verein_menschlichkeit_mime_types($mimes) {
-  $mimes['svg'] = 'image/svg+xml';
-  return $mimes;
-}
-add_filter('upload_mimes', 'verein_menschlichkeit_mime_types');
+// SVG-Upload entfernt, da unzureichend sanitisiert. Bei Bedarf sicheren Upload-Handler nutzen.
 
 // Beitragsauszüge für Seiten aktivieren
 add_post_type_support('page', 'excerpt');
@@ -198,16 +192,20 @@ add_filter('the_content', function($content) {
 // Automatische Navigation/Verlinkung zwischen den wichtigsten Seiten
 function verein_menschlichkeit_auto_nav($content) {
   if (!is_singular()) return $content;
-  $links = [
-    'team' => get_page_by_path('team'),
-    'veranstaltungen' => get_page_by_path('veranstaltungen'),
-    'downloads' => get_page_by_path('downloads'),
-    'faq' => get_page_by_path('faq'),
-    'galerie' => get_page_by_path('galerie'),
-    'newsletter' => get_page_by_path('newsletter'),
-    'presse' => get_page_by_path('partner'),
-    'sitemap' => get_page_by_path('sitemap'),
-  ];
+  $links = wp_cache_get('verein_auto_nav_links');
+  if ($links === false) {
+    $links = [
+      'team' => get_page_by_path('team'),
+      'veranstaltungen' => get_page_by_path('veranstaltungen'),
+      'downloads' => get_page_by_path('downloads'),
+      'faq' => get_page_by_path('faq'),
+      'galerie' => get_page_by_path('galerie'),
+      'newsletter' => get_page_by_path('newsletter'),
+      'presse' => get_page_by_path('partner'),
+      'sitemap' => get_page_by_path('sitemap'),
+    ];
+    wp_cache_set('verein_auto_nav_links', $links, '', HOUR_IN_SECONDS);
+  }
   $nav = '<nav class="verein-auto-nav" style="margin:2rem 0 2.5rem 0;display:flex;flex-wrap:wrap;gap:1rem;">';
   foreach ($links as $slug => $page) {
     if ($page && get_permalink($page)) {
