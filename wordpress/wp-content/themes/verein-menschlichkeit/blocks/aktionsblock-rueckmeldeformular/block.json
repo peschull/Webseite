@@ -1,0 +1,13 @@
+{
+  "apiVersion": 2,
+  "name": "verein/aktionsblock-rueckmeldeformular",
+  "title": "Aktionsblock Rückmeldeformular",
+  "category": "widgets",
+  "icon": "feedback",
+  "description": "Ein Block für Rückmeldeformulare.",
+  "supports": {
+    "html": false
+  },
+  "editorScript": "file:./block.js",
+  "style": "file:./style.css"
+}

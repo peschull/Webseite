@@ -1,0 +1,12 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/testimonials",
+  "title": "Testimonials Slider",
+  "category": "widgets",
+  "icon": "format-quote",
+  "description": "Slider für Zitate und Erfahrungsberichte.",
+  "attributes": {
+    "testimonials": { "type": "array", "default": [] }
+  },
+  "editorScript": "verein-block-testimonials"
+}

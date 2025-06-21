@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/newsletter-optin",
+  "title": "Newsletter-Opt-in mit DSGVO-Hinweis",
+  "category": "widgets",
+  "icon": "email",
+  "description": "Newsletter-Anmeldung mit DSGVO-Hinweis.",
+  "attributes": {"headline": {"type": "string"}, "text": {"type": "string"}},
+  "editorScript": "verein-block-newsletter-optin"
+}

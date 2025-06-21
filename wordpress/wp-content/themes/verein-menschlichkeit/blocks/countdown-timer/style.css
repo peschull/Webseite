@@ -1,0 +1,40 @@
+.countdown-timer {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    text-align: center;
+}
+.countdown-titel {
+    font-size: 2em;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+.countdown-anzeige {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: var(--wp--preset--color--primary, #007cba);
+    background: #f7f7f7;
+    border-radius: 6px;
+    display: inline-block;
+    padding: 1.2rem 2.5rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    letter-spacing: 0.05em;
+}
+.countdown-anzeige span {
+    min-width: 2.2em;
+    display: inline-block;
+}
+@media (max-width: 600px) {
+    .countdown-timer {
+        padding: 0.5rem;
+    }
+    .countdown-titel {
+        font-size: 1.3em;
+    }
+    .countdown-anzeige {
+        font-size: 1.1em;
+        padding: 0.7rem 1rem;
+    }
+}

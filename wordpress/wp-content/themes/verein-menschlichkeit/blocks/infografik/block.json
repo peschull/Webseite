@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/infografik",
+  "title": "Infografik-Block",
+  "category": "widgets",
+  "icon": "chart-pie",
+  "description": "Infografik, z. B. soziale Ungleichheit visuell darstellen.",
+  "attributes": {"grafik": {"type": "string"}},
+  "editorScript": "verein-block-infografik"
+}

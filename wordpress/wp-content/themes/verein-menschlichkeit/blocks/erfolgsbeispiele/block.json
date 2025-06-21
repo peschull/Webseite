@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/erfolgsbeispiele",
+  "title": "Erfolgsbeispiele in Kartenform",
+  "category": "widgets",
+  "icon": "star-filled",
+  "description": "Erfolgsbeispiele in Kartenform.",
+  "attributes": {"beispiele": {"type": "array"}},
+  "editorScript": "verein-block-erfolgsbeispiele"
+}

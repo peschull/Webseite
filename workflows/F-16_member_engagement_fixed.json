@@ -1,0 +1,259 @@
+{
+  "name": "F-16: Member Engagement Score & Analytics",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 2 * * *"
+            }
+          ]
+        }
+      },
+      "id": "cron-trigger",
+      "name": "Daily Engagement Analysis",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "contact",
+        "operation": "getAll",
+        "returnAll": true,
+        "filters": {
+          "contact_type": "Individual",
+          "is_deleted": 0
+        },
+        "additionalFields": {
+          "contact_sub_type": "Member"
+        }
+      },
+      "id": "get-all-members",
+      "name": "Get All Active Members",
+      "type": "n8n-nodes-base.civicrm",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "credentials": {
+        "civicrmOAuth2Api": {
+          "id": "civicrm-oauth",
+          "name": "CiviCRM OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Member Engagement Scoring System\nconst members = $input.all();\nconst currentDate = new Date();\nconst thirtyDaysAgo = new Date(currentDate - 30 * 24 * 60 * 60 * 1000);\n\nconst engagementScores = members.map(member => {\n  const data = member.json;\n  \n  // Calculate engagement factors\n  let score = 0;\n  const factors = {\n    email_opens: Math.min((data.email_opens_30d || 0) * 2, 20),\n    email_clicks: Math.min((data.email_clicks_30d || 0) * 5, 25),\n    event_attendance: Math.min((data.events_attended_90d || 0) * 10, 30),\n    donations: Math.min((data.donations_count_30d || 0) * 8, 25),\n    portal_activity: Math.min((data.portal_logins_30d || 0) * 3, 15)\n  };\n  \n  score = Object.values(factors).reduce((sum, val) => sum + val, 0);\n  \n  // Determine engagement level\n  let level, risk;\n  if (score >= 80) { level = 'Hochengagiert'; risk = 'Sehr niedrig'; }\n  else if (score >= 50) { level = 'Aktiv'; risk = 'Niedrig'; }\n  else if (score >= 25) { level = 'Moderat'; risk = 'Mittel'; }\n  else if (score >= 10) { level = 'Niedrig'; risk = 'Hoch'; }\n  else { level = 'Passiv'; risk = 'Sehr hoch'; }\n  \n  return {\n    json: {\n      contact_id: data.id,\n      membership_id: data.membership_id,\n      display_name: data.display_name,\n      email: data.email,\n      engagement_score: score,\n      engagement_level: level,\n      churn_risk: risk,\n      factors: factors,\n      calculated_at: currentDate.toISOString()\n    }\n  };\n});\n\nreturn engagementScores;"
+      },
+      "id": "calculate-engagement",
+      "name": "Calculate Engagement Scores",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.churn_risk }}",
+              "rightValue": "Sehr hoch",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combineOperation": "any"
+        }
+      },
+      "id": "check-high-risk",
+      "name": "Check High Risk",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $vars.SMTP_FROM_EMAIL }}",
+        "toEmail": "mitgliederbetreuung@menschlichkeit.at",
+        "subject": "Churn-Risiko Alert: {{ $json.display_name }}",
+        "emailType": "html",
+        "message": "<h2>Hohes Churn-Risiko identifiziert</h2><p><strong>Mitglied:</strong> {{ $json.display_name }}<br><strong>Score:</strong> {{ $json.engagement_score }}/115<br><strong>Risiko:</strong> {{ $json.churn_risk }}</p><p>Bitte kontaktieren Sie dieses Mitglied umgehend!</p>"
+      },
+      "id": "send-alert",
+      "name": "Send Churn Alert",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1120, 200],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-config",
+          "name": "SMTP Configuration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.engagement_score }}",
+              "rightValue": 80,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combineOperation": "all"
+        }
+      },
+      "id": "check-high-engagement",
+      "name": "Check High Engagement",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [900, 500]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $vars.SMTP_FROM_EMAIL }}",
+        "toEmail": "{{ $json.email }}",
+        "subject": "Sie sind ein Top-Mitglied! Exklusive Einladung",
+        "emailType": "html",
+        "message": "<h2>Herzlichen Glückwunsch!</h2><p>Liebe/r {{ $json.display_name }},</p><p>Sie gehören zu unseren aktivsten Mitgliedern mit einem Engagement-Score von {{ $json.engagement_score }}!</p><p>Als Anerkennung laden wir Sie zu unserem exklusiven VIP-Event ein.</p><p>Weitere Details folgen in Kürze.</p><p>Vielen Dank für Ihr außergewöhnliches Engagement!</p>"
+      },
+      "id": "send-vip-invitation",
+      "name": "Send VIP Invitation",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1120, 600],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-config",
+          "name": "SMTP Configuration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $vars.PROMETHEUS_PUSHGATEWAY_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "text/plain"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "string",
+        "body": "member_engagement_score{member_id=\"{{ $json.membership_id }}\",level=\"{{ $json.engagement_level }}\",risk=\"{{ $json.churn_risk }}\"} {{ $json.engagement_score }}"
+      },
+      "id": "update-metrics",
+      "name": "Update Prometheus Metrics",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1340, 400]
+    }
+  ],
+  "connections": {
+    "Daily Engagement Analysis": {
+      "main": [
+        [
+          {
+            "node": "Get All Active Members",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Active Members": {
+      "main": [
+        [
+          {
+            "node": "Calculate Engagement Scores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Engagement Scores": {
+      "main": [
+        [
+          {
+            "node": "Check High Risk",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check High Engagement",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update Prometheus Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check High Risk": {
+      "main": [
+        [
+          {
+            "node": "Send Churn Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Check High Engagement": {
+      "main": [
+        [
+          {
+            "node": "Send VIP Invitation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2025-06-21T10:00:00.000Z",
+      "updatedAt": "2025-06-21T10:00:00.000Z",
+      "id": "member-engagement",
+      "name": "Member Engagement"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2025-06-21T10:00:00.000Z",
+  "versionId": "1"
+}

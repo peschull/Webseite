@@ -1,0 +1,7 @@
+/* Spendenleiste Block Frontend Styles */
+.wp-block-verein-menschlichkeit-spendenleiste {
+  margin: 2em 0;
+}
+.wp-block-verein-menschlichkeit-spendenleiste .spenden-bar {
+  transition: width 0.5s;
+}

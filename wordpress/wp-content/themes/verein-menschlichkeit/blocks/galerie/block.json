@@ -1,0 +1,12 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/galerie",
+  "title": "Galerie/Lightbox",
+  "category": "media",
+  "icon": "format-gallery",
+  "description": "Bildergalerie mit Lightbox-Funktion.",
+  "attributes": {
+    "bilder": { "type": "array", "default": [] }
+  },
+  "editorScript": "verein-block-galerie"
+}

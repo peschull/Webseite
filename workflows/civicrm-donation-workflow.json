@@ -1,0 +1,372 @@
+{
+  "name": "CiviCRM Donation End-to-End Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "civicrm-contribution",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "CiviCRM Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.CIVICRM_BASE_URL }}/civicrm/extern/rest.php",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "civicrmApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "entity",
+              "value": "Contribution"
+            },
+            {
+              "name": "action",
+              "value": "get"
+            },
+            {
+              "name": "api_key",
+              "value": "={{ $env.CIVICRM_API_KEY }}"
+            },
+            {
+              "name": "key",
+              "value": "={{ $env.CIVICRM_SITE_KEY }}"
+            },
+            {
+              "name": "id",
+              "value": "={{ $json.id }}"
+            },
+            {
+              "name": "json",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "get-contribution",
+      "name": "Get Contribution Details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.CIVICRM_BASE_URL }}/civicrm/extern/rest.php",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "civicrmApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "entity",
+              "value": "Contact"
+            },
+            {
+              "name": "action",
+              "value": "get"
+            },
+            {
+              "name": "api_key",
+              "value": "={{ $env.CIVICRM_API_KEY }}"
+            },
+            {
+              "name": "key",
+              "value": "={{ $env.CIVICRM_SITE_KEY }}"
+            },
+            {
+              "name": "id",
+              "value": "={{ $node['Get Contribution Details'].json.values[0].contact_id }}"
+            },
+            {
+              "name": "json",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "get-contact",
+      "name": "Get Contact Details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {},
+      "id": "fanout-split",
+      "name": "Fan-out Split",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "templateId": "so5-confirmation",
+        "data": "={{ {\n  \"amount\": $node['Get Contribution Details'].json.values[0].total_amount,\n  \"donor\": $node['Get Contact Details'].json.values[0].display_name,\n  \"receipt_nr\": $node['Get Contribution Details'].json.values[0].id,\n  \"date\": new Date().toLocaleDateString('de-AT'),\n  \"organization\": \"Menschlichkeit Österreich\"\n} }}",
+        "outputFormat": "binary"
+      },
+      "id": "generate-pdf",
+      "name": "Generate PDF Receipt",
+      "type": "n8n-nodes-craftmypdf.craftMyPdf",
+      "typeVersion": 1,
+      "position": [1120, 180]
+    },
+    {
+      "parameters": {
+        "fromEmail": "spenden@menschlichkeit.at",
+        "toEmail": "={{ $node['Get Contact Details'].json.values[0].email_primary.email }}",
+        "subject": "Spendenbestätigung - Vielen Dank für Ihre Unterstützung!",
+        "emailFormat": "html",
+        "html": "=Liebe/r {{ $node['Get Contact Details'].json.values[0].display_name }},\n\nvielen Dank für Ihre großzügige Spende von € {{ $node['Get Contribution Details'].json.values[0].total_amount }}!\n\nIm Anhang finden Sie Ihre Spendenbestätigung.\n\nHerzliche Grüße,\nIhr Team von Menschlichkeit Österreich",
+        "attachments": "data",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "data"
+              }
+            ]
+          }
+        }
+      },
+      "id": "send-receipt-email",
+      "name": "Send Receipt Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1340, 180]
+    },
+    {
+      "parameters": {
+        "url": "https://api.freefinance.at/v1/vouchers",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "freefinanceApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.FF_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "ERLÖS"
+            },
+            {
+              "name": "net",
+              "value": "={{ parseFloat($node['Get Contribution Details'].json.values[0].total_amount) }}"
+            },
+            {
+              "name": "taxRate",
+              "value": "0"
+            },
+            {
+              "name": "description",
+              "value": "Spende von {{ $node['Get Contact Details'].json.values[0].display_name }}"
+            },
+            {
+              "name": "pdf",
+              "value": "={{ $node['Generate PDF Receipt'].binary.data.data }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "freefinance-voucher",
+      "name": "Create FreeFinance Voucher",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.hubapi.com/contacts/v1/contact/vid/{{ $node['Get Contact Details'].json.values[0].external_identifier }}/profile",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "hubspotApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.HUBSPOT_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "properties",
+              "value": "={{ [{\n  \"property\": \"donor_status\",\n  \"value\": \"active\"\n}, {\n  \"property\": \"last_donation_amount\",\n  \"value\": $node['Get Contribution Details'].json.values[0].total_amount\n}, {\n  \"property\": \"last_donation_date\",\n  \"value\": new Date().toISOString()\n}] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "hubspot-update",
+      "name": "Update HubSpot Contact",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 420]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "messages": {
+          "messageValues": [
+            {
+              "role": "system",
+              "content": "Du bist ein Social Media Manager für eine Hilfsorganisation. Erstelle einen inspirierenden Post über eine anonyme Spende. Verwende keine konkreten Beträge oder Namen."
+            },
+            {
+              "role": "user", 
+              "content": "Erstelle einen Post über eine Spende für soziale Projekte. Die Spende hilft bei der Unterstützung von Menschen in Not."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "generate-social-copy",
+      "name": "Generate Social Media Copy",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1,
+      "position": [1120, 540]
+    },
+    {
+      "parameters": {
+        "url": "https://graph.facebook.com/v23.0/{{ $env.FB_PAGE_ID }}/photos",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "access_token",
+              "value": "{{ $env.FB_PAGE_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "{{ $env.SOCIAL_IMAGE_URL }}"
+            },
+            {
+              "name": "caption",
+              "value": "={{ $node['Generate Social Media Copy'].json.content }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "facebook-post",
+      "name": "Post to Facebook",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1340, 540]
+    }
+  ],
+  "connections": {
+    "CiviCRM Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Contribution Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contribution Details": {
+      "main": [
+        [
+          {
+            "node": "Get Contact Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contact Details": {
+      "main": [
+        [
+          {
+            "node": "Fan-out Split",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fan-out Split": {
+      "main": [
+        [
+          {
+            "node": "Generate PDF Receipt",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create FreeFinance Voucher",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update HubSpot Contact",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Generate Social Media Copy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate PDF Receipt": {
+      "main": [
+        [
+          {
+            "node": "Send Receipt Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Social Media Copy": {
+      "main": [
+        [
+          {
+            "node": "Post to Facebook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "errorWorkflow": {
+      "id": "error-handler-workflow"
+    },
+    "timezone": "Europe/Vienna"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/spendenformular",
+  "title": "Spendenformular mit Betragsslider",
+  "category": "widgets",
+  "icon": "money",
+  "description": "Spendenformular mit dynamischem Betragsslider.",
+  "attributes": {"betrag": {"type": "number"}},
+  "editorScript": "verein-block-spendenformular"
+}

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spendenbestätigung</title>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12pt;
+            line-height: 1.4;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2cm;
+        }
+        .logo {
+            max-width: 200px;
+            height: auto;
+        }
+        .organization {
+            font-size: 16pt;
+            font-weight: bold;
+            margin: 1cm 0;
+        }
+        .receipt-number {
+            font-size: 14pt;
+            font-weight: bold;
+            text-align: right;
+            margin-bottom: 1cm;
+        }
+        .donor-info {
+            margin-bottom: 1.5cm;
+        }
+        .donation-details {
+            background-color: #f8f9fa;
+            padding: 1cm;
+            border: 1px solid #dee2e6;
+            margin: 1cm 0;
+        }
+        .amount {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .legal-text {
+            font-size: 10pt;
+            margin-top: 2cm;
+            color: #666;
+        }
+        .signature {
+            margin-top: 2cm;
+            text-align: right;
+        }
+        
+        /* Accessibility improvements */
+        h1, h2, h3 {
+            color: #333;
+        }
+        .accessible-table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .accessible-table td, .accessible-table th {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .accessible-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="{{ organization_logo }}" alt="Logo von {{ organization }}" class="logo">
+        <div class="organization">{{ organization }}</div>
+    </div>
+    
+    <div class="receipt-number">
+        Bestätigungsnummer: {{ receipt_nr }}
+    </div>
+    
+    <h1>Spendenbestätigung</h1>
+    
+    <div class="donor-info">
+        <h2>Spender/in:</h2>
+        <p>{{ donor }}</p>
+    </div>
+    
+    <div class="donation-details">
+        <h2>Spendendetails:</h2>
+        <table class="accessible-table">
+            <tr>
+                <th>Spendenbetrag</th>
+                <td><span class="amount">€ {{ amount }}</span></td>
+            </tr>
+            <tr>
+                <th>Datum</th>
+                <td>{{ date }}</td>
+            </tr>
+            <tr>
+                <th>Verwendungszweck</th>
+                <td>Spende für soziale Projekte</td>
+            </tr>
+        </table>
+    </div>
+    
+    <p>Wir bestätigen hiermit dankend den Erhalt Ihrer Spende in Höhe von <strong>€ {{ amount }}</strong>.</p>
+    
+    <p>Ihre Spende wird für unsere sozialen Projekte zur Unterstützung von Menschen in Not verwendet.</p>
+    
+    <div class="legal-text">
+        <h3>Steuerliche Absetzbarkeit:</h3>
+        <p>
+            Gemäß § 4a Abs. 2 Z 3 lit. a-c EStG ist diese Spende steuerlich absetzbar. 
+            {{ organization }} ist als gemeinnützige Organisation anerkannt (Registrierungsnummer: SO-1234).
+        </p>
+        
+        <h3>Datenschutz:</h3>
+        <p>
+            Ihre Daten werden gemäß DSGVO verarbeitet. Weitere Informationen finden Sie in unserer 
+            <a href="{{ privacy_policy_url }}">Datenschutzerklärung</a>.
+        </p>
+    </div>
+    
+    <div class="signature">
+        <p>{{ organization }}</p>
+        <p>{{ date }}</p>
+        <p>Geschäftsführung</p>
+    </div>
+    
+    <!-- Accessibility metadata for screen readers -->
+    <div style="position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden;">
+        <h1>Strukturelle Informationen für Screenreader</h1>
+        <p>Dieses Dokument ist eine Spendenbestätigung mit folgender Struktur:</p>
+        <ul>
+            <li>Organisationsheader mit Logo</li>
+            <li>Bestätigungsnummer</li>
+            <li>Spenderinformationen</li>
+            <li>Spendendetails in tabellarischer Form</li>
+            <li>Rechtliche Hinweise</li>
+            <li>Unterschrift</li>
+        </ul>
+    </div>
+</body>
+</html>

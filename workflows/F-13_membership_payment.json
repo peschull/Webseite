@@ -1,0 +1,384 @@
+{
+  "name": "F-13: Membership Payment Processing",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "membership-payment",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-payment",
+      "name": "Webhook Payment",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "contribution",
+        "operation": "create",
+        "additionalFields": {
+          "contribution_type_id": "={{ $json.contribution_type_id }}",
+          "financial_type_id": "={{ $json.financial_type_id }}",
+          "contact_id": "={{ $json.contact_id }}",
+          "total_amount": "={{ $json.total_amount }}",
+          "currency": "EUR",
+          "receive_date": "={{ $now }}",
+          "contribution_status_id": "1",
+          "payment_instrument_id": "={{ $json.payment_instrument_id }}",
+          "trxn_id": "={{ $json.transaction_id }}",
+          "invoice_id": "={{ $json.invoice_id }}",
+          "source": "Membership Payment Processing"
+        }
+      },
+      "id": "civicrm-contribution",
+      "name": "CiviCRM Create Contribution",
+      "type": "n8n-nodes-base.civicrm",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "credentials": {
+        "civicrmOAuth2Api": {
+          "id": "civicrm-oauth",
+          "name": "CiviCRM OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "membership",
+        "operation": "get",
+        "contactId": "={{ $json.contact_id }}",
+        "membershipId": "={{ $json.membership_id }}"
+      },
+      "id": "get-membership",
+      "name": "Get Membership",
+      "type": "n8n-nodes-base.civicrm",
+      "typeVersion": 1,
+      "position": [680, 300],
+      "credentials": {
+        "civicrmOAuth2Api": {
+          "id": "civicrm-oauth",
+          "name": "CiviCRM OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "membership",
+        "operation": "update",
+        "membershipId": "={{ $json.membership_id }}",
+        "updateFields": {
+          "status_id": "={{ $json.total_amount >= $('Get Membership').first().$node.membership_fee ? '1' : '2' }}",
+          "start_date": "={{ $now }}",
+          "end_date": "={{ DateTime.now().plus({ years: 1 }).toISODate() }}",
+          "is_pay_later": "0"
+        }
+      },
+      "id": "update-membership",
+      "name": "Update Membership Status",
+      "type": "n8n-nodes-base.civicrm",
+      "typeVersion": 1,
+      "position": [900, 300],
+      "credentials": {
+        "civicrmOAuth2Api": {
+          "id": "civicrm-oauth",
+          "name": "CiviCRM OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.total_amount }}",
+              "rightValue": "={{ $('Get Membership').first().$node.membership_fee }}",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combineOperation": "all"
+        }
+      },
+      "id": "check-payment-amount",
+      "name": "Check Payment Amount",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $vars.SMTP_FROM_EMAIL }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "Ihre Mitgliedschaft wurde aktiviert - Menschlichkeit Österreich",
+        "emailType": "html",
+        "message": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Mitgliedschaft aktiviert</title>\n</head>\n<body>\n    <h2>Herzlichen Glückwunsch!</h2>\n    <p>Liebe/r {{ $json.display_name }},</p>\n    \n    <p>Ihre Mitgliedschaft bei Menschlichkeit Österreich wurde erfolgreich aktiviert.</p>\n    \n    <div style=\"background-color: #f0f8ff; padding: 15px; border-radius: 5px; margin: 20px 0;\">\n        <h3>Ihre Mitgliedschaftsdetails:</h3>\n        <ul>\n            <li><strong>Mitgliedsnummer:</strong> {{ $json.membership_id }}</li>\n            <li><strong>Status:</strong> Aktiv</li>\n            <li><strong>Gültig bis:</strong> {{ DateTime.now().plus({ years: 1 }).toFormat('dd.MM.yyyy') }}</li>\n            <li><strong>Beitrag:</strong> {{ $json.total_amount }} EUR</li>\n        </ul>\n    </div>\n    \n    <p>Sie erhalten in den nächsten Tagen Ihre Willkommensunterlagen und Zugang zu unserem Mitgliederbereich.</p>\n    \n    <p>Vielen Dank für Ihre Unterstützung!</p>\n    \n    <p>Mit herzlichen Grüßen,<br>\n    Ihr Team von Menschlichkeit Österreich</p>\n</body>\n</html>",
+        "options": {
+          "attachments": "={{ $json.attachments }}",
+          "ccEmail": "",
+          "bccEmail": ""
+        }
+      },
+      "id": "send-activation-email",
+      "name": "Send Activation Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1340, 200],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-config",
+          "name": "SMTP Configuration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $vars.SMTP_FROM_EMAIL }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "Zahlungsabweichung - Ihre Mitgliedschaft",
+        "emailType": "html",
+        "message": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Zahlungsabweichung</title>\n</head>\n<body>\n    <h2>Zahlungsabweichung festgestellt</h2>\n    <p>Liebe/r {{ $json.display_name }},</p>\n    \n    <p>wir haben eine Abweichung bei Ihrer Mitgliedschaftszahlung festgestellt.</p>\n    \n    <div style=\"background-color: #fff3cd; padding: 15px; border-radius: 5px; margin: 20px 0;\">\n        <h3>Details:</h3>\n        <ul>\n            <li><strong>Erwarteter Betrag:</strong> {{ $('Get Membership').first().$node.membership_fee }} EUR</li>\n            <li><strong>Eingegangener Betrag:</strong> {{ $json.total_amount }} EUR</li>\n            <li><strong>Differenz:</strong> {{ $('Get Membership').first().$node.membership_fee - $json.total_amount }} EUR</li>\n        </ul>\n    </div>\n    \n    <p>Bitte setzen Sie sich mit uns in Verbindung, um die Differenz zu klären.</p>\n    \n    <p>Mit freundlichen Grüßen,<br>\n    Ihr Team von Menschlichkeit Österreich</p>\n</body>\n</html>",
+        "options": {}
+      },
+      "id": "send-discrepancy-email",
+      "name": "Send Payment Discrepancy Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1340, 400],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-config",
+          "name": "SMTP Configuration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $vars.WEBHOOK_WELCOME_SEQUENCE }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $vars.WEBHOOK_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "contact_id",
+              "value": "={{ $json.contact_id }}"
+            },
+            {
+              "name": "membership_id",
+              "value": "={{ $json.membership_id }}"
+            },
+            {
+              "name": "email",
+              "value": "={{ $json.email }}"
+            },
+            {
+              "name": "trigger_date",
+              "value": "={{ $now }}"
+            }
+          ]
+        }
+      },
+      "id": "trigger-welcome-sequence",
+      "name": "Trigger Welcome Sequence",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1560, 200]
+    },
+    {
+      "parameters": {
+        "url": "={{ $vars.PROMETHEUS_PUSHGATEWAY_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "text/plain"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "string",
+        "body": "membership_payment_processed_total{status=\"{{ $json.status }}\",amount=\"{{ $json.total_amount }}\"} 1"
+      },
+      "id": "update-metrics",
+      "name": "Update Prometheus Metrics",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1780, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  \"success\": true,\n  \"message\": \"Payment processed successfully\",\n  \"contribution_id\": $json.contribution_id,\n  \"membership_id\": $json.membership_id,\n  \"status\": $json.status,\n  \"processed_at\": $now\n} }}"
+      },
+      "id": "respond-success",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2000, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  \"success\": false,\n  \"message\": \"Payment amount discrepancy detected\",\n  \"contribution_id\": $json.contribution_id,\n  \"membership_id\": $json.membership_id,\n  \"expected_amount\": $('Get Membership').first().$node.membership_fee,\n  \"received_amount\": $json.total_amount,\n  \"processed_at\": $now\n} }}"
+      },
+      "id": "respond-discrepancy",
+      "name": "Respond Discrepancy",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2000, 400]
+    }
+  ],
+  "connections": {
+    "Webhook Payment": {
+      "main": [
+        [
+          {
+            "node": "CiviCRM Create Contribution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CiviCRM Create Contribution": {
+      "main": [
+        [
+          {
+            "node": "Get Membership",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Membership": {
+      "main": [
+        [
+          {
+            "node": "Update Membership Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Membership Status": {
+      "main": [
+        [
+          {
+            "node": "Check Payment Amount",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Payment Amount": {
+      "main": [
+        [
+          {
+            "node": "Send Activation Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Payment Discrepancy Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Activation Email": {
+      "main": [
+        [
+          {
+            "node": "Trigger Welcome Sequence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Payment Discrepancy Email": {
+      "main": [
+        [
+          {
+            "node": "Update Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Welcome Sequence": {
+      "main": [
+        [
+          {
+            "node": "Update Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Metrics": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond Discrepancy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2025-06-21T10:00:00.000Z",
+      "updatedAt": "2025-06-21T10:00:00.000Z",
+      "id": "membership-payment",
+      "name": "Membership Payment"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2025-06-21T10:00:00.000Z",
+  "versionId": "1"
+}

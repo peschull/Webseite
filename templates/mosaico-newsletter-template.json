@@ -1,0 +1,301 @@
+{
+  "template_id": "mosaico_membership_newsletter",
+  "name": "Mitglieder-Newsletter Template",
+  "description": "Responsive E-Mail Template für Mitglieder-Newsletter mit Mosaico Editor",
+  "version": "2.0",
+  "metadata": {
+    "created": "2024-06-21",
+    "last_modified": "2024-06-21",
+    "author": "Menschlichkeit Österreich Design Team",
+    "category": "newsletter",
+    "tags": ["mitglieder", "newsletter", "responsive", "quarterly"]
+  },
+  "template_config": {
+    "width": 600,
+    "background_color": "#f8f9fa",
+    "font_family": "Arial, sans-serif",
+    "primary_color": "#007bff",
+    "secondary_color": "#28a745",
+    "accent_color": "#ffc107"
+  },
+  "content_blocks": [
+    {
+      "type": "header",
+      "id": "header_block",
+      "properties": {
+        "background_color": "#007bff",
+        "text_color": "#ffffff",
+        "logo_url": "https://menschlichkeit.at/assets/logo-white.png",
+        "logo_width": 150,
+        "title": "{{newsletter_title}}",
+        "subtitle": "{{newsletter_subtitle}}",
+        "issue_date": "{{issue_date}}"
+      },
+      "content": {
+        "editable": true,
+        "placeholder": "Newsletter Titel"
+      }
+    },
+    {
+      "type": "hero_section",
+      "id": "hero_block",
+      "properties": {
+        "background_image": "{{hero_image_url}}",
+        "overlay_color": "rgba(0, 123, 255, 0.8)",
+        "text_align": "center",
+        "padding": "40px"
+      },
+      "content": {
+        "headline": "{{hero_headline}}",
+        "subheadline": "{{hero_subheadline}}",
+        "cta_text": "{{hero_cta_text}}",
+        "cta_url": "{{hero_cta_url}}",
+        "editable": true
+      }
+    },
+    {
+      "type": "article_grid",
+      "id": "articles_block",
+      "properties": {
+        "columns": 2,
+        "gap": "20px",
+        "background_color": "#ffffff"
+      },
+      "content": {
+        "articles": [
+          {
+            "title": "{{article_1_title}}",
+            "excerpt": "{{article_1_excerpt}}",
+            "image": "{{article_1_image}}",
+            "read_more_url": "{{article_1_url}}",
+            "author": "{{article_1_author}}",
+            "date": "{{article_1_date}}"
+          },
+          {
+            "title": "{{article_2_title}}",
+            "excerpt": "{{article_2_excerpt}}",
+            "image": "{{article_2_image}}",
+            "read_more_url": "{{article_2_url}}",
+            "author": "{{article_2_author}}",
+            "date": "{{article_2_date}}"
+          }
+        ],
+        "editable": true
+      }
+    },
+    {
+      "type": "impact_stats",
+      "id": "impact_block",
+      "properties": {
+        "background_color": "#e8f5e8",
+        "border_color": "#28a745",
+        "text_color": "#155724"
+      },
+      "content": {
+        "title": "🌟 Ihre Wirkung in Zahlen",
+        "stats": [
+          {
+            "number": "{{projects_count}}",
+            "label": "Unterstützte Projekte",
+            "icon": "🏠"
+          },
+          {
+            "number": "{{people_helped}}",
+            "label": "Menschen geholfen",
+            "icon": "👥"
+          },
+          {
+            "number": "{{donations_total}}€",
+            "label": "Spenden gesammelt",
+            "icon": "💰"
+          },
+          {
+            "number": "{{members_count}}",
+            "label": "Aktive Mitglieder",
+            "icon": "❤️"
+          }
+        ],
+        "editable": true
+      }
+    },
+    {
+      "type": "event_calendar",
+      "id": "events_block",
+      "properties": {
+        "background_color": "#fff3cd",
+        "border_color": "#ffc107"
+      },
+      "content": {
+        "title": "📅 Kommende Veranstaltungen",
+        "events": [
+          {
+            "title": "{{event_1_title}}",
+            "date": "{{event_1_date}}",
+            "time": "{{event_1_time}}",
+            "location": "{{event_1_location}}",
+            "type": "{{event_1_type}}",
+            "registration_url": "{{event_1_registration_url}}",
+            "members_only": true
+          },
+          {
+            "title": "{{event_2_title}}",
+            "date": "{{event_2_date}}",
+            "time": "{{event_2_time}}",
+            "location": "{{event_2_location}}",
+            "type": "{{event_2_type}}",
+            "registration_url": "{{event_2_registration_url}}",
+            "members_only": false
+          }
+        ],
+        "editable": true
+      }
+    },
+    {
+      "type": "testimonial",
+      "id": "testimonial_block",
+      "properties": {
+        "background_color": "#f8f9fa",
+        "text_align": "center",
+        "border_style": "solid",
+        "border_width": "1px",
+        "border_color": "#dee2e6"
+      },
+      "content": {
+        "quote": "{{testimonial_text}}",
+        "author_name": "{{testimonial_author}}",
+        "author_title": "{{testimonial_author_title}}",
+        "author_image": "{{testimonial_author_image}}",
+        "rating": "{{testimonial_rating}}",
+        "editable": true
+      }
+    },
+    {
+      "type": "cta_section",
+      "id": "cta_block",
+      "properties": {
+        "background_color": "#28a745",
+        "text_color": "#ffffff",
+        "text_align": "center",
+        "padding": "30px"
+      },
+      "content": {
+        "title": "{{cta_title}}",
+        "description": "{{cta_description}}",
+        "button_text": "{{cta_button_text}}",
+        "button_url": "{{cta_button_url}}",
+        "button_color": "#ffc107",
+        "button_text_color": "#212529",
+        "editable": true
+      }
+    },
+    {
+      "type": "social_media",
+      "id": "social_block",
+      "properties": {
+        "background_color": "#e3f2fd",
+        "text_align": "center"
+      },
+      "content": {
+        "title": "🌐 Folgen Sie uns",
+        "platforms": [
+          {
+            "name": "Facebook",
+            "url": "https://facebook.com/MenschlichkeitAT",
+            "icon": "facebook",
+            "color": "#1877f2"
+          },
+          {
+            "name": "Instagram",
+            "url": "https://instagram.com/MenschlichkeitAT",
+            "icon": "instagram",
+            "color": "#e4405f"
+          },
+          {
+            "name": "Twitter",
+            "url": "https://twitter.com/MenschlichkeitAT",
+            "icon": "twitter",
+            "color": "#1da1f2"
+          },
+          {
+            "name": "LinkedIn",
+            "url": "https://linkedin.com/company/menschlichkeit-at",
+            "icon": "linkedin",
+            "color": "#0077b5"
+          }
+        ],
+        "editable": false
+      }
+    },
+    {
+      "type": "footer",
+      "id": "footer_block",
+      "properties": {
+        "background_color": "#343a40",
+        "text_color": "#ffffff",
+        "link_color": "#ffc107",
+        "font_size": "12px"
+      },
+      "content": {
+        "organization_name": "Menschlichkeit Österreich",
+        "address": "Musterstraße 123, 1010 Wien, Österreich",
+        "phone": "+43 1 234 5678",
+        "email": "info@menschlichkeit.at",
+        "website": "https://menschlichkeit.at",
+        "legal_info": "Vereinsregister: ZVR-Zahl 123456789",
+        "unsubscribe_url": "{{unsubscribe_url}}",
+        "preferences_url": "{{preferences_url}}",
+        "privacy_policy_url": "https://menschlichkeit.at/datenschutz",
+        "imprint_url": "https://menschlichkeit.at/impressum",
+        "editable": false
+      }
+    }
+  ],
+  "personalization": {
+    "member_data": {
+      "first_name": "{{member_first_name}}",
+      "last_name": "{{member_last_name}}",
+      "membership_number": "{{member_number}}",
+      "membership_start": "{{membership_start_date}}",
+      "membership_type": "{{membership_type}}",
+      "total_donations": "{{member_total_donations}}",
+      "events_attended": "{{member_events_attended}}",
+      "engagement_score": "{{member_engagement_score}}"
+    },
+    "dynamic_content": {
+      "based_on_interests": true,
+      "based_on_location": true,
+      "based_on_engagement": true,
+      "based_on_donation_history": true
+    }
+  },
+  "responsive_settings": {
+    "mobile_optimized": true,
+    "tablet_optimized": true,
+    "desktop_min_width": 600,
+    "mobile_font_size_adjustment": 1.1,
+    "mobile_padding_adjustment": 0.8
+  },
+  "accessibility": {
+    "alt_text_required": true,
+    "contrast_ratio_minimum": 4.5,
+    "keyboard_navigation": true,
+    "screen_reader_friendly": true
+  },
+  "testing": {
+    "preview_urls": {
+      "desktop": "https://preview.menschlichkeit.at/templates/newsletter/desktop",
+      "mobile": "https://preview.menschlichkeit.at/templates/newsletter/mobile",
+      "tablet": "https://preview.menschlichkeit.at/templates/newsletter/tablet"
+    },
+    "test_email_addresses": [
+      "test@menschlichkeit.at",
+      "preview@example.com"
+    ]
+  },
+  "usage_instructions": {
+    "setup": "1. Import template into Mosaico editor, 2. Configure content blocks, 3. Add dynamic content placeholders",
+    "customization": "All content blocks can be edited via drag-and-drop interface. Use {{placeholder}} syntax for dynamic content.",
+    "best_practices": "Keep subject lines under 50 characters, ensure mobile optimization, test across different email clients",
+    "required_fields": ["newsletter_title", "issue_date", "unsubscribe_url"]
+  }
+}

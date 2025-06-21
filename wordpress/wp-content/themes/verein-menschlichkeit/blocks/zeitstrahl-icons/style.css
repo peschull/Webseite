@@ -1,0 +1,19 @@
+/* Grundlegendes CSS für den Zeitstrahl Icons-Block */
+.block-zeitstrahl-icons {
+    padding: 1em;
+    background: #f8f8f8;
+    border-radius: 8px;
+}
+.block-zeitstrahl-icons .zeitstrahl-eintrag {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    margin-bottom: 0.5em;
+}
+.block-zeitstrahl-icons .icon {
+    font-size: 2em;
+    color: #0073aa;
+}
+.block-zeitstrahl-icons .text {
+    font-size: 1em;
+}

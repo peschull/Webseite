@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>Accessibility Test - Verein Menschlichkeit | Barrierefreiheit und Inklusion</title>
+    <meta name="description" content="Testseite für Barrierefreiheit und Accessibility-Features des Vereins Menschlichkeit. Erfahren Sie mehr über unsere inklusiven Ansätze und digitale Zugänglichkeit.">
+    <meta name="keywords" content="Accessibility, Barrierefreiheit, Inklusion, Verein Menschlichkeit, WCAG, digitale Zugänglichkeit">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://localhost:3000/accessibility-test">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Accessibility Test - Verein Menschlichkeit">
+    <meta property="og:description" content="Testseite für Barrierefreiheit und Accessibility-Features des Vereins Menschlichkeit.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="http://localhost:3000/accessibility-test">
+    <meta property="og:image" content="http://localhost:3000/images/accessibility-og.jpg">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Accessibility Test - Verein Menschlichkeit">
+    <meta name="twitter:description" content="Testseite für Barrierefreiheit und Accessibility-Features.">
+    
+    <!-- WordPress Head Profile -->
+    <link rel="profile" href="https://gmpg.org/xfn/11">
+    
+    <link rel="stylesheet" href="/style.css">
+    
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Accessibility Test - Barrierefreiheit beim Verein Menschlichkeit",
+        "description": "Informationen über unsere Accessibility-Bemühungen und Tests für digitale Barrierefreiheit",
+        "author": {
+            "@type": "Person",
+            "name": "Maria Müller"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Verein Menschlichkeit",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "http://localhost:3000/images/logo.png"
+            }
+        },
+        "datePublished": "2025-06-20",
+        "dateModified": "2025-06-20",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http://localhost:3000/accessibility-test"
+        }
+    }
+    </script>
+</head>
+<body class="page page-accessibility-test wordpress wp-theme-verein-menschlichkeit">
+    <a class="screen-reader-text skip-link" href="#main">Zum Hauptinhalt springen</a>
+    
+    <header class="site-header" role="banner">
+        <div class="container">
+            <div class="site-branding">
+                <p class="site-title"><a href="/" rel="home">Verein Menschlichkeit</a></p>
+                <p class="site-description">Für eine bessere Welt</p>
+            </div>
+            
+            <nav class="main-navigation" role="navigation" aria-label="Hauptmenü">
+                <ul class="menu nav-menu">
+                    <li class="menu-item"><a href="/">Startseite</a></li>
+                    <li class="menu-item"><a href="/ueber-uns">Über uns</a></li>
+                    <li class="menu-item"><a href="/projekte">Projekte</a></li>
+                    <li class="menu-item current-menu-item"><a href="/accessibility-test" aria-current="page">Accessibility Test</a></li>
+                    <li class="menu-item"><a href="/kontakt">Kontakt</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main" class="site-main" role="main">
+        <div class="container">
+            <article class="page post hentry" itemscope itemtype="https://schema.org/Article">
+                <header class="entry-header">
+                    <h1 class="entry-title" itemprop="headline">Accessibility Test Seite</h1>
+                    <div class="entry-meta">
+                        <time class="published" datetime="2025-06-20T12:00:00+02:00" itemprop="datePublished">20. Juni 2025</time>
+                        <span class="author" itemprop="author" itemscope itemtype="https://schema.org/Person">
+                            <span itemprop="name">Maria Müller</span>
+                        </span>
+                    </div>
+                </header>
+                
+                <div class="entry-content" itemprop="articleBody">
+                    <p>Diese Seite dient zur Überprüfung der Barrierefreiheit und Accessibility-Features unserer Website. Der Verein Menschlichkeit setzt sich für Inklusion in allen Bereichen ein, einschließlich der digitalen Zugänglichkeit.</p>
+                    
+                    <h2>Unsere Accessibility-Prinzipien</h2>
+                    <p>Wir folgen den WCAG 2.1 Richtlinien und stellen sicher, dass unsere Website für alle Menschen zugänglich ist, unabhängig von ihren individuellen Fähigkeiten oder verwendeten Hilfsmitteln.</p>
+                    
+                    <h3>Tastaturnavigation</h3>
+                    <p>Alle interaktiven Elemente sind über die Tastatur erreichbar. Verwenden Sie die Tab-Taste zur Navigation und Enter zum Aktivieren von Links und Buttons.</p>
+                    
+                    <h3>Semantische HTML-Struktur</h3>
+                    <p>Wir verwenden semantisches HTML, um Screenreadern und anderen assistiven Technologien eine klare Struktur zu bieten.</p>
+                    
+                    <h4>Beispiel-Formular für Accessibility-Tests</h4>
+                    <form action="/test-form" method="post" aria-labelledby="test-form-heading">
+                        <fieldset>
+                            <legend>Persönliche Informationen</legend>
+                            
+                            <div class="form-group">
+                                <label for="test-name">Vollständiger Name *</label>
+                                <input type="text" id="test-name" name="name" required aria-required="true" aria-describedby="name-help">
+                                <small id="name-help">Geben Sie Ihren vollständigen Namen ein</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="test-email">E-Mail-Adresse *</label>
+                                <input type="email" id="test-email" name="email" required aria-required="true" aria-describedby="email-help">
+                                <small id="email-help">Wir verwenden Ihre E-Mail nur für die Kontaktaufnahme</small>
+                            </div>
+                            
+                            <fieldset>
+                                <legend>Interesse an</legend>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="interest-volunteer" name="interests[]" value="volunteer">
+                                    <label for="interest-volunteer">Ehrenamtliche Tätigkeit</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="interest-donate" name="interests[]" value="donate">
+                                    <label for="interest-donate">Spenden</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="interest-events" name="interests[]" value="events">
+                                    <label for="interest-events">Veranstaltungen</label>
+                                </div>
+                            </fieldset>
+                            
+                            <div class="form-group">
+                                <label for="test-message">Nachricht</label>
+                                <textarea id="test-message" name="message" rows="4" aria-describedby="message-help"></textarea>
+                                <small id="message-help">Optional: Teilen Sie uns mit, wie Sie helfen möchten</small>
+                            </div>
+                            
+                            <button type="submit" class="submit-button">Formular absenden</button>
+                        </fieldset>
+                    </form>
+                    
+                    <h3>Bildbeispiele mit Alt-Text</h3>
+                    <div class="image-gallery">
+                        <figure>
+                            <img src="/images/accessibility-demo1.jpg" alt="Gruppe von Menschen unterschiedlicher Fähigkeiten arbeitet gemeinsam an einem Projekt" width="300" height="200" loading="lazy">
+                            <figcaption>Inklusive Zusammenarbeit in unserem Verein</figcaption>
+                        </figure>
+                        
+                        <figure>
+                            <img src="/images/accessibility-demo2.jpg" alt="Person im Rollstuhl gibt Präsentation vor interessiertem Publikum" width="300" height="200" loading="lazy">
+                            <figcaption>Barrierefreie Veranstaltungen sind für uns selbstverständlich</figcaption>
+                        </figure>
+                    </div>
+                    
+                    <h3>Farbkontrast und Design</h3>
+                    <p>Unsere Website verwendet ausreichende Farbkontraste, um die Lesbarkeit für Menschen mit Sehbehinderungen zu gewährleisten. Wichtige Informationen werden nie nur durch Farbe vermittelt.</p>
+                    
+                    <div class="color-contrast-demo">
+                        <p class="high-contrast">Dieser Text hat einen hohen Kontrast für bessere Lesbarkeit</p>
+                        <p class="emphasis" style="font-weight: bold; text-decoration: underline;">Wichtige Informationen werden durch mehrere visuelle Hinweise hervorgehoben</p>
+                    </div>
+                    
+                    <h3>Links und Navigation</h3>
+                    <p>Alle Links haben aussagekräftige Beschreibungen und externe Links werden entsprechend gekennzeichnet:</p>
+                    <ul>
+                        <li><a href="/" aria-label="Zur Startseite des Vereins Menschlichkeit">Startseite</a></li>
+                        <li><a href="/projekte">Unsere sozialen Projekte</a></li>
+                        <li><a href="https://www.w3.org/WAI/WCAG21/quickref/" target="_blank" rel="noopener noreferrer">WCAG 2.1 Richtlinien (externe Website)</a></li>
+                        <li><a href="mailto:accessibility@verein-menschlichkeit.de">E-Mail für Accessibility-Feedback</a></li>
+                        <li><a href="tel:+493012345678">Telefon: +49 30 12345678</a></li>
+                    </ul>
+                    
+                    <h3>Breadcrumb Navigation</h3>
+                    <nav aria-label="Breadcrumb" class="breadcrumb">
+                        <ol>
+                            <li><a href="/">Startseite</a></li>
+                            <li><a href="/tests">Tests</a></li>
+                            <li aria-current="page">Accessibility Test</li>
+                        </ol>
+                    </nav>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <footer class="site-footer" role="contentinfo">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Verein Menschlichkeit</h3>
+                    <p>Für eine bessere und barrierefreie Welt</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Accessibility</h3>
+                    <nav class="footer-navigation">
+                        <ul>
+                            <li><a href="/accessibility-statement">Erklärung zur Barrierefreiheit</a></li>
+                            <li><a href="/accessibility-feedback">Feedback zur Barrierefreiheit</a></li>
+                            <li><a href="/accessibility-help">Hilfe zur Bedienung</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="footer-section">
+                    <h3>Rechtliches</h3>
+                    <nav class="footer-navigation">
+                        <ul>
+                            <li><a href="/impressum">Impressum</a></li>
+                            <li><a href="/datenschutz">Datenschutz</a></li>
+                            <li><a href="/agb">AGB</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <p class="copyright">&copy; 2025 Verein Menschlichkeit. Alle Rechte vorbehalten. Diese Website ist barrierefrei gestaltet.</p>
+        </div>
+    </footer>
+
+    <script src="/script.js"></script>
+</body>
+</html>

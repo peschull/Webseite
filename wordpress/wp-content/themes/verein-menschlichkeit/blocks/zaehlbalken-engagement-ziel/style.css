@@ -1,0 +1,17 @@
+/* Grundlegendes CSS für den Zählbalken Engagement Ziel-Block */
+.block-zaehlbalken-engagement-ziel {
+    background: #f8f8f8;
+    padding: 1em;
+    border-radius: 8px;
+}
+.block-zaehlbalken-engagement-ziel .balken {
+    height: 24px;
+    background: #0073aa;
+    border-radius: 4px;
+    margin-bottom: 0.5em;
+    transition: width 0.5s;
+}
+.block-zaehlbalken-engagement-ziel .zahlen {
+    text-align: right;
+    font-weight: bold;
+}

@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/team-karte",
+  "title": "Team-Karte mit Hover-Biografie",
+  "category": "widgets",
+  "icon": "id-alt",
+  "description": "Teammitglied als Karte mit Hover-Biografie.",
+  "attributes": {"name": {"type": "string"}, "bio": {"type": "string"}, "image": {"type": "string"}},
+  "editorScript": "verein-block-team-karte"
+}

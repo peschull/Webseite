@@ -1,0 +1,57 @@
+.vorlese-block {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    text-align: center;
+}
+.vorlese-titel {
+    font-size: 2em;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+.vorlese-text {
+    font-size: 1.1em;
+    color: #222;
+    background: #f7f7f7;
+    border-radius: 6px;
+    padding: 1.2rem 1rem;
+    margin-bottom: 1.2rem;
+    display: inline-block;
+    max-width: 700px;
+    text-align: left;
+}
+.vorlese-button {
+    background: var(--wp--preset--color--primary, #007cba);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.7rem 1.5rem;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+}
+.vorlese-button:hover {
+    background: var(--wp--preset--color--primary-dark, #005a87);
+}
+@media (max-width: 600px) {
+    .vorlese-block {
+        padding: 0.5rem;
+    }
+    .vorlese-titel {
+        font-size: 1.3em;
+    }
+    .vorlese-text {
+        font-size: 1em;
+        padding: 0.7rem 0.5rem;
+    }
+    .vorlese-button {
+        font-size: 0.95em;
+        padding: 0.5rem 1rem;
+    }
+}

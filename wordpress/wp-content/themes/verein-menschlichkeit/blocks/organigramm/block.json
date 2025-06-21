@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/organigramm",
+  "title": "Aufklappbares Organigramm",
+  "category": "widgets",
+  "icon": "networking",
+  "description": "Organigramm als aufklappbarer Block.",
+  "attributes": {"struktur": {"type": "array"}},
+  "editorScript": "verein-block-organigramm"
+}

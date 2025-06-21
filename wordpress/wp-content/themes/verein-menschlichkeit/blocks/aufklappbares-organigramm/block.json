@@ -1,0 +1,13 @@
+{
+  "apiVersion": 2,
+  "name": "verein/aufklappbares-organigramm",
+  "title": "Aufklappbares Organigramm",
+  "category": "widgets",
+  "icon": "networking",
+  "description": "Ein Block für ein aufklappbares Organigramm.",
+  "supports": {
+    "html": false
+  },
+  "editorScript": "file:./block.js",
+  "style": "file:./style.css"
+}

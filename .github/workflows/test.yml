@@ -1,0 +1,41 @@
+name: Test Workflows
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run tests
+        run: |
+          npm run test:workflows
+          
+      - name: Test workflow dry-run
+        run: |
+          docker run --rm \
+            --env-file .env.test \
+            -v ${{ github.workspace }}/workflows:/workflows \
+            -v ${{ github.workspace }}/tests:/tests \
+            n8nio/n8n:latest sh -c "
+              n8n import:workflow --input /workflows --yes &&
+              curl -X POST http://localhost:5678/webhook-test/civicrm-contribution \
+                   -H 'Content-Type: application/json' \
+                   -d @/tests/payloads/contribution.json \
+                   --fail-with-body
+            "

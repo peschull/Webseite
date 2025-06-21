@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/partnerlogos",
+  "title": "Partnerschaften: Logo-Reihe",
+  "category": "widgets",
+  "icon": "admin-users",
+  "description": "Reihe von Partnerlogos mit Hover-Effekt.",
+  "attributes": {"logos": {"type": "array"}},
+  "editorScript": "verein-block-partnerlogos"
+}

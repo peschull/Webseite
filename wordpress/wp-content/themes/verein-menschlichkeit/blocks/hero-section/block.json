@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/hero-section",
+  "title": "Hero-Section mit Call-to-Action",
+  "category": "design",
+  "icon": "cover-image",
+  "description": "Großer Aufmacher mit Call-to-Action und Scroll-Trigger.",
+  "attributes": {"headline": {"type": "string"}, "ctaText": {"type": "string"}, "ctaUrl": {"type": "string"}},
+  "editorScript": "verein-block-hero-section"
+}

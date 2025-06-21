@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/timeline",
+  "title": "Timeline für Chronologie",
+  "category": "widgets",
+  "icon": "clock",
+  "description": "Zeitstrahl für Meilensteine und Chronologie.",
+  "attributes": {"items": {"type": "array"}},
+  "editorScript": "verein-block-timeline"
+}

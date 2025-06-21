@@ -1,0 +1,13 @@
+{
+  "apiVersion": 2,
+  "name": "verein/blog-kachelgrid",
+  "title": "Blog Kachelgrid",
+  "category": "widgets",
+  "icon": "grid-view",
+  "description": "Ein Block für ein Blog-Kachelgrid.",
+  "supports": {
+    "html": false
+  },
+  "editorScript": "file:./block.js",
+  "style": "file:./style.css"
+}

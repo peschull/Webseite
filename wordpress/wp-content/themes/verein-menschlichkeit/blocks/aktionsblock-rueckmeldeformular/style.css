@@ -1,0 +1,12 @@
+/* Aktionsblock Rückmeldeformular – Basis-Styles */
+.aktionsblock-rueckmeldeformular-block {
+  padding: 1.5em;
+  background: #f4f8fa;
+  border: 1px solid #d0dbe5;
+  border-radius: 8px;
+}
+
+.aktionsblock-rueckmeldeformular-block .formular-titel {
+  font-weight: bold;
+  margin-bottom: 1em;
+}

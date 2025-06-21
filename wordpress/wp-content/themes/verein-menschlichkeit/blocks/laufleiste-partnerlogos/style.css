@@ -1,0 +1,17 @@
+/* Grundlegendes CSS für den Laufleiste Partnerlogos-Block */
+.block-laufleiste-partnerlogos {
+    padding: 1em;
+    background: #f0f0f0;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+.block-laufleiste-partnerlogos .logos {
+    display: flex;
+    gap: 1em;
+    align-items: center;
+}
+.block-laufleiste-partnerlogos img {
+    height: 40px;
+    width: auto;
+    display: block;
+}

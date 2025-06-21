@@ -1,0 +1,17 @@
+/* Grundlegendes CSS für den Zustimmungsbarometer-Block */
+.block-zustimmungsbarometer {
+    background: var(--gray-50);
+    padding: 1em;
+    border-radius: 8px;
+}
+.block-zustimmungsbarometer .bar {
+    height: 24px;
+    background: var(--color-secondary-600);
+    border-radius: 4px;
+    margin-bottom: 0.5em;
+    transition: width 0.5s;
+}
+.block-zustimmungsbarometer .zahlen {
+    text-align: right;
+    font-weight: bold;
+}

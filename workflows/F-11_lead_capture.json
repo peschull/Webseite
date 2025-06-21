@@ -1,0 +1,395 @@
+{
+  "name": "F-11 Lead Capture & Double-Opt-In",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-capture",
+        "options": {}
+      },
+      "id": "webhook-lead-capture",
+      "name": "Lead Capture Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.gdpr_consent }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "check-gdpr-consent",
+      "name": "Check GDPR Consent",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.CIVICRM_BASE_URL }}/civicrm/extern/rest.php",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "entity",
+              "value": "Contact"
+            },
+            {
+              "name": "action",
+              "value": "get"
+            },
+            {
+              "name": "api_key",
+              "value": "={{ $env.CIVICRM_API_KEY }}"
+            },
+            {
+              "name": "key",
+              "value": "={{ $env.CIVICRM_SITE_KEY }}"
+            },
+            {
+              "name": "email",
+              "value": "={{ $json.email }}"
+            },
+            {
+              "name": "json",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "id": "check-existing-contact",
+      "name": "Check Existing Contact",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.count }}",
+              "value2": 0,
+              "operation": "larger"
+            }
+          ]
+        }
+      },
+      "id": "contact-exists",
+      "name": "Contact Exists?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.CIVICRM_BASE_URL }}/civicrm/extern/rest.php",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "entity",
+              "value": "Contact"
+            },
+            {
+              "name": "action",
+              "value": "create"
+            },
+            {
+              "name": "api_key",
+              "value": "={{ $env.CIVICRM_API_KEY }}"
+            },
+            {
+              "name": "key",
+              "value": "={{ $env.CIVICRM_SITE_KEY }}"
+            },
+            {
+              "name": "contact_type",
+              "value": "Individual"
+            },
+            {
+              "name": "first_name",
+              "value": "={{ $node['Lead Capture Webhook'].json.first_name }}"
+            },
+            {
+              "name": "email",
+              "value": "={{ $node['Lead Capture Webhook'].json.email }}"
+            },
+            {
+              "name": "source",
+              "value": "={{ $node['Lead Capture Webhook'].json.source || 'Website Lead Form' }}"
+            },
+            {
+              "name": "json",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "id": "create-contact",
+      "name": "Create New Contact",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 120]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.CIVICRM_BASE_URL }}/civicrm/extern/rest.php",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "entity",
+              "value": "EntityTag"
+            },
+            {
+              "name": "action",
+              "value": "create"
+            },
+            {
+              "name": "api_key",
+              "value": "={{ $env.CIVICRM_API_KEY }}"
+            },
+            {
+              "name": "key",
+              "value": "={{ $env.CIVICRM_SITE_KEY }}"
+            },
+            {
+              "name": "entity_id",
+              "value": "={{ $json.values[0].id || $node['Check Existing Contact'].json.values[0].id }}"
+            },
+            {
+              "name": "entity_table",
+              "value": "civicrm_contact"
+            },
+            {
+              "name": "tag_id",
+              "value": "Lead"
+            },
+            {
+              "name": "json",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "id": "add-lead-tag",
+      "name": "Add Lead Tag",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1340, 200]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.CIVICRM_BASE_URL }}/civicrm/extern/rest.php",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "entity",
+              "value": "Activity"
+            },
+            {
+              "name": "action",
+              "value": "create"
+            },
+            {
+              "name": "api_key",
+              "value": "={{ $env.CIVICRM_API_KEY }}"
+            },
+            {
+              "name": "key",
+              "value": "={{ $env.CIVICRM_SITE_KEY }}"
+            },
+            {
+              "name": "activity_type_id",
+              "value": "Opt-In Pending"
+            },
+            {
+              "name": "source_contact_id",
+              "value": "={{ $node['Create New Contact'].json.values[0].id || $node['Check Existing Contact'].json.values[0].id }}"
+            },
+            {
+              "name": "target_contact_id",
+              "value": "={{ $node['Create New Contact'].json.values[0].id || $node['Check Existing Contact'].json.values[0].id }}"
+            },
+            {
+              "name": "subject",
+              "value": "Double Opt-In pending for {{ $node['Lead Capture Webhook'].json.email }}"
+            },
+            {
+              "name": "activity_date_time",
+              "value": "={{ new Date().toISOString() }}"
+            },
+            {
+              "name": "json",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "id": "create-activity",
+      "name": "Create Opt-In Activity",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1560, 200]
+    },
+    {
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "brevoApi",
+        "templateId": 1,
+        "toEmail": "={{ $node['Lead Capture Webhook'].json.email }}",
+        "toName": "={{ $node['Lead Capture Webhook'].json.first_name }}",
+        "params": {
+          "first_name": "={{ $node['Lead Capture Webhook'].json.first_name }}",
+          "opt_in_url": "={{ $env.CIVICRM_BASE_URL }}/civicrm/mailing/confirm?reset=1&cid={{ $node['Create New Contact'].json.values[0].id || $node['Check Existing Contact'].json.values[0].id }}&qid={{ Math.random().toString(36).substring(7) }}",
+          "source_page": "={{ $node['Lead Capture Webhook'].json.source }}"
+        }
+      },
+      "id": "send-double-optin",
+      "name": "Send Double Opt-In Email",
+      "type": "n8n-nodes-base.brevo",
+      "typeVersion": 1,
+      "position": [1780, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  \"success\": true,\n  \"contact_id\": $node['Create New Contact'].json.values[0].id || $node['Check Existing Contact'].json.values[0].id,\n  \"message\": \"Lead captured successfully. Please check email for confirmation.\",\n  \"cex_id\": \"LEAD-\" + new Date().getTime()\n} }}"
+      },
+      "id": "webhook-response",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2000, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  \"success\": false,\n  \"error\": \"GDPR consent is required\",\n  \"message\": \"Please accept our privacy policy to continue.\"\n} }}"
+      },
+      "id": "gdpr-error-response",
+      "name": "GDPR Error Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [680, 400]
+    }
+  ],
+  "connections": {
+    "Lead Capture Webhook": {
+      "main": [
+        [
+          {
+            "node": "Check GDPR Consent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check GDPR Consent": {
+      "main": [
+        [
+          {
+            "node": "Check Existing Contact",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "GDPR Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Existing Contact": {
+      "main": [
+        [
+          {
+            "node": "Contact Exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contact Exists?": {
+      "main": [
+        [
+          {
+            "node": "Add Lead Tag",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create New Contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create New Contact": {
+      "main": [
+        [
+          {
+            "node": "Add Lead Tag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Lead Tag": {
+      "main": [
+        [
+          {
+            "node": "Create Opt-In Activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Opt-In Activity": {
+      "main": [
+        [
+          {
+            "node": "Send Double Opt-In Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Double Opt-In Email": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "errorWorkflow": {
+      "id": "F-08_error"
+    },
+    "timezone": "Europe/Vienna"
+  }
+}

@@ -1,0 +1,355 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: civicrm-staging
+  namespace: civicrm-staging
+  labels:
+    app: civicrm
+    environment: staging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: civicrm
+      environment: staging
+  template:
+    metadata:
+      labels:
+        app: civicrm
+        environment: staging
+    spec:
+      initContainers:
+      - name: wait-for-db
+        image: busybox:1.35
+        command: ['sh', '-c', 'until nc -z mariadb-staging 3306; do echo waiting for mariadb; sleep 2; done;']
+      - name: civicrm-init
+        image: civicrm/civicrm:5.74-wordpress
+        command: ['/bin/bash', '-c']
+        args:
+        - |
+          set -e
+          echo "Initializing CiviCRM..."
+          
+          # Warte auf Datenbank
+          while ! mysqladmin ping -h"$DB_HOST" -u"$DB_USER" -p"$DB_PASSWORD" --silent; do
+            echo "Waiting for database..."
+            sleep 2
+          done
+          
+          # Erstelle CiviCRM-Datenbank falls nicht vorhanden
+          mysql -h"$DB_HOST" -u"$DB_USER" -p"$DB_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS civicrm_staging CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+          
+          echo "Database initialization complete"
+        env:
+        - name: DB_HOST
+          value: "mariadb-staging"
+        - name: DB_USER
+          value: "civicrm"
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secrets
+              key: user-password
+      containers:
+      - name: civicrm
+        image: civicrm/civicrm:5.74-wordpress
+        ports:
+        - containerPort: 80
+        env:
+        - name: WORDPRESS_DB_HOST
+          value: "mariadb-staging"
+        - name: WORDPRESS_DB_NAME
+          value: "civicrm_staging"
+        - name: WORDPRESS_DB_USER
+          value: "civicrm"
+        - name: WORDPRESS_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secrets
+              key: user-password
+        - name: CIVICRM_DB_HOST
+          value: "mariadb-staging"
+        - name: CIVICRM_DB_NAME
+          value: "civicrm_staging"
+        - name: CIVICRM_DB_USER
+          value: "civicrm"
+        - name: CIVICRM_DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: db-secrets
+              key: user-password
+        - name: CIVICRM_SITE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: civicrm-secrets
+              key: site-key
+        - name: CIVICRM_SITE_URL
+          value: "https://staging.menschlichkeit.at"
+        - name: WORDPRESS_DEBUG
+          value: "1"
+        - name: WORDPRESS_DEBUG_LOG
+          value: "1"
+        volumeMounts:
+        - name: civicrm-data
+          mountPath: /var/www/html/wp-content/uploads
+        - name: civicrm-config
+          mountPath: /var/www/html/wp-content/uploads/civicrm
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        readinessProbe:
+          httpGet:
+            path: /wp-admin/admin-ajax.php
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /wp-admin/admin-ajax.php
+            port: 80
+          initialDelaySeconds: 60
+          periodSeconds: 30
+      volumes:
+      - name: civicrm-data
+        persistentVolumeClaim:
+          claimName: civicrm-data-pvc
+      - name: civicrm-config
+        persistentVolumeClaim:
+          claimName: civicrm-config-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: civicrm-data-pvc
+  namespace: civicrm-staging
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: civicrm-config-pvc
+  namespace: civicrm-staging
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: civicrm-staging
+  namespace: civicrm-staging
+spec:
+  selector:
+    app: civicrm
+    environment: staging
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n8n-staging
+  namespace: civicrm-staging
+  labels:
+    app: n8n
+    environment: staging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: n8n
+      environment: staging
+  template:
+    metadata:
+      labels:
+        app: n8n
+        environment: staging
+    spec:
+      initContainers:
+      - name: wait-for-db
+        image: busybox:1.35
+        command: ['sh', '-c', 'until nc -z mariadb-staging 3306; do echo waiting for mariadb; sleep 2; done;']
+      containers:
+      - name: n8n
+        image: n8nio/n8n:1.62.1
+        ports:
+        - containerPort: 5678
+        env:
+        - name: N8N_BASIC_AUTH_ACTIVE
+          value: "true"
+        - name: N8N_BASIC_AUTH_USER
+          value: "admin"
+        - name: N8N_BASIC_AUTH_PASSWORD
+          value: "staging123"
+        - name: N8N_HOST
+          value: "0.0.0.0"
+        - name: N8N_PORT
+          value: "5678"
+        - name: N8N_PROTOCOL
+          value: "https"
+        - name: WEBHOOK_URL
+          value: "https://staging.menschlichkeit.at/webhook"
+        - name: N8N_EDITOR_BASE_URL
+          value: "https://staging.menschlichkeit.at/n8n"
+        - name: DB_TYPE
+          value: "mariadb"
+        - name: DB_MARIADB_HOST
+          value: "mariadb-staging"
+        - name: DB_MARIADB_PORT
+          value: "3306"
+        - name: DB_MARIADB_DATABASE
+          value: "n8n_staging"
+        - name: DB_MARIADB_USERNAME
+          value: "civicrm"
+        - name: DB_MARIADB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secrets
+              key: user-password
+        - name: N8N_ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: n8n-secrets
+              key: encryption-key
+        - name: EXECUTIONS_MODE
+          value: "queue"
+        - name: QUEUE_BULL_REDIS_HOST
+          value: "redis-staging"
+        - name: QUEUE_BULL_REDIS_PORT
+          value: "6379"
+        - name: N8N_METRICS
+          value: "true"
+        - name: N8N_LOG_LEVEL
+          value: "debug"
+        - name: N8N_LOG_OUTPUT
+          value: "console"
+        volumeMounts:
+        - name: n8n-data
+          mountPath: /home/node/.n8n
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 5678
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 5678
+          initialDelaySeconds: 60
+          periodSeconds: 30
+      volumes:
+      - name: n8n-data
+        persistentVolumeClaim:
+          claimName: n8n-data-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: n8n-data-pvc
+  namespace: civicrm-staging
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: n8n-staging
+  namespace: civicrm-staging
+spec:
+  selector:
+    app: n8n
+    environment: staging
+  ports:
+    - protocol: TCP
+      port: 5678
+      targetPort: 5678
+  type: ClusterIP
+---
+# n8n Worker für Queue-Processing
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n8n-worker-staging
+  namespace: civicrm-staging
+  labels:
+    app: n8n-worker
+    environment: staging
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: n8n-worker
+      environment: staging
+  template:
+    metadata:
+      labels:
+        app: n8n-worker
+        environment: staging
+    spec:
+      containers:
+      - name: n8n-worker
+        image: n8nio/n8n:1.62.1
+        command: ["n8n", "worker"]
+        env:
+        - name: DB_TYPE
+          value: "mariadb"
+        - name: DB_MARIADB_HOST
+          value: "mariadb-staging"
+        - name: DB_MARIADB_PORT
+          value: "3306"
+        - name: DB_MARIADB_DATABASE
+          value: "n8n_staging"
+        - name: DB_MARIADB_USERNAME
+          value: "civicrm"
+        - name: DB_MARIADB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secrets
+              key: user-password
+        - name: N8N_ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: n8n-secrets
+              key: encryption-key
+        - name: QUEUE_BULL_REDIS_HOST
+          value: "redis-staging"
+        - name: QUEUE_BULL_REDIS_PORT
+          value: "6379"
+        - name: N8N_LOG_LEVEL
+          value: "info"
+        - name: N8N_LOG_OUTPUT
+          value: "console"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "250m"

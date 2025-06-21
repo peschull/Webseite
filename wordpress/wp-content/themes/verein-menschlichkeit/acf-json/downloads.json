@@ -1,0 +1,13 @@
+{
+  "key": "group_downloads",
+  "title": "Downloads",
+  "fields": [
+    { "key": "field_datei_url", "label": "Datei-URL", "name": "datei_url", "type": "url" },
+    { "key": "field_beschreibung", "label": "Beschreibung", "name": "beschreibung", "type": "text" }
+  ],
+  "location": [
+    [
+      { "param": "post_type", "operator": "==", "value": "download" }
+    ]
+  ]
+}

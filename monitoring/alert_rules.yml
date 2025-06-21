@@ -1,0 +1,160 @@
+groups:
+  - name: n8n_alerts
+    rules:
+      # High Error Rate
+      - alert: N8nHighErrorRate
+        expr: (rate(n8n_executions_failed_total[5m]) / rate(n8n_executions_total[5m])) * 100 > 5
+        for: 2m
+        labels:
+          severity: critical
+          service: n8n
+        annotations:
+          summary: "n8n high error rate detected"
+          description: "n8n error rate is {{ $value }}% over the last 5 minutes"
+
+      # Queue Lag
+      - alert: N8nQueueLag
+        expr: redis_queue_length > 100
+        for: 1m
+        labels:
+          severity: warning
+          service: n8n
+        annotations:
+          summary: "n8n queue lag detected"
+          description: "Queue {{ $labels.queue }} has {{ $value }} pending jobs"
+
+      # Long Queue Processing Time
+      - alert: N8nQueueProcessingTime
+        expr: redis_queue_processing_time > 30
+        for: 2m
+        labels:
+          severity: critical
+          service: n8n
+        annotations:
+          summary: "n8n queue processing time too high"
+          description: "Queue processing time is {{ $value }} seconds"
+
+      # Worker Down
+      - alert: N8nWorkerDown
+        expr: up{job=~"n8n-worker.*"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: n8n
+        annotations:
+          summary: "n8n worker is down"
+          description: "Worker {{ $labels.instance }} has been down for more than 1 minute"
+
+      # High Memory Usage
+      - alert: N8nHighMemoryUsage
+        expr: (container_memory_usage_bytes{name=~"n8n.*"} / container_spec_memory_limit_bytes{name=~"n8n.*"}) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          service: n8n
+        annotations:
+          summary: "n8n high memory usage"
+          description: "Container {{ $labels.name }} memory usage is {{ $value }}%"
+
+      # High CPU Usage
+      - alert: N8nHighCPUUsage
+        expr: (rate(container_cpu_usage_seconds_total{name=~"n8n.*"}[5m]) / container_spec_cpu_quota{name=~"n8n.*"}) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: n8n
+        annotations:
+          summary: "n8n high CPU usage"
+          description: "Container {{ $labels.name }} CPU usage is {{ $value }}%"
+
+  - name: infrastructure_alerts
+    rules:
+      # PostgreSQL Down
+      - alert: PostgreSQLDown
+        expr: up{job="postgres"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: postgresql
+        annotations:
+          summary: "PostgreSQL is down"
+          description: "PostgreSQL database has been down for more than 1 minute"
+
+      # Redis Down
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: redis
+        annotations:
+          summary: "Redis is down"
+          description: "Redis server has been down for more than 1 minute"
+
+      # MinIO Down
+      - alert: MinIODown
+        expr: up{job="minio"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: minio
+        annotations:
+          summary: "MinIO is down"
+          description: "MinIO storage service has been down for more than 1 minute"
+
+      # High Disk Usage
+      - alert: HighDiskUsage
+        expr: (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High disk usage detected"
+          description: "Disk usage is {{ $value }}% on {{ $labels.instance }}"
+
+  - name: business_alerts
+    rules:
+      # No Donations Processing
+      - alert: NoDonationsProcessing
+        expr: increase(n8n_executions_total{workflow="civicrm-donation-workflow"}[1h]) == 0
+        for: 2h
+        labels:
+          severity: warning
+          service: business
+        annotations:
+          summary: "No donations processed in the last hour"
+          description: "The donation processing workflow hasn't executed in the last hour"
+
+      # Failed PDF Generation
+      - alert: FailedPDFGeneration
+        expr: rate(n8n_executions_failed_total{workflow="pdf-generation"}[10m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+          service: business
+        annotations:
+          summary: "PDF generation failures detected"
+          description: "PDF generation is failing at a rate of {{ $value }} per second"
+
+      # Social Media API Rate Limit
+      - alert: SocialMediaRateLimit
+        expr: increase(n8n_http_response_codes_total{code="429"}[5m]) > 5
+        for: 1m
+        labels:
+          severity: warning
+          service: social-media
+        annotations:
+          summary: "Social media API rate limit hit"
+          description: "Received {{ $value }} rate limit responses in the last 5 minutes"
+
+      # Token Expiry Warning
+      - alert: TokenExpiryWarning
+        expr: (token_expiry_timestamp - time()) < 86400  # 24 hours
+        for: 1m
+        labels:
+          severity: warning
+          service: authentication
+        annotations:
+          summary: "API token expiring soon"
+          description: "Token {{ $labels.service }} expires in less than 24 hours"

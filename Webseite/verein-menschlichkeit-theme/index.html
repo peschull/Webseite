@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes, maximum-scale=5.0">
+    
+    <!-- Mobile-spezifische Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Verein Menschlichkeit">
+    <meta name="format-detection" content="telephone=yes, email=yes">
+    <meta name="HandheldFriendly" content="true">
+    <meta name="MobileOptimized" content="width">
+    
+    <!-- Performance Hints -->
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="preconnect" href="//fonts.gstatic.com" crossorigin>
+    
+    <!-- SEO Meta Tags -->
+    <title>Verein Menschlichkeit - Soziale Gerechtigkeit & Umweltschutz</title>
+    <meta name="description" content="Der Verein Menschlichkeit setzt sich für soziale Gerechtigkeit, Umweltschutz und Bildung ein. Werden Sie Mitglied und unterstützen Sie unsere Projekte.">
+    <meta name="keywords" content="Verein, Menschlichkeit, soziale Projekte, Ehrenamt, Spenden, Bildung, Umweltschutz, soziale Gerechtigkeit">
+    <meta name="author" content="Verein Menschlichkeit">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://localhost:3000/">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Verein Menschlichkeit - Soziale Gerechtigkeit & Umweltschutz">
+    <meta property="og:description" content="Der Verein Menschlichkeit setzt sich für soziale Gerechtigkeit, Umweltschutz und Bildung ein. Werden Sie Teil unserer Bewegung!">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://localhost:3000/">
+    <meta property="og:image" content="http://localhost:3000/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Verein Menschlichkeit Logo und Gruppenbild">
+    <meta property="og:site_name" content="Verein Menschlichkeit">
+    <meta property="og:locale" content="de_DE">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Verein Menschlichkeit - Soziale Gerechtigkeit & Umweltschutz">
+    <meta name="twitter:description" content="Der Verein Menschlichkeit setzt sich für soziale Gerechtigkeit, Umweltschutz und Bildung ein. Werden Sie Teil unserer Bewegung!">
+    <meta name="twitter:image" content="http://localhost:3000/images/twitter-card.jpg">
+    <meta name="twitter:image:alt" content="Verein Menschlichkeit - Soziale Projekte">
+    <meta name="twitter:site" content="@vereinmenschlichkeit">
+    <meta name="twitter:creator" content="@vereinmenschlichkeit">
+    
+    <!-- WordPress Head Profile -->
+    <link rel="profile" href="https://gmpg.org/xfn/11">
+    
+    <!-- RSS/Atom Feeds - Development: Feeds disabled for testing -->
+    <!-- <link rel="alternate" type="application/rss+xml" title="Verein Menschlichkeit &raquo; Feed" href="/feed/">
+    <link rel="alternate" type="application/rss+xml" title="Verein Menschlichkeit &raquo; Kommentar-Feed" href="/comments/feed/">
+    <link rel="alternate" type="application/atom+xml" title="Verein Menschlichkeit &raquo; Atom-Feed" href="/feed/atom/"> -->
+    
+    <!-- Favicons and Icons -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
+    <link rel="icon" href="/favicon-192x192.png" sizes="192x192" type="image/png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#2c5aa0">
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Verein Menschlichkeit",
+        "description": "Ein gemeinnütziger Verein, der sich für soziale Gerechtigkeit, Umweltschutz und Bildung einsetzt",
+        "url": "http://localhost:3000",
+        "logo": "http://localhost:3000/images/logo.png",
+        "image": "http://localhost:3000/images/og-image.jpg",
+        "founder": {
+            "@type": "Person",
+            "name": "Maria Müller"
+        },
+        "foundingDate": "2020",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Musterstraße 123",
+            "addressLocality": "Berlin",
+            "postalCode": "10115",
+            "addressCountry": "DE"
+        },
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+49-30-12345678",
+            "contactType": "customer service",
+            "email": "info@verein-menschlichkeit.de"
+        },
+        "sameAs": [
+            "https://www.facebook.com/vereinmenschlichkeit",
+            "https://www.twitter.com/vereinmenschlichkeit",
+            "https://www.instagram.com/vereinmenschlichkeit"
+        ]
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Verein Menschlichkeit",
+        "url": "http://localhost:3000",
+        "description": "Offizielle Website des Vereins Menschlichkeit - Soziale Projekte, Ehrenamt und gemeinsames Engagement",
+        "publisher": {
+            "@type": "Organization",
+            "name": "Verein Menschlichkeit"
+        },
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "http://localhost:3000/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Wie kann ich Mitglied werden?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Sie können über unser Kontaktformular eine Mitgliedsanfrage stellen oder direkt per E-Mail an info@verein-menschlichkeit.de schreiben."
+                }
+            },
+            {
+                "@type": "Question", 
+                "name": "Welche Projekte unterstützt der Verein?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Wir engagieren uns in den Bereichen Bildung für alle, Umweltschutz, soziale Gerechtigkeit und digitale Teilhabe."
+                }
+            }
+        ]
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Unsere Mission: Eine bessere Welt schaffen",
+        "description": "Der Verein Menschlichkeit wurde 2020 mit dem Ziel gegründet, positive Veränderungen in unserer Gesellschaft zu bewirken.",
+        "image": "http://localhost:3000/images/hero-image.jpg",
+        "author": {
+            "@type": "Person",
+            "name": "Maria Müller"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Verein Menschlichkeit",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "http://localhost:3000/images/logo.png"
+            }
+        },
+        "datePublished": "2025-06-20T10:00:00+02:00",
+        "dateModified": "2025-06-20T10:00:00+02:00",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http://localhost:3000/"
+        }
+    }
+    </script>
+</head>
+<body class="home blog logged-in wordpress wp-theme-verein-menschlichkeit">
+    <!-- Skip Link for Accessibility -->
+    <a class="screen-reader-text skip-link" href="#main">Zum Hauptinhalt springen</a>
+    
+    <!-- WordPress Site Header -->
+    <header class="site-header" role="banner">
+        <div class="container">
+            <div class="site-branding">
+                <h1 class="site-title"><a href="/" rel="home">Verein Menschlichkeit</a></h1>
+                <p class="site-description">Für eine bessere Welt</p>
+            </div>
+            
+            <!-- Mobile Menu Toggle Button -->
+            <button class="mobile-nav-toggle" 
+                    type="button" 
+                    aria-expanded="false" 
+                    aria-controls="mobile-menu" 
+                    aria-label="Hauptmenü öffnen">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <!-- WordPress Navigation -->
+            <nav class="main-navigation" role="navigation" aria-label="Hauptmenü" id="mobile-menu">
+                <ul class="menu nav-menu">
+                    <li class="menu-item current-menu-item"><a href="/" aria-current="page">Startseite</a></li>
+                    <li class="menu-item"><a href="/ueber-uns">Über uns</a></li>
+                    <li class="menu-item"><a href="/projekte">Projekte</a></li>
+                    <li class="menu-item"><a href="/mitmachen">Mitmachen</a></li>
+                    <li class="menu-item"><a href="/kontakt">Kontakt</a></li>
+                    <li class="menu-item"><a href="https://www.facebook.com/vereinmenschlichkeit" target="_blank" rel="noopener noreferrer" aria-label="Facebook (öffnet in neuem Tab)">Facebook</a></li>
+                </ul>
+            </nav>
+            
+            <!-- Search Form -->
+            <div class="search-form" role="search">
+                <button class="search-toggle" 
+                        type="button" 
+                        aria-expanded="false" 
+                        aria-label="Suche öffnen">
+                    🔍
+                </button>
+                <label class="screen-reader-text" for="search-field">Suchen nach:</label>
+                <input type="search" 
+                       id="search-field" 
+                       class="search-field" 
+                       placeholder="Suchen..." 
+                       name="s" 
+                       style="display: none;">
+                <button type="submit" 
+                        class="search-submit" 
+                        style="display: none;">
+                    Suchen
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- WordPress Main Content -->
+    <main id="main" class="site-main" role="main">
+        <div class="container">
+            <!-- Hero Section with proper heading hierarchy -->
+            <section class="hero-section wp-block">
+                <h1>Willkommen beim Verein Menschlichkeit</h1>
+                <p class="hero-description">Gemeinsam schaffen wir eine Welt voller Mitgefühl, Gerechtigkeit und nachhaltiger Entwicklung. Seit 2020 setzen wir uns für die wichtigsten gesellschaftlichen Herausforderungen unserer Zeit ein.</p>
+                <img src="/images/hero-image.jpg" alt="Gruppe von Freiwilligen bei einem sozialen Projekt des Vereins Menschlichkeit" width="800" height="400" loading="eager">
+            </section>
+            
+            <!-- WordPress Article/Post Structure -->
+            <article class="post hentry" itemscope itemtype="https://schema.org/Article">
+                <header class="entry-header">
+                    <h2 class="entry-title" itemprop="headline">Unsere Mission: Eine bessere Welt schaffen</h2>
+                    <div class="entry-meta">
+                        <time class="published" datetime="2025-06-20T10:00:00+02:00" itemprop="datePublished">20. Juni 2025</time>
+                        <span class="author" itemprop="author" itemscope itemtype="https://schema.org/Person">
+                            <span itemprop="name">Maria Müller</span>
+                        </span>
+                    </div>
+                </header>
+                
+                <div class="entry-content" itemprop="articleBody">
+                    <p>Der Verein Menschlichkeit wurde 2020 mit dem Ziel gegründet, positive Veränderungen in unserer Gesellschaft zu bewirken. Wir glauben daran, dass jeder Mensch das Potenzial hat, die Welt zu einem besseren Ort zu machen.</p>
+                    
+                    <h3>Unsere Schwerpunkte</h3>
+                    <p>Unsere Arbeit konzentriert sich auf drei Hauptbereiche, die für eine nachhaltige gesellschaftliche Entwicklung von entscheidender Bedeutung sind:</p>
+                    
+                    <h4>Bildung und Chancengleichheit</h4>
+                    <p>Wir fördern Bildungsprojekte und schaffen Chancen für benachteiligte Gruppen in unserer Gesellschaft. Bildung ist der Schlüssel zu persönlicher Entwicklung und gesellschaftlichem Fortschritt.</p>
+                    
+                    <h4>Umweltschutz und Nachhaltigkeit</h4>
+                    <p>Durch lokale Umweltprojekte und Aufklärungsarbeit tragen wir zum Schutz unseres Planeten bei. Nachhaltigkeit ist nicht nur ein Trend, sondern eine Notwendigkeit für zukünftige Generationen.</p>
+                    
+                    <h4>Soziale Gerechtigkeit</h4>
+                    <p>Wir setzen uns für die Rechte aller Menschen ein und kämpfen gegen Diskriminierung und Ungerechtigkeit. Eine gerechte Gesellschaft ist die Grundlage für ein friedliches Zusammenleben.</p>
+                </div>
+            </article>
+
+            <!-- WordPress Block: CTA Block -->
+            <section class="wp-block cta-block">
+                <h2>Jetzt mitmachen!</h2>
+                <p>Werde Teil unserer Bewegung für mehr Menschlichkeit. Zusammen können wir die Welt verändern.</p>
+                <a href="/mitmachen" class="cta-button">Mitglied werden</a>
+            </section>
+
+            <!-- WordPress Block: Team Block -->
+            <section class="wp-block team-block">
+                <h2>Unser Team</h2>
+                <div class="team-grid">
+                    <article class="team-member post">
+                        <img src="/images/team1.jpg" alt="Porträt von Maria Müller, Geschäftsführerin des Vereins Menschlichkeit" class="wp-image-123 attachment-medium" width="300" height="300" loading="lazy">
+                        <h3>Maria Müller</h3>
+                        <p>Geschäftsführerin und Gründerin</p>
+                        <p>Maria leitet den Verein seit der Gründung 2020 und bringt über 15 Jahre Erfahrung im sozialen Bereich mit.</p>
+                    </article>
+                    <article class="team-member post">
+                        <img src="/images/team2.jpg" alt="Porträt von Thomas Weber, Projektleiter für Bildungsprojekte" class="wp-image-124 attachment-medium" width="300" height="300" loading="lazy">
+                        <h3>Thomas Weber</h3>
+                        <p>Projektleiter Bildung</p>
+                        <p>Thomas koordiniert unsere Bildungsprojekte und hat einen Hintergrund in Pädagogik und Sozialarbeit.</p>
+                    </article>
+                    <article class="team-member post">
+                        <img src="/images/team3.jpg" alt="Porträt von Sarah Schmidt, Koordinatorin für Umweltprojekte" class="wp-image-125 attachment-medium" width="300" height="300" loading="lazy">
+                        <h3>Sarah Schmidt</h3>
+                        <p>Umweltkoordinatorin</p>
+                        <p>Sarah entwickelt und leitet unsere Umweltschutzprojekte mit ihrer Expertise in Umweltwissenschaften.</p>
+                    </article>
+                </div>
+            </section>
+
+            <!-- WordPress Block: Projekte Block -->
+            <section class="wp-block projekte-block">
+                <h2>Aktuelle Projekte</h2>
+                <div class="projekte-grid">
+                    <article class="projekt-card post">
+                        <img src="/images/projekt1.jpg" alt="Kinder beim Lesen in einer Bibliothek - Bildungsprojekt des Vereins" width="400" height="250" loading="lazy">
+                        <h3><a href="/projekte/bildung-fuer-alle">Bildung für alle</a></h3>
+                        <p>Unterstützung benachteiligter Kinder durch Nachhilfe, Mentoring und Zugang zu Bildungsressourcen.</p>
+                        <a href="/projekte/bildung-fuer-alle" class="read-more">Mehr erfahren</a>
+                    </article>
+                    <article class="projekt-card post">
+                        <img src="/images/projekt2.jpg" alt="Freiwillige beim Bäume pflanzen im Rahmen des Umweltprojekts" width="400" height="250" loading="lazy">
+                        <h3><a href="/projekte/gruene-zukunft">Grüne Zukunft</a></h3>
+                        <p>Aufforstungsprojekte und Umweltbildung für eine nachhaltige Zukunft unserer Gemeinschaft.</p>
+                        <a href="/projekte/gruene-zukunft" class="read-more">Mehr erfahren</a>
+                    </article>
+                </div>
+            </section>
+
+            <!-- WordPress Block: Werte Block -->
+            <section class="wp-block werte-block">
+                <h2>Unsere Werte</h2>
+                <div class="werte-grid">
+                    <div class="wert-card">
+                        <h3>Respekt</h3>
+                        <p>Wir begegnen allen Menschen mit Respekt und Würde.</p>
+                    </div>
+                    <div class="wert-card">
+                        <h3>Solidarität</h3>
+                        <p>Gemeinsam sind wir stark und unterstützen uns gegenseitig.</p>
+                    </div>
+                    <div class="wert-card">
+                        <h3>Gerechtigkeit</h3>
+                        <p>Wir setzen uns für Gerechtigkeit und Chancengleichheit ein.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- WordPress Form -->
+            <section class="contact-form">
+                <h2>Kontakt aufnehmen</h2>
+                <p>Haben Sie Fragen oder möchten Sie sich engagieren? Wir freuen uns auf Ihre Nachricht!</p>
+                <address>
+                    <p><strong>Verein Menschlichkeit e.V.</strong></p>
+                    <p>Musterstraße 123<br>10115 Berlin</p>
+                    <p>Telefon: <a href="tel:+493012345678">+49 30 12345678</a></p>
+                    <p>E-Mail: <a href="mailto:info@verein-menschlichkeit.de">info@verein-menschlichkeit.de</a></p>
+                </address>
+                <form action="/contact" method="post" class="contact-form">
+                    <div class="form-group">
+                        <label for="contact-name">Name *</label>
+                        <input type="text" 
+                               id="contact-name" 
+                               name="name" 
+                               required 
+                               aria-required="true"
+                               autocomplete="name"
+                               placeholder="Ihr vollständiger Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-email">E-Mail *</label>
+                        <input type="email" 
+                               id="contact-email" 
+                               name="email" 
+                               required 
+                               aria-required="true"
+                               autocomplete="email"
+                               placeholder="ihre@email.de">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-subject">Betreff</label>
+                        <input type="text" 
+                               id="contact-subject" 
+                               name="subject" 
+                               autocomplete="off"
+                               placeholder="Worum geht es?">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-message">Nachricht *</label>
+                        <textarea id="contact-message" 
+                                  name="message" 
+                                  rows="5" 
+                                  required 
+                                  aria-required="true"
+                                  placeholder="Ihre Nachricht an uns..."></textarea>
+                    </div>
+                    <button type="submit" class="submit-button">Nachricht senden</button>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <!-- WordPress Site Footer -->
+    <footer class="site-footer" role="contentinfo">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Verein Menschlichkeit</h3>
+                    <p>Für eine bessere Welt</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Links</h3>
+                    <nav class="footer-navigation">
+                        <ul>
+                            <li><a href="/impressum">Impressum</a></li>
+                            <li><a href="/datenschutz">Datenschutz</a></li>
+                            <li><a href="/agb">AGB</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <p class="copyright">&copy; 2025 Verein Menschlichkeit. Alle Rechte vorbehalten.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/skip-link-focus-fix.js"></script>
+</body>
+</html>

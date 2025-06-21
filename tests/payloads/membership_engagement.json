@@ -1,0 +1,44 @@
+{
+  "members": [
+    {
+      "id": 12345,
+      "membership_id": "MEM-2024-001",
+      "display_name": "Maria Mustermann",
+      "email": "maria.mustermann@example.com",
+      "membership_start_date": "2024-01-01",
+      "membership_end_date": "2024-12-31",
+      "email_opens_30d": 8,
+      "email_clicks_30d": 3,
+      "events_attended_90d": 2,
+      "donations_count_30d": 1,
+      "portal_logins_30d": 12,
+      "forum_posts_30d": 5,
+      "newsletter_rating": 4,
+      "surveys_completed_90d": 1,
+      "engagement_trend": "increasing",
+      "last_portal_login": "2024-06-20",
+      "days_until_renewal": 180,
+      "complaints_count": 0
+    },
+    {
+      "id": 12346,
+      "membership_id": "MEM-2024-002",
+      "display_name": "Max Beispiel",
+      "email": "max.beispiel@example.com",
+      "membership_start_date": "2024-03-01",
+      "membership_end_date": "2025-03-01",
+      "email_opens_30d": 0,
+      "email_clicks_30d": 0,
+      "events_attended_90d": 0,
+      "donations_count_30d": 0,
+      "portal_logins_30d": 0,
+      "forum_posts_30d": 0,
+      "newsletter_rating": 2,
+      "surveys_completed_90d": 0,
+      "engagement_trend": "declining",
+      "last_portal_login": null,
+      "days_until_renewal": 30,
+      "complaints_count": 1
+    }
+  ]
+}

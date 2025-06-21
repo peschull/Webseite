@@ -1,0 +1,13 @@
+{
+  "apiVersion": 2,
+  "name": "verein/button-row",
+  "title": "Button Row",
+  "category": "widgets",
+  "icon": "editor-table",
+  "description": "Ein Block für eine Button-Reihe.",
+  "supports": {
+    "html": false
+  },
+  "editorScript": "file:./block.js",
+  "style": "file:./style.css"
+}

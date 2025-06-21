@@ -1,0 +1,13 @@
+{
+  "apiVersion": 2,
+  "name": "verein/argumenteblock-pro-contra",
+  "title": "Argumenteblock Pro/Contra",
+  "category": "widgets",
+  "icon": "list-view",
+  "description": "Ein Block für Pro- und Contra-Argumente.",
+  "supports": {
+    "html": false
+  },
+  "editorScript": "file:./block.js",
+  "style": "file:./style.css"
+}

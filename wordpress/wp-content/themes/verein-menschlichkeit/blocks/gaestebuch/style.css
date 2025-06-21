@@ -1,0 +1,14 @@
+/* Grundlegendes CSS für den Gästebuch-Block */
+.block-gaestebuch {
+    padding: 1em;
+    background: #fffbe6;
+    border-radius: 8px;
+}
+.block-gaestebuch ul {
+    list-style: none;
+    padding: 0;
+}
+.block-gaestebuch li {
+    border-bottom: 1px solid #eee;
+    padding: 0.5em 0;
+}

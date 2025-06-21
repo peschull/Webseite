@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/mitglied-werden",
+  "title": "Mitglied werden: 3-Karten-Modul",
+  "category": "widgets",
+  "icon": "groups",
+  "description": "3-Karten-Modul mit Beitragsinfos und Call-to-Action.",
+  "attributes": {"cards": {"type": "array"}},
+  "editorScript": "verein-block-mitglied-werden"
+}

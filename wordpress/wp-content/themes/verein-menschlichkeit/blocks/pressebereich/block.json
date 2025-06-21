@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/pressebereich",
+  "title": "Pressebereich mit Downloadboxen",
+  "category": "widgets",
+  "icon": "media-document",
+  "description": "Pressebereich mit Downloadboxen für PDF, Logo etc.",
+  "attributes": {"downloads": {"type": "array"}},
+  "editorScript": "verein-block-pressebereich"
+}

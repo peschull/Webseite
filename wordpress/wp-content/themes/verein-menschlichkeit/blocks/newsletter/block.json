@@ -1,0 +1,13 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/newsletter",
+  "title": "Newsletter-Formular",
+  "category": "widgets",
+  "icon": "email",
+  "description": "DSGVO-konformes Newsletter-Anmeldeformular.",
+  "attributes": {
+    "headline": { "type": "string", "default": "Newsletter abonnieren" },
+    "text": { "type": "string", "default": "Bleibe informiert!" }
+  },
+  "editorScript": "verein-block-newsletter"
+}

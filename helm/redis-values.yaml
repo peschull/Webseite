@@ -1,0 +1,159 @@
+# Redis Cluster Helm Values für n8n Queue-Management
+# Bitnami Redis Chart
+
+# Basis-Konfiguration
+fullnameOverride: "redis"
+nameOverride: "redis"
+
+# Architektur (Cluster-Mode für HA)
+architecture: "replication"
+
+# Authentifizierung
+auth:
+  enabled: true
+  password: "{{secrets.redis.password}}"
+  sentinel: false
+
+# Master-Konfiguration
+master:
+  persistence:
+    enabled: true
+    size: 50Gi
+    storageClass: "fast-ssd"
+  
+  resources:
+    requests:
+      cpu: "1"
+      memory: "2Gi"
+    limits:
+      cpu: "2"
+      memory: "4Gi"
+  
+  # Redis-Konfiguration
+  configuration: |
+    # Memory-Management
+    maxmemory 3gb
+    maxmemory-policy allkeys-lru
+    
+    # Persistence
+    save 900 1
+    save 300 10
+    save 60 10000
+    appendonly yes
+    appendfsync everysec
+    auto-aof-rewrite-percentage 100
+    auto-aof-rewrite-min-size 64mb
+    
+    # Network
+    tcp-keepalive 300
+    timeout 0
+    
+    # Queue-Performance
+    hash-max-ziplist-entries 512
+    hash-max-ziplist-value 64
+    list-max-ziplist-size -2
+    list-compress-depth 0
+    set-max-intset-entries 512
+    zset-max-ziplist-entries 128
+    zset-max-ziplist-value 64
+    
+    # Logging
+    loglevel notice
+
+# Replica-Konfiguration (2x für HA)
+replica:
+  replicaCount: 2
+  persistence:
+    enabled: true
+    size: 50Gi
+    storageClass: "fast-ssd"
+  
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+    limits:
+      cpu: "1"
+      memory: "2Gi"
+
+# Service-Konfiguration
+service:
+  type: ClusterIP
+  ports:
+    redis: 6379
+
+# Monitoring
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    namespace: monitoring
+    interval: 30s
+    labels:
+      app: redis
+      release: prometheus
+
+# Sicherheit
+networkPolicy:
+  enabled: true
+  allowExternal: false
+  ingressRules:
+    accessOnlyFrom:
+      enabled: true
+      namespaceSelector:
+        matchLabels:
+          name: n8n-prod
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: n8n
+
+# Pod-Sicherheit
+podSecurityContext:
+  enabled: true
+  fsGroup: 1001
+  runAsUser: 1001
+  runAsGroup: 1001
+
+securityContext:
+  enabled: true
+  runAsUser: 1001
+  runAsGroup: 1001
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  capabilities:
+    drop:
+      - ALL
+
+# Health Checks
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 20
+  periodSeconds: 5
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 5
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 20
+  periodSeconds: 5
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 5
+
+# Backup-Konfiguration
+backup:
+  enabled: true
+  cronjob:
+    schedule: "*/15 * * * *"  # Alle 15 Minuten RDB Snapshot
+    historyLimit: 5
+    restartPolicy: OnFailure
+  
+  # S3 Backup
+  s3:
+    bucket: "backup-bucket"
+    region: "eu-central-1"
+    endpoint: "minio.n8n-prod.svc.cluster.local:9000"
+    accessKey: "{{secrets.minio.accessKey}}"
+    secretKey: "{{secrets.minio.secretKey}}"

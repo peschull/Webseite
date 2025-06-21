@@ -1,0 +1,1 @@
+{"version":1,"defects":{"InvoiceServiceTest::testVatIsCalculatedCorrectly":4},"times":{"InvoiceServiceTest::testVatIsCalculatedCorrectly":0.001,"InvoiceServiceTest::testTotalIsCalculatedCorrectly":0,"Tests\\InvoiceServiceTest::testVatIsCalculatedCorrectly":0.005,"Tests\\InvoiceServiceTest::testTotalIsCalculatedCorrectly":0}}

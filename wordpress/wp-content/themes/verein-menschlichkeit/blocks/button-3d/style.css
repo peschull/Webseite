@@ -1,0 +1,16 @@
+/* 3D-Button Block – Basis-Styles */
+.button-3d-block {
+  padding: 1em 2em;
+  background: linear-gradient(180deg, #007cba 0%, #005a8c 100%);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1em;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.button-3d-block:hover {
+  background: linear-gradient(180deg, #005a8c 0%, #007cba 100%);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.10);
+}

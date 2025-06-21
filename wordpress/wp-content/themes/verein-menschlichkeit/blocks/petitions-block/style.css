@@ -1,0 +1,64 @@
+.petition-block {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.petition-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.petition-content {
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    color: #555;
+}
+
+.petition-progress {
+    margin-bottom: 2rem;
+}
+
+.progress-bar {
+    height: 20px;
+    background: #eee;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+    transition: width 0.3s ease;
+}
+
+.signature-count {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+    text-align: right;
+}
+
+.petition-actions {
+    text-align: center;
+}
+
+.sign-petition-button {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    color: white;
+    background: #4CAF50;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.sign-petition-button:hover {
+    background: #45a049;
+}

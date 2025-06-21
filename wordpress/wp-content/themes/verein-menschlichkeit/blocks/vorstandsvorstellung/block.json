@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/vorstandsvorstellung",
+  "title": "Vorstandsvorstellung mit Modalfenster",
+  "category": "widgets",
+  "icon": "id",
+  "description": "Vorstandsvorstellung mit Modalfenster für Biografien.",
+  "attributes": {"vorstand": {"type": "array"}},
+  "editorScript": "verein-block-vorstandsvorstellung"
+}

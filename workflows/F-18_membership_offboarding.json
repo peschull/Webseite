@@ -1,0 +1,597 @@
+{
+  "name": "F-18: Membership Offboarding & Exit Survey",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "membership-offboarding",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-offboarding",
+      "name": "Webhook Offboarding",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "contact",
+        "operation": "get",
+        "contactId": "={{ $json.contact_id }}"
+      },
+      "id": "get-contact",
+      "name": "Get Contact Details",
+      "type": "n8n-nodes-base.civicrm",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "credentials": {
+        "civicrmOAuth2Api": {
+          "id": "civicrm-oauth",
+          "name": "CiviCRM OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "membership",
+        "operation": "get",
+        "contactId": "={{ $json.contact_id }}",
+        "membershipId": "={{ $json.membership_id }}"
+      },
+      "id": "get-membership",
+      "name": "Get Membership Details",
+      "type": "n8n-nodes-base.civicrm",
+      "typeVersion": 1,
+      "position": [680, 300],
+      "credentials": {
+        "civicrmOAuth2Api": {
+          "id": "civicrm-oauth",
+          "name": "CiviCRM OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.offboarding_reason }}",
+              "rightValue": "voluntary_cancellation",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combineOperation": "any"
+        }
+      },
+      "id": "check-voluntary-cancellation",
+      "name": "Check Voluntary Cancellation",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $vars.SMTP_FROM_EMAIL }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "Ihre Kündigung bei Menschlichkeit Österreich - Wir sind traurig 😢",
+        "emailType": "html",
+        "message": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Kündigung bestätigt</title>\n    <style>\n        .farewell-container {\n            max-width: 600px;\n            margin: 0 auto;\n            font-family: Arial, sans-serif;\n            line-height: 1.6;\n        }\n        .header {\n            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);\n            color: white;\n            padding: 25px;\n            text-align: center;\n            border-radius: 10px 10px 0 0;\n        }\n        .content {\n            background: white;\n            padding: 30px;\n            border: 1px solid #ddd;\n        }\n        .cancellation-details {\n            background: #f8f9fa;\n            border: 1px solid #dee2e6;\n            padding: 20px;\n            border-radius: 10px;\n            margin: 20px 0;\n        }\n        .survey-cta {\n            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);\n            color: white;\n            padding: 25px;\n            border-radius: 10px;\n            text-align: center;\n            margin: 25px 0;\n        }\n        .survey-button {\n            display: inline-block;\n            background: #ffc107;\n            color: #212529;\n            padding: 15px 30px;\n            text-decoration: none;\n            border-radius: 5px;\n            font-weight: bold;\n            margin: 15px 0;\n        }\n        .return-offer {\n            background: #e8f5e8;\n            border: 2px solid #28a745;\n            padding: 20px;\n            border-radius: 10px;\n            margin: 20px 0;\n        }\n        .footer {\n            background: #f8f9fa;\n            padding: 20px;\n            text-align: center;\n            font-size: 12px;\n            color: #666;\n            border-radius: 0 0 10px 10px;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"farewell-container\">\n        <div class=\"header\">\n            <h1>😢 Auf Wiedersehen</h1>\n            <p>Ihre Kündigung wurde bearbeitet</p>\n        </div>\n        \n        <div class=\"content\">\n            <h2>Liebe/r {{ $json.display_name }},</h2>\n            \n            <p>es tut uns sehr leid, dass Sie sich entschieden haben, Ihre Mitgliedschaft bei Menschlichkeit Österreich zu beenden.</p>\n            \n            <div class=\"cancellation-details\">\n                <h3>📋 Details Ihrer Kündigung:</h3>\n                <ul>\n                    <li><strong>Mitgliedsnummer:</strong> {{ $json.membership_id }}</li>\n                    <li><strong>Kündigungsdatum:</strong> {{ DateTime.now().toFormat('dd.MM.yyyy') }}</li>\n                    <li><strong>Mitgliedschaft endet am:</strong> {{ DateTime.fromISO($json.end_date).toFormat('dd.MM.yyyy') }}</li>\n                    <li><strong>Grund:</strong> {{ $json.cancellation_reason || 'Nicht angegeben' }}</li>\n                    <li><strong>Mitgliedschaftsdauer:</strong> {{ $json.membership_duration || 'Wird berechnet' }}</li>\n                </ul>\n            </div>\n            \n            <p><strong>Was passiert jetzt?</strong></p>\n            <ul>\n                <li>✅ Ihre Kündigung ist hiermit bestätigt</li>\n                <li>📅 Ihre Mitgliedsvorteile bleiben bis {{ DateTime.fromISO($json.end_date).toFormat('dd.MM.yyyy') }} bestehen</li>\n                <li>🔐 Ihr Zugang zum Mitgliederbereich bleibt bis zum Ablauf aktiv</li>\n                <li>💳 Es werden keine weiteren Gebühren abgebucht</li>\n                <li>📧 Sie bleiben in unserem Newsletter (falls gewünscht)</li>\n            </ul>\n            \n            <div class=\"survey-cta\">\n                <h3>💭 Helfen Sie uns, besser zu werden!</h3>\n                <p>Ihre Meinung ist uns wichtig. Mit nur 3 Minuten Ihrer Zeit können Sie uns helfen, unsere Arbeit für zukünftige Mitglieder zu verbessern.</p>\n                <a href=\"{{ $vars.EXIT_SURVEY_URL }}?member_id={{ $json.membership_id }}&token={{ $json.survey_token }}\" class=\"survey-button\">\n                    📝 Kurze Umfrage ausfüllen\n                </a>\n                <p><small>Als Dankeschön erhalten Sie einen 25€ Gutschein für unseren Shop</small></p>\n            </div>\n            \n            <h3>🌟 Das haben Sie als Mitglied bewirkt:</h3>\n            <div style=\"background: #fff3cd; padding: 20px; border-radius: 10px; margin: 20px 0;\">\n                <ul>\n                    <li>🏠 {{ $json.projects_supported || 12 }} Projekte unterstützt</li>\n                    <li>👥 {{ $json.people_helped || 156 }} Menschen geholfen</li>\n                    <li>💰 {{ $json.total_contributions || 480 }}€ gespendet (inkl. Mitgliedsbeiträge)</li>\n                    <li>🌍 {{ $json.events_attended || 3 }} Veranstaltungen besucht</li>\n                    <li>📧 {{ $json.newsletters_received || 16 }} Newsletter erhalten</li>\n                </ul>\n                <p><strong>Vielen Dank für {{ $json.membership_duration || 'Ihre' }} {{ $json.membership_duration ? 'Jahre' : '' }} der Unterstützung!</strong></p>\n            </div>\n            \n            <div class=\"return-offer\">\n                <h4>🚪 Die Tür steht immer offen</h4>\n                <p>Sie sind jederzeit willkommen, wieder Teil unserer Gemeinschaft zu werden:</p>\n                <ul>\n                    <li>🎁 <strong>Wiedereintrittsbonus:</strong> 50% Rabatt im ersten Jahr</li>\n                    <li>📚 <strong>Alumni-Status:</strong> Weiterhin Zugang zu ausgewählten Inhalten</li>\n                    <li>📧 <strong>Comeback-Updates:</strong> Quartalsweise Berichte über neue Projekte</li>\n                    <li>🎪 <strong>Event-Einladungen:</strong> Zu besonderen Anlässen</li>\n                </ul>\n                <p><strong>Einfach eine E-Mail an uns und Sie sind wieder dabei!</strong></p>\n            </div>\n            \n            <h3>📞 Letzte Fragen oder Anliegen?</h3>\n            <p>Auch nach Ihrer Kündigung stehen wir für Fragen zur Verfügung:</p>\n            <ul>\n                <li>📧 <a href=\"mailto:mitglieder@menschlichkeit.at\">mitglieder@menschlichkeit.at</a></li>\n                <li>📞 +43 1 234 5678 (Mo-Fr, 9-17 Uhr)</li>\n                <li>💬 <a href=\"{{ $vars.WEBSITE_URL }}/kontakt\">Online-Kontaktformular</a></li>\n            </ul>\n            \n            <div style=\"background: #e3f2fd; padding: 20px; border-radius: 10px; margin: 30px 0; text-align: center;\">\n                <h4>❤️ Ein letztes Wort</h4>\n                <p>Auch wenn wir traurig sind, Sie gehen zu sehen, respektieren wir Ihre Entscheidung vollkommen. Sie haben in Ihrer Zeit als Mitglied einen wertvollen Beitrag für mehr Menschlichkeit geleistet.</p>\n                <p><strong>Dafür sagen wir von Herzen: DANKE! 🙏</strong></p>\n            </div>\n            \n            <p>Wir wünschen Ihnen alles Gute für Ihren weiteren Weg und hoffen, Sie vielleicht eines Tages wieder bei uns begrüßen zu dürfen.</p>\n            \n            <p>Mit den besten Wünschen und herzlichen Grüßen,<br>\n            <strong>Das gesamte Team von Menschlichkeit Österreich</strong></p>\n        </div>\n        \n        <div class=\"footer\">\n            <p>Sie bleiben als Ehemalige/r immer Teil unserer Geschichte.<br>\n            <a href=\"{{ $vars.WEBSITE_URL }}/alumni\">Alumni-Bereich</a> | \n            <a href=\"{{ $vars.WEBSITE_URL }}/newsletter/abmelden\">Newsletter abmelden</a></p>\n        </div>\n    </div>\n</body>\n</html>"
+      },
+      "id": "send-farewell-email",
+      "name": "Send Farewell Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1120, 200],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-config",
+          "name": "SMTP Configuration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.offboarding_reason }}",
+              "rightValue": "non_payment",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combineOperation": "any"
+        }
+      },
+      "id": "check-non-payment",
+      "name": "Check Non-Payment",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [900, 500]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $vars.SMTP_FROM_EMAIL }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "Mitgliedschaft beendet wegen ausbleibender Zahlung - Comeback möglich! 💔",
+        "emailType": "html",
+        "message": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Mitgliedschaft beendet</title>\n</head>\n<body>\n    <div style=\"max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;\">\n        <div style=\"background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; padding: 25px; text-align: center; border-radius: 10px 10px 0 0;\">\n            <h1>💔 Mitgliedschaft beendet</h1>\n            <p>Aufgrund ausbleibender Zahlung</p>\n        </div>\n        \n        <div style=\"background: white; padding: 30px; border: 1px solid #ddd;\">\n            <h2>Liebe/r {{ $json.display_name }},</h2>\n            \n            <p>leider mussten wir Ihre Mitgliedschaft aufgrund ausbleibender Zahlungen beenden.</p>\n            \n            <div style=\"background: #f8d7da; border: 1px solid #f5c6cb; padding: 20px; border-radius: 10px; margin: 20px 0;\">\n                <h3>📋 Details:</h3>\n                <ul>\n                    <li><strong>Mitgliedsnummer:</strong> {{ $json.membership_id }}</li>\n                    <li><strong>Beendigungsdatum:</strong> {{ DateTime.now().toFormat('dd.MM.yyyy') }}</li>\n                    <li><strong>Offener Betrag:</strong> {{ $json.outstanding_amount || 'Wird geprüft' }}€</li>\n                    <li><strong>Letzte Zahlung:</strong> {{ $json.last_payment_date || 'Keine Information' }}</li>\n                </ul>\n            </div>\n            \n            <div style=\"background: #d4edda; border: 1px solid #c3e6cb; padding: 20px; border-radius: 10px; margin: 20px 0;\">\n                <h3>🔄 Comeback-Angebot</h3>\n                <p>Wir verstehen, dass manchmal schwierige Zeiten auftreten. Deshalb bieten wir Ihnen:</p>\n                <ul>\n                    <li>💰 <strong>Ratenzahlung:</strong> Begleichen Sie offene Beträge in 3-6 Raten</li>\n                    <li>🎁 <strong>Sozialrabatt:</strong> 50% Ermäßigung bei finanziellen Schwierigkeiten</li>\n                    <li>🤝 <strong>Ehrenamt-Option:</strong> 4 Stunden Ehrenamt = 1 Monat Mitgliedschaft</li>\n                    <li>⏰ <strong>Zahlungspause:</strong> Bis zu 6 Monate Pause möglich</li>\n                </ul>\n                <div style=\"text-align: center; margin: 20px 0;\">\n                    <a href=\"{{ $vars.WEBSITE_URL }}/mitgliedschaft/reaktivierung?id={{ $json.membership_id }}\" style=\"display: inline-block; background: #28a745; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;\">\n                        🚀 Mitgliedschaft reaktivieren\n                    </a>\n                </div>\n            </div>\n            \n            <h3>📞 Persönliches Gespräch</h3>\n            <p>Rufen Sie uns an und wir finden gemeinsam eine Lösung:</p>\n            <p><strong>📞 +43 1 234 5678</strong> (Mo-Fr, 9-17 Uhr)<br>\n            <strong>📧 mitglieder@menschlichkeit.at</strong></p>\n            \n            <p>Ihre Unterstützung ist uns wichtig - lassen Sie uns gemeinsam einen Weg finden!</p>\n            \n            <p>Mit hoffnungsvollen Grüßen,<br>\n            Ihr Mitgliederservice-Team</p>\n        </div>\n    </div>\n</body>\n</html>"
+      },
+      "id": "send-non-payment-email",
+      "name": "Send Non-Payment Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1120, 400],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-config",
+          "name": "SMTP Configuration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $vars.NEXTCLOUD_API_URL }}/ocs/v1.php/cloud/users/member_{{ $json.membership_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "httpMethod": "DELETE",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "OCS-APIRequest",
+              "value": "true"
+            }
+          ]
+        }
+      },
+      "id": "deactivate-nextcloud",
+      "name": "Deactivate Nextcloud Account",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1340, 300],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "nextcloud-admin",
+          "name": "Nextcloud Admin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $vars.WORDPRESS_API_URL }}/wp-json/wp/v2/users/{{ $json.wp_user_id }}",
+        "httpMethod": "DELETE",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $vars.WORDPRESS_JWT_TOKEN }}"
+            }
+          ]
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "force",
+              "value": "true"
+            }
+          ]
+        }
+      },
+      "id": "deactivate-wordpress",
+      "name": "Deactivate WordPress Account",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1340, 400]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "membership",
+        "operation": "update",
+        "membershipId": "={{ $json.membership_id }}",
+        "updateFields": {
+          "status_id": "4",
+          "end_date": "={{ $now }}",
+          "is_override": 1,
+          "status_override_end_date": "={{ $now }}"
+        }
+      },
+      "id": "update-membership-status",
+      "name": "Update Membership Status",
+      "type": "n8n-nodes-base.civicrm",
+      "typeVersion": 1,
+      "position": [1340, 500],
+      "credentials": {
+        "civicrmOAuth2Api": {
+          "id": "civicrm-oauth",
+          "name": "CiviCRM OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "resource": "activity",
+        "additionalFields": {
+          "activity_type_id": "54",
+          "activity_date_time": "={{ $now }}",
+          "status_id": "2",
+          "source_contact_id": "1",
+          "target_contact_id": "={{ $json.contact_id }}",
+          "subject": "Mitgliedschaft beendet: {{ $json.display_name }}",
+          "details": "Membership offboarding completed. Reason: {{ $json.offboarding_reason }}. Duration: {{ $json.membership_duration }}. Exit survey sent: {{ $json.survey_sent ? 'Yes' : 'No' }}. Portal access revoked.",
+          "assignee_contact_id": "1"
+        }
+      },
+      "id": "create-offboarding-activity",
+      "name": "Create Offboarding Activity",
+      "type": "n8n-nodes-base.civicrm",
+      "typeVersion": 1,
+      "position": [1560, 400],
+      "credentials": {
+        "civicrmOAuth2Api": {
+          "id": "civicrm-oauth",
+          "name": "CiviCRM OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "unit": "days",
+        "amount": 7
+      },
+      "id": "wait-7-days",
+      "name": "Wait 7 Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1780, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.survey_completed }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "equal"
+              }
+            }
+          ],
+          "combineOperation": "all"
+        }
+      },
+      "id": "check-survey-not-completed",
+      "name": "Check Survey Not Completed",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [2000, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $vars.SMTP_FROM_EMAIL }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "Letzte Bitte: 2 Minuten für eine bessere Zukunft 🙏",
+        "emailType": "html",
+        "message": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Exit Survey Reminder</title>\n</head>\n<body>\n    <div style=\"max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;\">\n        <div style=\"background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); color: white; padding: 25px; text-align: center; border-radius: 10px 10px 0 0;\">\n            <h1>🙏 Letzte Bitte</h1>\n            <p>2 Minuten für eine bessere Zukunft</p>\n        </div>\n        \n        <div style=\"background: white; padding: 30px; border: 1px solid #ddd;\">\n            <h2>Liebe/r {{ $json.display_name }},</h2>\n            \n            <p>vor einer Woche haben Sie Ihre Mitgliedschaft beendet. Wir respektieren Ihre Entscheidung vollkommen.</p>\n            \n            <p>Falls Sie noch nicht die Gelegenheit hatten: <strong>Ihre Meinung würde uns sehr helfen</strong>, unsere Arbeit für zukünftige Mitglieder zu verbessern.</p>\n            \n            <div style=\"background: #e3f2fd; padding: 20px; border-radius: 10px; margin: 20px 0; text-align: center;\">\n                <h3>📝 Nur 4 kurze Fragen</h3>\n                <p>⏱️ Dauert wirklich nur 2 Minuten<br>\n                🎁 25€ Gutschein als Dankeschön<br>\n                🌟 Hilft anderen Menschen</p>\n                <a href=\"{{ $vars.EXIT_SURVEY_URL }}?member_id={{ $json.membership_id }}&token={{ $json.survey_token }}\" style=\"display: inline-block; background: #28a745; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 15px 0;\">\n                    📋 Zur Umfrage\n                </a>\n            </div>\n            \n            <p><strong>Die Fragen sind:</strong></p>\n            <ol>\n                <li>Was war der Hauptgrund für Ihre Kündigung?</li>\n                <li>Was hätten wir besser machen können?</li>\n                <li>Würden Sie uns weiterempfehlen?</li>\n                <li>Haben Sie Verbesserungsvorschläge?</li>\n            </ol>\n            \n            <p>Das war's schon! Ihre Antworten helfen uns, anderen Menschen besser zu dienen.</p>\n            \n            <p>Nochmals vielen Dank für alles und alles Gute für Sie!</p>\n            \n            <p>Herzliche Grüße,<br>\n            Ihr ehemaliges Team</p>\n        </div>\n    </div>\n</body>\n</html>"
+      },
+      "id": "send-survey-reminder",
+      "name": "Send Survey Reminder",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [2220, 200],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-config",
+          "name": "SMTP Configuration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $vars.TELEGRAM_BOT_API_URL }}/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "{{ $vars.TELEGRAM_ADMIN_CHANNEL_ID }}"
+            },
+            {
+              "name": "text",
+              "value": "❌ Mitgliedschaft beendet\n\n👤 Name: {{ $json.display_name }}\n🆔 Mitgliedsnummer: {{ $json.membership_id }}\n📧 E-Mail: {{ $json.email }}\n📅 Beendet am: {{ DateTime.now().toFormat('dd.MM.yyyy HH:mm') }}\n🔍 Grund: {{ $json.offboarding_reason }}\n⏱️ Mitgliedsdauer: {{ $json.membership_duration }}\n💰 Lifetime Value: {{ $json.total_contributions }}€\n\n{{ $json.offboarding_reason === 'voluntary_cancellation' ? '📝 Exit Survey versendet' : '💔 Zahlungsprobleme - Follow-up nötig' }}"
+            },
+            {
+              "name": "parse_mode",
+              "value": "Markdown"
+            }
+          ]
+        }
+      },
+      "id": "notify-admin-telegram",
+      "name": "Notify Admin via Telegram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1560, 600]
+    },
+    {
+      "parameters": {
+        "url": "={{ $vars.PROMETHEUS_PUSHGATEWAY_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "text/plain"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "string",
+        "body": "membership_offboarding_completed_total{reason=\"{{ $json.offboarding_reason }}\",duration_years=\"{{ $json.membership_duration }}\",lifetime_value=\"{{ $json.total_contributions }}\"} 1"
+      },
+      "id": "update-metrics",
+      "name": "Update Prometheus Metrics",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1780, 500]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  \"success\": true,\n  \"message\": \"Offboarding completed successfully\",\n  \"member_id\": $json.membership_id,\n  \"contact_id\": $json.contact_id,\n  \"offboarding_reason\": $json.offboarding_reason,\n  \"survey_sent\": true,\n  \"portal_access_revoked\": true,\n  \"completed_at\": $now\n} }}"
+      },
+      "id": "respond-success",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2000, 500]
+    }
+  ],
+  "connections": {
+    "Webhook Offboarding": {
+      "main": [
+        [
+          {
+            "node": "Get Contact Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contact Details": {
+      "main": [
+        [
+          {
+            "node": "Get Membership Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Membership Details": {
+      "main": [
+        [
+          {
+            "node": "Check Voluntary Cancellation",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check Non-Payment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Voluntary Cancellation": {
+      "main": [
+        [
+          {
+            "node": "Send Farewell Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Check Non-Payment": {
+      "main": [
+        [
+          {
+            "node": "Send Non-Payment Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Send Farewell Email": {
+      "main": [
+        [
+          {
+            "node": "Deactivate Nextcloud Account",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Deactivate WordPress Account",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update Membership Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Non-Payment Email": {
+      "main": [
+        [
+          {
+            "node": "Deactivate Nextcloud Account",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Deactivate WordPress Account",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update Membership Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deactivate Nextcloud Account": {
+      "main": [
+        [
+          {
+            "node": "Create Offboarding Activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deactivate WordPress Account": {
+      "main": [
+        [
+          {
+            "node": "Create Offboarding Activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Membership Status": {
+      "main": [
+        [
+          {
+            "node": "Create Offboarding Activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Offboarding Activity": {
+      "main": [
+        [
+          {
+            "node": "Wait 7 Days",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notify Admin via Telegram",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update Prometheus Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 7 Days": {
+      "main": [
+        [
+          {
+            "node": "Check Survey Not Completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Survey Not Completed": {
+      "main": [
+        [
+          {
+            "node": "Send Survey Reminder",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Update Prometheus Metrics": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2025-06-21T10:00:00.000Z",
+      "updatedAt": "2025-06-21T10:00:00.000Z",
+      "id": "membership-offboarding",
+      "name": "Membership Offboarding"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2025-06-21T10:00:00.000Z",
+  "versionId": "1"
+}

@@ -1,0 +1,30 @@
+.erfolgsbeispiele-block {
+    background: #f7fafd;
+    border-left: 4px solid #00b4d8;
+    padding: 1.2em 1em;
+    margin: 1em 0;
+}
+.erfolgsbeispiele-liste {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5em;
+}
+.erfolgsbeispiel {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 1em;
+    width: 220px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.erfolgsbeispiel-titel {
+    font-weight: bold;
+    color: #007cba;
+}
+.erfolgsbeispiel-text {
+    font-size: 0.95em;
+    color: #222;
+}

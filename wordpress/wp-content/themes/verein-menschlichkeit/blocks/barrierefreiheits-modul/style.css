@@ -1,0 +1,12 @@
+/* Barrierefreiheits-Modul – Basis-Styles */
+.barrierefreiheits-modul-block {
+  padding: 1.5em;
+  background: #f7f7f7;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.barrierefreiheits-modul-block .barrierefrei-titel {
+  font-weight: bold;
+  margin-bottom: 1em;
+}

@@ -1,0 +1,233 @@
+# n8n Workflow Alert Rules für Prometheus
+# Diese Regeln überwachen die kritischen Business-Metriken
+
+groups:
+  - name: n8n-workflows
+    rules:
+      # Workflow-Fehlerrate zu hoch
+      - alert: WorkflowHighErrorRate
+        expr: rate(n8n_workflow_executions_failed_total[5m]) / rate(n8n_workflow_executions_total[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+          service: n8n
+        annotations:
+          summary: "Hohe Fehlerrate bei n8n Workflows"
+          description: "Workflow {{ $labels.workflow_name }} hat eine Fehlerrate von {{ $value | humanizePercentage }} in den letzten 5 Minuten"
+      
+      # Queue-Verarbeitung zu langsam
+      - alert: QueueProcessingSlowdown
+        expr: n8n_queue_waiting_time > 120
+        for: 1m
+        labels:
+          severity: warning
+          service: n8n
+        annotations:
+          summary: "n8n Queue-Verarbeitung verlangsamt"
+          description: "Queue {{ $labels.queue_name }} hat eine Wartezeit von {{ $value }}s"
+      
+      # Keine Workflow-Ausführungen (System-Ausfall)
+      - alert: NoWorkflowExecutions
+        expr: rate(n8n_workflow_executions_total[10m]) == 0
+        for: 5m
+        labels:
+          severity: critical
+          service: n8n
+        annotations:
+          summary: "Keine n8n Workflow-Ausführungen"
+          description: "Seit 10 Minuten wurden keine Workflows ausgeführt - möglicher Systemausfall"
+      
+      # Spenden-Workflow Fehler
+      - alert: DonationWorkflowFailure
+        expr: rate(n8n_workflow_executions_failed_total{workflow_name=~".*donation.*"}[5m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          service: n8n
+          business_impact: high
+        annotations:
+          summary: "Spenden-Workflow Fehler"
+          description: "Der kritische Spenden-Workflow {{ $labels.workflow_name }} ist fehlgeschlagen"
+      
+      # Mitgliedschafts-Workflow Fehler
+      - alert: MembershipWorkflowFailure
+        expr: rate(n8n_workflow_executions_failed_total{workflow_name=~".*membership.*"}[5m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+          service: n8n
+          business_impact: medium
+        annotations:
+          summary: "Mitgliedschafts-Workflow Fehler"
+          description: "Mitgliedschafts-Workflow {{ $labels.workflow_name }} ist fehlgeschlagen"
+      
+      # PDF-Generierung fehlgeschlagen
+      - alert: PDFGenerationFailure
+        expr: rate(n8n_pdf_generation_failed_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+          service: n8n
+        annotations:
+          summary: "PDF-Generierung fehlgeschlagen"
+          description: "{{ $value }} PDF-Generierungen sind in den letzten 5 Minuten fehlgeschlagen"
+
+  - name: infrastructure
+    rules:
+      # PostgreSQL-Verbindung verloren
+      - alert: PostgreSQLDown
+        expr: up{job="postgresql"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: postgresql
+        annotations:
+          summary: "PostgreSQL ist nicht erreichbar"
+          description: "PostgreSQL-Instanz {{ $labels.instance }} ist seit 1 Minute nicht erreichbar"
+      
+      # Redis-Verbindung verloren
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: redis
+        annotations:
+          summary: "Redis ist nicht erreichbar"
+          description: "Redis-Instanz {{ $labels.instance }} ist seit 1 Minute nicht erreichbar"
+      
+      # MinIO Storage-Probleme
+      - alert: MinIODown
+        expr: up{job="minio"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: minio
+        annotations:
+          summary: "MinIO Storage ist nicht erreichbar"
+          description: "MinIO-Instanz {{ $labels.instance }} ist seit 2 Minuten nicht erreichbar"
+      
+      # Festplatte fast voll
+      - alert: DiskSpaceHigh
+        expr: (1 - node_filesystem_avail_bytes / node_filesystem_size_bytes) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          service: infrastructure
+        annotations:
+          summary: "Festplatte fast voll"
+          description: "Festplatte {{ $labels.mountpoint }} auf {{ $labels.instance }} ist zu {{ $value }}% voll"
+      
+      # Hohe CPU-Last
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+        for: 5m
+        labels:
+          severity: warning
+          service: infrastructure
+        annotations:
+          summary: "Hohe CPU-Auslastung"
+          description: "Server {{ $labels.instance }} hat eine CPU-Auslastung von {{ $value }}%"
+      
+      # Wenig verfügbarer Arbeitsspeicher
+      - alert: HighMemoryUsage
+        expr: (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+          service: infrastructure
+        annotations:
+          summary: "Hohe Speicherauslastung"
+          description: "Server {{ $labels.instance }} hat eine Speicherauslastung von {{ $value }}%"
+
+  - name: business-kpis
+    rules:
+      # Ungewöhnlich niedrige Spendenaktivität
+      - alert: LowDonationActivity
+        expr: rate(n8n_webhook_donations_total[1h]) < 0.1
+        for: 2h
+        labels:
+          severity: warning
+          service: business
+        annotations:
+          summary: "Niedrige Spendenaktivität"
+          description: "Nur {{ $value }} Spenden in der letzten Stunde - möglicherweise ein Problem mit dem Spendenformular"
+      
+      # Keine neuen Mitgliedsanträge
+      - alert: NoNewMemberships
+        expr: rate(n8n_membership_applications_total[24h]) == 0
+        for: 12h
+        labels:
+          severity: info
+          service: business
+        annotations:
+          summary: "Keine neuen Mitgliedsanträge"
+          description: "Seit 24 Stunden wurden keine neuen Mitgliedsanträge eingereicht"
+      
+      # Hohe Churn-Rate
+      - alert: HighMemberChurnRate
+        expr: rate(n8n_membership_cancellations_total[7d]) / rate(n8n_membership_applications_total[7d]) > 0.2
+        for: 1d
+        labels:
+          severity: warning
+          service: business
+        annotations:
+          summary: "Hohe Mitglieder-Churn-Rate"
+          description: "Churn-Rate von {{ $value | humanizePercentage }} in den letzten 7 Tagen"
+      
+      # Externe API-Fehler
+      - alert: ExternalAPIFailure
+        expr: rate(n8n_external_api_errors_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          service: external-apis
+        annotations:
+          summary: "Externe API-Fehler"
+          description: "API {{ $labels.api_name }} hat {{ $value }} Fehler pro Sekunde in den letzten 5 Minuten"
+      
+      # E-Mail-Zustellung fehlgeschlagen
+      - alert: EmailDeliveryFailure
+        expr: rate(n8n_email_delivery_failed_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+          service: email
+        annotations:
+          summary: "E-Mail-Zustellung fehlgeschlagen"
+          description: "{{ $value }} E-Mails konnten in den letzten 5 Minuten nicht zugestellt werden"
+
+  - name: security
+    rules:
+      # Verdächtige Webhook-Aktivität
+      - alert: SuspiciousWebhookActivity
+        expr: rate(n8n_webhook_requests_total[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+          service: security
+        annotations:
+          summary: "Verdächtige Webhook-Aktivität"
+          description: "{{ $value }} Webhook-Requests pro Sekunde - möglicherweise ein Angriff"
+      
+      # Fehlgeschlagene Authentifizierung
+      - alert: AuthenticationFailures
+        expr: rate(n8n_auth_failures_total[5m]) > 0.5
+        for: 1m
+        labels:
+          severity: warning
+          service: security
+        annotations:
+          summary: "Fehlgeschlagene Authentifizierungen"
+          description: "{{ $value }} fehlgeschlagene Authentifizierungen pro Sekunde in den letzten 5 Minuten"
+      
+      # SSL-Zertifikat läuft bald ab
+      - alert: SSLCertificateExpiry
+        expr: probe_ssl_earliest_cert_expiry - time() < 7 * 24 * 3600
+        for: 1h
+        labels:
+          severity: warning
+          service: security
+        annotations:
+          summary: "SSL-Zertifikat läuft bald ab"
+          description: "SSL-Zertifikat für {{ $labels.instance }} läuft in {{ $value | humanizeDuration }} ab"

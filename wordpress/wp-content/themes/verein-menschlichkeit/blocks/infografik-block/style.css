@@ -1,0 +1,43 @@
+.infografik-block {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    text-align: center;
+}
+.infografik-titel {
+    font-size: 2em;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+.infografik-text.oben {
+    margin-bottom: 1rem;
+    color: #555;
+}
+.infografik-grafik {
+    margin: 0 auto 1rem auto;
+    max-width: 600px;
+}
+.infografik-grafik img {
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    transition: opacity 0.8s;
+}
+.infografik-text.unten {
+    margin-top: 1rem;
+    color: #555;
+}
+@media (max-width: 600px) {
+    .infografik-block {
+        padding: 0.5rem;
+    }
+    .infografik-titel {
+        font-size: 1.3em;
+    }
+    .infografik-grafik {
+        max-width: 100%;
+    }
+}

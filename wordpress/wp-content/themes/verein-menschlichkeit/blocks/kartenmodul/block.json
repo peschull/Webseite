@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/kartenmodul",
+  "title": "Kartenmodul mit Ortsanzeige",
+  "category": "widgets",
+  "icon": "location",
+  "description": "Kartenmodul mit Ortsanzeige und GPX-Daten.",
+  "attributes": {"orte": {"type": "array"}},
+  "editorScript": "verein-block-kartenmodul"
+}

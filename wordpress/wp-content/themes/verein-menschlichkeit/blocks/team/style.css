@@ -1,0 +1,15 @@
+/* Team Block Frontend Styles */
+.team-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2em;
+}
+.team-mitglied {
+  background: #f4f7ff;
+  border-radius: 1em;
+  padding: 1.5em 1em;
+  min-width: 180px;
+  max-width: 220px;
+  box-shadow: 0 2px 16px rgba(37,99,235,0.08);
+}

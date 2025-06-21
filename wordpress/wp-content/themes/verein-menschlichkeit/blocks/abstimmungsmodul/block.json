@@ -1,0 +1,13 @@
+{
+  "apiVersion": 2,
+  "name": "verein/abstimmungsmodul",
+  "title": "Abstimmungsmodul",
+  "category": "widgets",
+  "icon": "yes",
+  "description": "Ein Block für Abstimmungen und Umfragen.",
+  "supports": {
+    "html": false
+  },
+  "editorScript": "file:./block.js",
+  "style": "file:./style.css"
+}

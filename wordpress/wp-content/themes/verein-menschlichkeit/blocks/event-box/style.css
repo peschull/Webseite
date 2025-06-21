@@ -1,0 +1,17 @@
+/* style.css für event-box Block */
+.event-box-block {
+    border: 1px solid #e0e0e0;
+    padding: 1.5em;
+    background: #fafbfc;
+    border-radius: 8px;
+    margin-bottom: 2em;
+}
+.event-box-block h2 {
+    margin-top: 0;
+    color: #2a3a4a;
+}
+.event-box-block .event-datum {
+    font-size: 1.1em;
+    color: #0073aa;
+    margin-top: 0.5em;
+}

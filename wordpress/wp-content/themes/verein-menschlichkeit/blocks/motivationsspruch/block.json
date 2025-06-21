@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/motivationsspruch",
+  "title": "Motivationsspruch mit Schriftanimation",
+  "category": "widgets",
+  "icon": "editor-textcolor",
+  "description": "Motivationsspruch mit animierter Schrift.",
+  "attributes": {"spruch": {"type": "string"}},
+  "editorScript": "verein-block-motivationsspruch"
+}

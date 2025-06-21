@@ -1,0 +1,12 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/quiz",
+  "title": "Quiz/Gamification",
+  "category": "widgets",
+  "icon": "awards",
+  "description": "Interaktives Quiz für Engagement und Wissen.",
+  "attributes": {
+    "fragen": { "type": "array", "default": [] }
+  },
+  "editorScript": "verein-block-quiz"
+}

@@ -1,0 +1,349 @@
+{
+  "name": "F-14: Membership Welcome Sequence",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "membership-welcome",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-welcome",
+      "name": "Webhook Welcome",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "contact",
+        "operation": "get",
+        "contactId": "={{ $json.contact_id }}"
+      },
+      "id": "get-contact",
+      "name": "Get Contact Details",
+      "type": "n8n-nodes-base.civicrm",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "credentials": {
+        "civicrmOAuth2Api": {
+          "id": "civicrm-oauth",
+          "name": "CiviCRM OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $vars.CRAFTMYPDF_API_URL }}/templates/welcome-package/generate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $vars.CRAFTMYPDF_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "template_id",
+              "value": "welcome-package-template"
+            },
+            {
+              "name": "data",
+              "value": "={{ {\n  \"member_name\": $json.display_name,\n  \"member_number\": $json.membership_id,\n  \"start_date\": DateTime.now().toFormat('dd.MM.yyyy'),\n  \"end_date\": DateTime.now().plus({ years: 1 }).toFormat('dd.MM.yyyy'),\n  \"member_benefits\": [\n    \"Quartalsmagazin 'Menschlichkeit'\",\n    \"Einladungen zu exklusiven Veranstaltungen\",\n    \"10% Rabatt auf Merchandise\",\n    \"Zugang zum Mitgliederbereich\"\n  ],\n  \"contact_info\": {\n    \"email\": \"mitglieder@menschlichkeit.at\",\n    \"phone\": \"+43 1 234 5678\",\n    \"website\": \"https://menschlichkeit.at/mitglieder\"\n  }\n} }}"
+            }
+          ]
+        }
+      },
+      "id": "generate-welcome-pdf",
+      "name": "Generate Welcome Package PDF",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $vars.SMTP_FROM_EMAIL }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "Willkommen bei Menschlichkeit Österreich! 🎉",
+        "emailType": "html",
+        "message": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Willkommen bei Menschlichkeit Österreich</title>\n    <style>\n        .welcome-container {\n            max-width: 600px;\n            margin: 0 auto;\n            font-family: Arial, sans-serif;\n            line-height: 1.6;\n        }\n        .header {\n            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n            color: white;\n            padding: 30px;\n            text-align: center;\n            border-radius: 10px 10px 0 0;\n        }\n        .content {\n            background: white;\n            padding: 30px;\n            border: 1px solid #ddd;\n        }\n        .benefits {\n            background: #f8f9fa;\n            padding: 20px;\n            border-radius: 5px;\n            margin: 20px 0;\n        }\n        .cta-button {\n            display: inline-block;\n            background: #28a745;\n            color: white;\n            padding: 12px 30px;\n            text-decoration: none;\n            border-radius: 5px;\n            margin: 15px 0;\n        }\n        .footer {\n            background: #f8f9fa;\n            padding: 20px;\n            text-align: center;\n            font-size: 12px;\n            color: #666;\n            border-radius: 0 0 10px 10px;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"welcome-container\">\n        <div class=\"header\">\n            <h1>🎉 Herzlich Willkommen!</h1>\n            <p>Sie sind nun offiziell Mitglied bei Menschlichkeit Österreich</p>\n        </div>\n        \n        <div class=\"content\">\n            <h2>Liebe/r {{ $json.display_name }},</h2>\n            \n            <p>herzlich willkommen in unserer Gemeinschaft! Wir freuen uns sehr, Sie als neues Mitglied begrüßen zu dürfen.</p>\n            \n            <div class=\"benefits\">\n                <h3>🌟 Ihre Mitgliedsvorteile:</h3>\n                <ul>\n                    <li>📰 Quartalsmagazin \"Menschlichkeit\" per Post</li>\n                    <li>🎪 Einladungen zu exklusiven Veranstaltungen</li>\n                    <li>🛍️ 10% Rabatt auf unser Merchandise</li>\n                    <li>🔐 Zugang zum exklusiven Mitgliederbereich</li>\n                    <li>📞 Direkter Draht zu unserem Mitgliederservice</li>\n                    <li>📊 Transparente Berichte über unsere Projekte</li>\n                </ul>\n            </div>\n            \n            <p><strong>Ihre Mitgliedsnummer:</strong> {{ $json.membership_id }}</p>\n            <p><strong>Gültig bis:</strong> {{ DateTime.now().plus({ years: 1 }).toFormat('dd.MM.yyyy') }}</p>\n            \n            <div style=\"text-align: center; margin: 30px 0;\">\n                <a href=\"{{ $vars.MEMBER_PORTAL_URL }}/login\" class=\"cta-button\">\n                    🚀 Zum Mitgliederbereich\n                </a>\n            </div>\n            \n            <p>In den nächsten Tagen erhalten Sie:</p>\n            <ul>\n                <li>📦 Ihr Willkommenspaket per Post</li>\n                <li>🔑 Ihre Zugangsdaten für den Mitgliederbereich</li>\n                <li>📧 Informationen zu unseren aktuellen Projekten</li>\n            </ul>\n            \n            <p>Bei Fragen stehen wir Ihnen gerne zur Verfügung:</p>\n            <ul>\n                <li>📧 <a href=\"mailto:mitglieder@menschlichkeit.at\">mitglieder@menschlichkeit.at</a></li>\n                <li>📞 +43 1 234 5678</li>\n                <li>🌐 <a href=\"https://menschlichkeit.at/kontakt\">Online-Kontaktformular</a></li>\n            </ul>\n            \n            <p>Nochmals herzlichen Dank für Ihr Vertrauen und Ihre Unterstützung!</p>\n            \n            <p>Mit herzlichen Grüßen,<br>\n            <strong>Ihr Team von Menschlichkeit Österreich</strong></p>\n        </div>\n        \n        <div class=\"footer\">\n            <p>Menschlichkeit Österreich | Musterstraße 123, 1010 Wien<br>\n            <a href=\"{{ $vars.WEBSITE_URL }}/impressum\">Impressum</a> | \n            <a href=\"{{ $vars.WEBSITE_URL }}/datenschutz\">Datenschutz</a> | \n            <a href=\"{{ $vars.WEBSITE_URL }}/abmelden\">Abmelden</a></p>\n        </div>\n    </div>\n</body>\n</html>",
+        "options": {
+          "attachments": "={{ $('Generate Welcome Package PDF').first().$node.pdf_url ? [{ \"name\": \"Willkommenspaket.pdf\", \"url\": $('Generate Welcome Package PDF').first().$node.pdf_url }] : [] }}"
+        }
+      },
+      "id": "send-welcome-email",
+      "name": "Send Welcome Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [900, 300],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-config",
+          "name": "SMTP Configuration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "resource": "group",
+        "additionalFields": {
+          "title": "{{ $json.display_name }} - Willkommenssequenz",
+          "description": "Automatisierte Willkommenssequenz für neues Mitglied {{ $json.display_name }}",
+          "activity_type_id": "52",
+          "activity_date_time": "={{ $now }}",
+          "status_id": "1",
+          "source_contact_id": "1",
+          "target_contact_id": "={{ $json.contact_id }}",
+          "assignee_contact_id": "1",
+          "subject": "Willkommenssequenz gestartet für {{ $json.display_name }}",
+          "details": "Welcome sequence initiated for new member. Email sent with welcome package and member portal access information.",
+          "campaign_id": "{{ $vars.WELCOME_CAMPAIGN_ID }}"
+        }
+      },
+      "id": "create-activity",
+      "name": "Create Welcome Activity",
+      "type": "n8n-nodes-base.civicrm",
+      "typeVersion": 1,
+      "position": [1120, 300],
+      "credentials": {
+        "civicrmOAuth2Api": {
+          "id": "civicrm-oauth",
+          "name": "CiviCRM OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "unit": "days",
+        "amount": 3
+      },
+      "id": "wait-3-days",
+      "name": "Wait 3 Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $vars.SMTP_FROM_EMAIL }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "Haben Sie schon Ihren Mitgliederbereich besucht? 🔐",
+        "emailType": "html",
+        "message": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Mitgliederbereich Erinnerung</title>\n</head>\n<body>\n    <h2>🔐 Ihr exklusiver Mitgliederbereich wartet auf Sie!</h2>\n    \n    <p>Liebe/r {{ $json.display_name }},</p>\n    \n    <p>vor wenigen Tagen haben wir Sie herzlich in unserer Gemeinschaft willkommen geheißen. Falls Sie noch keinen Blick in Ihren exklusiven Mitgliederbereich geworfen haben, möchten wir Sie gerne daran erinnern!</p>\n    \n    <div style=\"background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; text-align: center; margin: 20px 0;\">\n        <h3>🌟 Was Sie im Mitgliederbereich erwartet:</h3>\n        <ul style=\"text-align: left; display: inline-block;\">\n            <li>📊 Aktuelle Projektberichte und Transparenz-Updates</li>\n            <li>📅 Exklusive Veranstaltungseinladungen</li>\n            <li>💬 Direkter Austausch mit anderen Mitgliedern</li>\n            <li>📚 Digitale Bibliothek mit Hintergrundmaterial</li>\n            <li>🎁 Spezielle Angebote und Rabatte</li>\n        </ul>\n    </div>\n    \n    <div style=\"text-align: center; margin: 30px 0;\">\n        <a href=\"{{ $vars.MEMBER_PORTAL_URL }}/login\" style=\"display: inline-block; background: #28a745; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;\">\n            🚀 Jetzt Mitgliederbereich besuchen\n        </a>\n    </div>\n    \n    <p><strong>Ihre Zugangsdaten:</strong></p>\n    <ul>\n        <li><strong>Mitgliedsnummer:</strong> {{ $json.membership_id }}</li>\n        <li><strong>E-Mail-Adresse:</strong> {{ $json.email }}</li>\n    </ul>\n    \n    <p><em>Falls Sie Ihr Passwort noch nicht erstellt haben, klicken Sie einfach auf \"Passwort vergessen\" auf der Login-Seite.</em></p>\n    \n    <p>Bei Fragen oder Problemen beim Zugang helfen wir gerne:</p>\n    <p>📧 <a href=\"mailto:mitglieder@menschlichkeit.at\">mitglieder@menschlichkeit.at</a><br>\n    📞 +43 1 234 5678</p>\n    \n    <p>Wir freuen uns darauf, Sie bald im Mitgliederbereich begrüßen zu dürfen!</p>\n    \n    <p>Herzliche Grüße,<br>\n    Ihr Team von Menschlichkeit Österreich</p>\n</body>\n</html>"
+      },
+      "id": "send-portal-reminder",
+      "name": "Send Member Portal Reminder",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1560, 300],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-config",
+          "name": "SMTP Configuration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "unit": "days",
+        "amount": 7
+      },
+      "id": "wait-7-days",
+      "name": "Wait 7 Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1780, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $vars.SMTP_FROM_EMAIL }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "Wie gefällt Ihnen Ihre Mitgliedschaft? 💭",
+        "emailType": "html",
+        "message": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Feedback erbeten</title>\n</head>\n<body>\n    <h2>💭 Ihre Meinung ist uns wichtig!</h2>\n    \n    <p>Liebe/r {{ $json.display_name }},</p>\n    \n    <p>Sie sind nun seit zwei Wochen Mitglied bei Menschlichkeit Österreich. Wie sind Ihre ersten Eindrücke?</p>\n    \n    <div style=\"background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;\">\n        <h3>🤔 Wir würden gerne wissen:</h3>\n        <ul>\n            <li>Wie zufrieden sind Sie mit unserem Willkommenspaket?</li>\n            <li>Haben Sie bereits unseren Mitgliederbereich besucht?</li>\n            <li>Gibt es etwas, was wir verbessern können?</li>\n            <li>Haben Sie Fragen oder Anregungen?</li>\n        </ul>\n    </div>\n    \n    <div style=\"text-align: center; margin: 30px 0;\">\n        <a href=\"{{ $vars.FEEDBACK_FORM_URL }}?member_id={{ $json.membership_id }}\" style=\"display: inline-block; background: #17a2b8; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;\">\n            📝 Feedback geben (2 Minuten)\n        </a>\n    </div>\n    \n    <p>Als kleines Dankeschön für Ihr Feedback erhalten Sie einen <strong>15% Rabattcode</strong> für unseren Online-Shop!</p>\n    \n    <p>Alternativ können Sie uns auch direkt antworten oder uns unter <a href=\"mailto:mitglieder@menschlichkeit.at\">mitglieder@menschlichkeit.at</a> schreiben.</p>\n    \n    <p>Vielen Dank für Ihre Zeit und Ihr Vertrauen!</p>\n    \n    <p>Herzliche Grüße,<br>\n    Ihr Mitgliederservice-Team</p>\n</body>\n</html>"
+      },
+      "id": "send-feedback-request",
+      "name": "Send Feedback Request",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [2000, 300],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-config",
+          "name": "SMTP Configuration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $vars.PROMETHEUS_PUSHGATEWAY_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "text/plain"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "string",
+        "body": "membership_welcome_sequence_completed_total{member_id=\"{{ $json.membership_id }}\"} 1"
+      },
+      "id": "update-metrics",
+      "name": "Update Prometheus Metrics",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [2220, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  \"success\": true,\n  \"message\": \"Welcome sequence completed\",\n  \"member_id\": $json.membership_id,\n  \"contact_id\": $json.contact_id,\n  \"sequence_completed_at\": $now\n} }}"
+      },
+      "id": "respond-success",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2440, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Welcome": {
+      "main": [
+        [
+          {
+            "node": "Get Contact Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contact Details": {
+      "main": [
+        [
+          {
+            "node": "Generate Welcome Package PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Welcome Package PDF": {
+      "main": [
+        [
+          {
+            "node": "Send Welcome Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Welcome Email": {
+      "main": [
+        [
+          {
+            "node": "Create Welcome Activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Welcome Activity": {
+      "main": [
+        [
+          {
+            "node": "Wait 3 Days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 3 Days": {
+      "main": [
+        [
+          {
+            "node": "Send Member Portal Reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Member Portal Reminder": {
+      "main": [
+        [
+          {
+            "node": "Wait 7 Days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 7 Days": {
+      "main": [
+        [
+          {
+            "node": "Send Feedback Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Feedback Request": {
+      "main": [
+        [
+          {
+            "node": "Update Prometheus Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Prometheus Metrics": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2025-06-21T10:00:00.000Z",
+      "updatedAt": "2025-06-21T10:00:00.000Z",
+      "id": "membership-welcome",
+      "name": "Membership Welcome"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2025-06-21T10:00:00.000Z",
+  "versionId": "1"
+}

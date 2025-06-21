@@ -1,0 +1,13 @@
+{
+  "apiVersion": 2,
+  "name": "verein/beteiligungskarte",
+  "title": "Beteiligungskarte",
+  "category": "widgets",
+  "icon": "location-alt",
+  "description": "Ein Block für eine Beteiligungskarte.",
+  "supports": {
+    "html": false
+  },
+  "editorScript": "file:./block.js",
+  "style": "file:./style.css"
+}

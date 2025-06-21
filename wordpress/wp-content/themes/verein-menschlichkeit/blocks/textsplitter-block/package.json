@@ -1,0 +1,20 @@
+{
+  "name": "textsplitter-block",
+  "version": "1.0.0",
+  "description": "Gutenberg/ACF Block: Textsplitter",
+  "scripts": {
+    "start": "wp-scripts start",
+    "build": "wp-scripts build",
+    "lint:js": "wp-scripts lint-js .",
+    "lint:php": "phpcs --standard=WPCS ."
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.53.0",
+    "@wordpress/eslint-plugin": "^22.11.0",
+    "@wordpress/scripts": "^30.0.0",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.5",
+    "prettier": "^3.5.3",
+    "prettier-plugin-packagejson": "^2.5.15"
+  }
+}

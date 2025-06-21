@@ -1,0 +1,12 @@
+/* Balken-Rating – Basis-Styles */
+.balken-rating-block {
+  padding: 1.5em;
+  background: #f7f7f7;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.balken-rating-block .rating-titel {
+  font-weight: bold;
+  margin-bottom: 1em;
+}

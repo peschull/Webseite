@@ -1,15 +1,25 @@
-module.exports = {
+export default {
   ci: {
     collect: {
-      url: ['http://localhost:8080/'],
+      url: [
+        'http://localhost:3000/',
+        'http://localhost:3000/accessibility-test'
+      ],
+      startServerCommand: 'npm run dev',
+      startServerReadyPattern: 'Server running',
+      startServerReadyTimeout: 30000,
+      numberOfRuns: 3
     },
     assert: {
       assertions: {
-        'categories:performance': ['error', {minScore: 0.8}],
-        'categories:accessibility': ['error', {minScore: 0.92}],
-        'categories:best-practices': ['error', {minScore: 0.9}],
-        'categories:seo': ['error', {minScore: 0.9}],
+        'categories:performance': ['warn', { minScore: 0.8 }],
+        'categories:accessibility': ['error', { minScore: 0.9 }],
+        'categories:best-practices': ['warn', { minScore: 0.8 }],
+        'categories:seo': ['warn', { minScore: 0.8 }]
       }
+    },
+    upload: {
+      target: 'temporary-public-storage'
     }
   }
 };

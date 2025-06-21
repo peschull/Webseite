@@ -1,0 +1,8 @@
+.button-row-farbverlauf {
+    background: #f0f7fa;
+    border: 1px dashed #b2e0e6;
+}
+.button-farbverlauf {
+    opacity: 0.7;
+    filter: grayscale(0.1);
+}

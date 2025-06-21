@@ -1,0 +1,8 @@
+/* CTA Block Editor Styles */
+.wp-block-verein-menschlichkeit-cta {
+  box-shadow: 0 2px 16px rgba(37,99,235,0.08);
+  transition: box-shadow 0.2s;
+}
+.wp-block-verein-menschlichkeit-cta:focus-within {
+  box-shadow: 0 4px 24px rgba(37,99,235,0.16);
+}

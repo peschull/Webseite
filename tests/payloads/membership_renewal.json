@@ -1,0 +1,40 @@
+{
+  "memberships": [
+    {
+      "id": "MEM-2024-001",
+      "contact_id": 12345,
+      "display_name": "Maria Mustermann",
+      "email": "maria.mustermann@example.com",
+      "membership_type": "Standard Mitgliedschaft",
+      "start_date": "2024-01-01",
+      "end_date": "2024-12-31",
+      "membership_fee": 120.00,
+      "payment_method": "bank_transfer",
+      "auto_renew": false,
+      "renewal_token": "token_abc123",
+      "last_renewal_reminder": "2024-05-15",
+      "phone": "+43 1 234 5678",
+      "address": "Musterstraße 123, 1010 Wien",
+      "status_id": 1,
+      "days_until_expiry": 30
+    },
+    {
+      "id": "MEM-2024-002", 
+      "contact_id": 12346,
+      "display_name": "Max Beispiel",
+      "email": "max.beispiel@example.com",
+      "membership_type": "Premium Mitgliedschaft",
+      "start_date": "2023-06-01",
+      "end_date": "2024-06-15",
+      "membership_fee": 200.00,
+      "payment_method": "credit_card",
+      "auto_renew": true,
+      "renewal_token": "token_def456",
+      "last_renewal_reminder": "2024-04-15",
+      "phone": "+43 1 234 5679",
+      "address": "Beispielgasse 456, 1020 Wien",
+      "status_id": 1,
+      "days_until_expiry": -6
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+.mini-podcast-player {
+    max-width: 400px;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.podcast-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.play-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: #4CAF50;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.play-button:hover {
+    background: #45a049;
+}
+
+.play-icon,
+.pause-icon {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.episode-info {
+    flex: 1;
+}
+
+.episode-title {
+    margin: 0;
+    font-size: 1rem;
+    color: #333;
+    line-height: 1.2;
+}
+
+.episode-duration {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.player-controls {
+    margin-bottom: 1rem;
+}
+
+.progress-bar {
+    position: relative;
+    height: 4px;
+    background: #eee;
+    border-radius: 2px;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+}
+
+.progress-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #eee;
+    border-radius: 2px;
+}
+
+.progress-current {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 0%;
+    background: #4CAF50;
+    border-radius: 2px;
+    transition: width 0.1s linear;
+}
+
+.progress-slider {
+    position: absolute;
+    top: -8px;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.time-display {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.episode-description {
+    font-size: 0.9rem;
+    color: #555;
+    line-height: 1.4;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
