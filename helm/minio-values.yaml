@@ -1,0 +1,245 @@
+# MinIO S3-kompatible Storage für n8n Binary Data
+# MinIO Operator Helm Chart
+
+# Basis-Konfiguration
+fullnameOverride: "minio"
+nameOverride: "minio"
+
+# Deployment-Modus
+mode: "distributed"  # Für HA und Skalierbarkeit
+replicas: 4
+
+# Authentifizierung
+auth:
+  rootUser: "admin"
+  rootPassword: "{{secrets.minio.rootPassword}}"
+
+# Persistence
+persistence:
+  enabled: true
+  size: 2Ti  # 2 Terabyte für Binärdaten
+  storageClass: "block-storage"
+  accessModes:
+    - ReadWriteOnce
+
+# Ressourcen
+resources:
+  requests:
+    cpu: "1"
+    memory: "2Gi"
+  limits:
+    cpu: "2"
+    memory: "4Gi"
+
+# Service-Konfiguration
+service:
+  type: ClusterIP
+  port: 9000
+  consolePort: 9001
+
+# Ingress für Management-Console
+ingress:
+  enabled: true
+  ingressClassName: "nginx"
+  hostname: minio-console.menschlichkeit.at
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "1000m"
+  tls: true
+
+# Bucket-Konfiguration (automatisch erstellt)
+defaultBuckets: |
+  n8n-binaries;
+  fin-archive-euc1;
+  backup-bucket;
+
+# Bucket-Policies
+bucketPolicy: |
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": ["arn:aws:iam:::user/n8n-service"]
+        },
+        "Action": [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ],
+        "Resource": [
+          "arn:aws:s3:::n8n-binaries/*",
+          "arn:aws:s3:::fin-archive-euc1/*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": ["arn:aws:iam:::user/backup-service"]
+        },
+        "Action": [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ],
+        "Resource": [
+          "arn:aws:s3:::backup-bucket",
+          "arn:aws:s3:::backup-bucket/*"
+        ]
+      }
+    ]
+  }
+
+# Lifecycle-Policies für BAO §132 Compliance
+lifecyclePolicy: |
+  {
+    "Rules": [
+      {
+        "ID": "FinArchiveRetention",
+        "Status": "Enabled",
+        "Filter": {
+          "Prefix": "fin-archive-euc1/"
+        },
+        "Transitions": [
+          {
+            "Days": 30,
+            "StorageClass": "STANDARD_IA"
+          },
+          {
+            "Days": 365,
+            "StorageClass": "GLACIER"
+          }
+        ],
+        "Expiration": {
+          "Days": 2555  # 7 Jahre
+        }
+      },
+      {
+        "ID": "BackupRetention",
+        "Status": "Enabled",
+        "Filter": {
+          "Prefix": "backup-bucket/"
+        },
+        "Expiration": {
+          "Days": 30
+        }
+      }
+    ]
+  }
+
+# IAM-Benutzer für Services
+users:
+  - accessKey: "{{secrets.minio.n8nAccessKey}}"
+    secretKey: "{{secrets.minio.n8nSecretKey}}"
+    policy: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "s3:GetObject",
+              "s3:PutObject",
+              "s3:DeleteObject"
+            ],
+            "Resource": [
+              "arn:aws:s3:::n8n-binaries/*",
+              "arn:aws:s3:::fin-archive-euc1/*"
+            ]
+          }
+        ]
+      }
+  
+  - accessKey: "{{secrets.minio.backupAccessKey}}"
+    secretKey: "{{secrets.minio.backupSecretKey}}"
+    policy: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "s3:*"
+            ],
+            "Resource": [
+              "arn:aws:s3:::backup-bucket",
+              "arn:aws:s3:::backup-bucket/*"
+            ]
+          }
+        ]
+      }
+
+# Monitoring
+metrics:
+  serviceMonitor:
+    enabled: true
+    namespace: monitoring
+    interval: 30s
+    labels:
+      app: minio
+      release: prometheus
+
+# Sicherheit
+podSecurityContext:
+  enabled: true
+  fsGroup: 1001
+  runAsUser: 1001
+  runAsGroup: 1001
+
+securityContext:
+  enabled: true
+  runAsUser: 1001
+  runAsGroup: 1001
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  capabilities:
+    drop:
+      - ALL
+
+# Network Policy
+networkPolicy:
+  enabled: true
+  allowExternal: false
+  ingressRules:
+    accessOnlyFrom:
+      enabled: true
+      namespaceSelector:
+        matchLabels:
+          name: n8n-prod
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: n8n
+
+# Health Checks
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 10
+  failureThreshold: 6
+  successThreshold: 1
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 5
+  periodSeconds: 15
+  timeoutSeconds: 10
+  failureThreshold: 6
+  successThreshold: 1
+
+# Backup & Replikation
+replication:
+  enabled: true
+  targets:
+    - name: "backup-region"
+      endpoint: "https://s3.eu-west-1.amazonaws.com"
+      accessKey: "{{secrets.aws.accessKey}}"
+      secretKey: "{{secrets.aws.secretKey}}"
+      bucket: "menschlichkeit-backup-eu-west"
+      region: "eu-west-1"
+      schedule: "0 3 * * *"  # Täglich um 3:00 Uhr

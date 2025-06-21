@@ -1,0 +1,23 @@
+.downloadbereich {
+    background: #e3f6fc;
+    border-left: 4px solid #00b4d8;
+    padding: 1.2em 1em;
+    margin: 1em 0;
+    border-radius: 6px;
+}
+.downloadliste {
+    list-style: disc inside;
+    margin: 0;
+    padding: 0;
+}
+.downloadliste li {
+    margin-bottom: 0.5em;
+}
+.downloadliste a {
+    color: #007cba;
+    text-decoration: underline;
+    font-weight: bold;
+}
+.downloadliste a:hover {
+    color: #005a87;
+}

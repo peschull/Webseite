@@ -1,0 +1,41 @@
+.downloadbereich-vorschau-filter {
+    background: #f7fafd;
+    border-left: 4px solid #00b4d8;
+    padding: 1.2em 1em;
+    margin: 1em 0;
+}
+.downloadliste {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+}
+.download-item {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 1em;
+    width: 220px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.download-vorschau {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 0.5em;
+}
+.download-titel {
+    font-weight: bold;
+    color: #007cba;
+}
+.download-kategorie {
+    font-size: 0.9em;
+    color: #888;
+    margin-left: 0.5em;
+}
+.download-link {
+    display: inline-block;
+    margin-top: 0.5em;
+    color: #00b4d8;
+    text-decoration: underline;
+}

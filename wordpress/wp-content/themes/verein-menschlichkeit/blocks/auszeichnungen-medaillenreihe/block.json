@@ -1,0 +1,13 @@
+{
+  "apiVersion": 2,
+  "name": "verein/auszeichnungen-medaillenreihe",
+  "title": "Auszeichnungen Medaillenreihe",
+  "category": "widgets",
+  "icon": "awards",
+  "description": "Ein Block für eine Medaillenreihe von Auszeichnungen.",
+  "supports": {
+    "html": false
+  },
+  "editorScript": "file:./block.js",
+  "style": "file:./style.css"
+}

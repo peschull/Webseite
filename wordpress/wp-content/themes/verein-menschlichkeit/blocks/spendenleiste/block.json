@@ -1,0 +1,14 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/spendenleiste",
+  "title": "Spendenleiste",
+  "category": "widgets",
+  "icon": "money",
+  "description": "Animierte Spendenfortschrittsleiste mit Ziel und aktuellem Stand.",
+  "attributes": {
+    "ziel": { "type": "number", "default": 1000 },
+    "stand": { "type": "number", "default": 250 },
+    "farbe": { "type": "string", "default": "#2563eb" }
+  },
+  "editorScript": "verein-block-spendenleiste"
+}

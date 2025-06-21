@@ -1,0 +1,13 @@
+/* Grundlegendes CSS für den Live-Suchfeld-Block */
+.block-live-suchfeld {
+    padding: 1em;
+    background: #f7f7f7;
+    border-radius: 8px;
+}
+.block-live-suchfeld input[type="text"] {
+    width: 100%;
+    padding: 0.5em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+}

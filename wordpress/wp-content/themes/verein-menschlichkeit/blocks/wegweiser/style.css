@@ -1,0 +1,16 @@
+/* Grundlegendes CSS für den Wegweiser-Block */
+.block-wegweiser {
+    padding: 1em;
+    background: #f8f8f8;
+    border-radius: 8px;
+}
+.block-wegweiser .wegweiser-punkt {
+    margin-bottom: 1em;
+}
+.block-wegweiser .titel {
+    font-weight: bold;
+    color: #0073aa;
+}
+.block-wegweiser .beschreibung {
+    color: #555;
+}

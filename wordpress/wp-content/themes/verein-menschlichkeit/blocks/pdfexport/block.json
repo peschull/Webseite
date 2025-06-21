@@ -1,0 +1,12 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/pdfexport",
+  "title": "PDF-Export-Button",
+  "category": "widgets",
+  "icon": "media-document",
+  "description": "Button zum PDF-Export des Inhalts.",
+  "attributes": {
+    "text": { "type": "string", "default": "Als PDF speichern" }
+  },
+  "editorScript": "verein-block-pdfexport"
+}

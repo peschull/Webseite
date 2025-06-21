@@ -1,0 +1,40 @@
+/* Eigene Styles für CiviCRM-Formulare im Theme Verein Menschlichkeit */
+
+.civicrm-container, .crm-container {
+  font-family: 'Public Sans', 'Noto Sans', sans-serif;
+  background: #f8fafc;
+  color: #1e293b;
+}
+.civicrm-container input[type="text"],
+.civicrm-container input[type="email"],
+.civicrm-container input[type="tel"],
+.civicrm-container select,
+.civicrm-container textarea {
+  border-radius: 0.4rem;
+  border: 1px solid #cbd5e1;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+.civicrm-container input[type="submit"],
+.civicrm-container button[type="submit"] {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 0.4rem;
+  padding: 0.5rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.civicrm-container input[type="submit"]:hover,
+.civicrm-container button[type="submit"]:hover {
+  background: #1d4ed8;
+}
+.civicrm-container label {
+  font-weight: 500;
+  color: #334155;
+}
+.civicrm-container .crm-section {
+  margin-bottom: 2rem;
+}

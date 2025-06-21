@@ -1,0 +1,11 @@
+{
+  "apiVersion": 2,
+  "name": "verein/chat-rueckmeldeblock",
+  "title": "Chat Rückmeldeblock",
+  "category": "widgets",
+  "icon": "format-chat",
+  "description": "Ein Block für Chat-ähnliche Rückmeldungen.",
+  "editorScript": "file:./block.js",
+  "style": "file:./style.css",
+  "editorStyle": "file:./editor.css"
+}

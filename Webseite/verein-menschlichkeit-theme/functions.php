@@ -97,20 +97,325 @@ add_post_type_support('page', 'excerpt');
 // Favicon über Customizer
 function verein_menschlichkeit_site_icon() {
   if (!has_site_icon()) {
-    echo '<link rel="icon" href="' . esc_url(get_template_directory_uri() . '/favicon.ico') . '" type="image/x-icon">';
-  }
+/**
+ * Security Headers für besseren Schutz
+ */
+function verein_menschlichkeit_security_headers() {
+    if (!is_admin()) {
+        header('X-Content-Type-Options: nosniff');
+        header('X-Frame-Options: SAMEORIGIN');
+        header('X-XSS-Protection: 1; mode=block');
+        header('Referrer-Policy: strict-origin-when-cross-origin');
+        
+        // Content Security Policy (nur für Produktionsumgebung)
+        if (!WP_DEBUG) {
+            header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https:; connect-src 'self';");
+        }
+    }
 }
-add_action('wp_head', 'verein_menschlichkeit_site_icon');
+add_action('init', 'verein_menschlichkeit_security_headers');
 
-// Cookie-Hinweis (einfach)
+/**
+ * Performance Optimierungen
+ */
+function verein_menschlichkeit_performance_optimizations() {
+    // Emoji Scripts deaktivieren
+    remove_action('wp_head', 'print_emoji_detection_script', 7);
+    remove_action('wp_print_styles', 'print_emoji_styles');
+    remove_action('admin_print_scripts', 'print_emoji_detection_script');
+    remove_action('admin_print_styles', 'print_emoji_styles');
+    
+    // WordPress Embeds deaktivieren
+    remove_action('wp_head', 'wp_oembed_add_discovery_links');
+    remove_action('wp_head', 'wp_oembed_add_host_js');
+    
+    // RSS Feed Links entfernen (falls nicht benötigt)
+    remove_action('wp_head', 'feed_links', 2);
+    remove_action('wp_head', 'feed_links_extra', 3);
+    
+    // WordPress Version verstecken
+    remove_action('wp_head', 'wp_generator');
+    
+    // Heartbeat API optimieren
+    add_filter('heartbeat_settings', function($settings) {
+        $settings['interval'] = 60; // 60 Sekunden statt 15
+        return $settings;
+    });
+}
+add_action('init', 'verein_menschlichkeit_performance_optimizations');
+
+/**
+ * Cookie-Hinweis DSGVO-konform
+ */
 function verein_menschlichkeit_cookie_notice() {
-  if (!isset($_COOKIE['verein_cookie_ok'])) {
-    echo '<div id="cookie-notice" style="position:fixed;bottom:0;left:0;right:0;background:var(--color-primary-600);color:var(--neutral-0);padding:1rem;text-align:center;z-index:9999;">'
-      . esc_html__('Diese Website verwendet Cookies. Mit der Nutzung stimmen Sie zu.', 'verein-menschlichkeit')
-      . ' <button onclick="document.cookie=\'verein_cookie_ok=1;path=/\';document.getElementById(\'cookie-notice\').remove();" style="margin-left:1rem;padding:0.3rem 1rem;border:none;border-radius:0.3rem;background:var(--neutral-0);color:var(--color-primary-600);cursor:pointer;">OK</button></div>';
-  }
+    if (!isset($_COOKIE['verein_cookie_accepted'])) {
+        ?>
+        <div id="cookie-notice" class="cookie-notice" role="dialog" aria-labelledby="cookie-notice-title" aria-describedby="cookie-notice-desc">
+            <div class="cookie-notice-container">
+                <div class="cookie-notice-content">
+                    <h3 id="cookie-notice-title"><?php esc_html_e('Cookie-Hinweis', 'verein-menschlichkeit'); ?></h3>
+                    <p id="cookie-notice-desc">
+                        <?php esc_html_e('Diese Website verwendet Cookies, um Ihnen die bestmögliche Nutzererfahrung zu bieten. Durch die weitere Nutzung stimmen Sie der Verwendung zu.', 'verein-menschlichkeit'); ?>
+                        <a href="<?php echo esc_url(get_privacy_policy_url()); ?>" target="_blank" rel="noopener">
+                            <?php esc_html_e('Mehr erfahren', 'verein-menschlichkeit'); ?>
+                        </a>
+                    </p>
+                </div>
+                <div class="cookie-notice-actions">
+                    <button type="button" id="cookie-accept" class="btn btn-primary">
+                        <?php esc_html_e('Akzeptieren', 'verein-menschlichkeit'); ?>
+                    </button>
+                    <button type="button" id="cookie-decline" class="btn btn-secondary">
+                        <?php esc_html_e('Ablehnen', 'verein-menschlichkeit'); ?>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const cookieNotice = document.getElementById('cookie-notice');
+                const acceptBtn = document.getElementById('cookie-accept');
+                const declineBtn = document.getElementById('cookie-decline');
+                
+                if (acceptBtn) {
+                    acceptBtn.addEventListener('click', function() {
+                        document.cookie = 'verein_cookie_accepted=1; path=/; max-age=31536000; SameSite=Strict';
+                        cookieNotice.style.display = 'none';
+                    });
+                }
+                
+                if (declineBtn) {
+                    declineBtn.addEventListener('click', function() {
+                        document.cookie = 'verein_cookie_accepted=0; path=/; max-age=31536000; SameSite=Strict';
+                        cookieNotice.style.display = 'none';
+                    });
+                }
+            });
+        </script>
+        <?php
+    }
 }
 add_action('wp_footer', 'verein_menschlichkeit_cookie_notice');
+
+/**
+ * Barrierefreiheits-Tools
+ */
+function verein_menschlichkeit_accessibility_tools() {
+    ?>
+    <div id="accessibility-tools" class="accessibility-tools" aria-label="<?php esc_attr_e('Barrierefreiheits-Werkzeuge', 'verein-menschlichkeit'); ?>">
+        <button type="button" id="accessibility-toggle" class="accessibility-toggle" aria-expanded="false" aria-controls="accessibility-panel">
+            <span class="sr-only"><?php esc_html_e('Barrierefreiheits-Werkzeuge', 'verein-menschlichkeit'); ?></span>
+            <span class="accessibility-icon" aria-hidden="true">♿</span>
+        </button>
+        <div id="accessibility-panel" class="accessibility-panel" hidden>
+            <h3><?php esc_html_e('Barrierefreiheit', 'verein-menschlichkeit'); ?></h3>
+            <div class="accessibility-controls">
+                <button type="button" id="font-size-decrease" class="accessibility-btn">
+                    <?php esc_html_e('Schrift verkleinern', 'verein-menschlichkeit'); ?>
+                </button>
+                <button type="button" id="font-size-increase" class="accessibility-btn">
+                    <?php esc_html_e('Schrift vergrößern', 'verein-menschlichkeit'); ?>
+                </button>
+                <button type="button" id="font-size-reset" class="accessibility-btn">
+                    <?php esc_html_e('Schrift zurücksetzen', 'verein-menschlichkeit'); ?>
+                </button>
+                <button type="button" id="high-contrast-toggle" class="accessibility-btn">
+                    <?php esc_html_e('Hoher Kontrast', 'verein-menschlichkeit'); ?>
+                </button>
+                <button type="button" id="focus-mode-toggle" class="accessibility-btn">
+                    <?php esc_html_e('Fokus-Modus', 'verein-menschlichkeit'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggle = document.getElementById('accessibility-toggle');
+            const panel = document.getElementById('accessibility-panel');
+            const body = document.body;
+            
+            // Panel Toggle
+            toggle.addEventListener('click', function() {
+                const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+                toggle.setAttribute('aria-expanded', !isExpanded);
+                panel.hidden = isExpanded;
+            });
+            
+            // Schriftgrößen-Kontrollen
+            let currentFontSize = 16;
+            document.getElementById('font-size-increase').addEventListener('click', function() {
+                currentFontSize = Math.min(currentFontSize + 2, 24);
+                body.style.fontSize = currentFontSize + 'px';
+                localStorage.setItem('accessibility_font_size', currentFontSize);
+            });
+            
+            document.getElementById('font-size-decrease').addEventListener('click', function() {
+                currentFontSize = Math.max(currentFontSize - 2, 12);
+                body.style.fontSize = currentFontSize + 'px';
+                localStorage.setItem('accessibility_font_size', currentFontSize);
+            });
+            
+            document.getElementById('font-size-reset').addEventListener('click', function() {
+                currentFontSize = 16;
+                body.style.fontSize = '';
+                localStorage.removeItem('accessibility_font_size');
+            });
+            
+            // Hoher Kontrast
+            document.getElementById('high-contrast-toggle').addEventListener('click', function() {
+                body.classList.toggle('high-contrast');
+                const isActive = body.classList.contains('high-contrast');
+                localStorage.setItem('accessibility_high_contrast', isActive);
+            });
+            
+            // Fokus-Modus
+            document.getElementById('focus-mode-toggle').addEventListener('click', function() {
+                body.classList.toggle('focus-mode');
+                const isActive = body.classList.contains('focus-mode');
+                localStorage.setItem('accessibility_focus_mode', isActive);
+            });
+            
+            // Einstellungen beim Laden wiederherstellen
+            const savedFontSize = localStorage.getItem('accessibility_font_size');
+            if (savedFontSize) {
+                currentFontSize = parseInt(savedFontSize);
+                body.style.fontSize = currentFontSize + 'px';
+            }
+            
+            if (localStorage.getItem('accessibility_high_contrast') === 'true') {
+                body.classList.add('high-contrast');
+            }
+            
+            if (localStorage.getItem('accessibility_focus_mode') === 'true') {
+                body.classList.add('focus-mode');
+            }
+        });
+    </script>
+    <?php
+}
+add_action('wp_footer', 'verein_menschlichkeit_accessibility_tools', 300);
+
+/**
+ * WordPress Dashboard Anpassungen
+ */
+function verein_menschlichkeit_admin_customizations() {
+    // Admin Footer Text anpassen
+    add_filter('admin_footer_text', function() {
+        return sprintf(
+            __('Verein Menschlichkeit Theme by %s', 'verein-menschlichkeit'),
+            '<a href="https://verein-menschlichkeit.de" target="_blank">Verein Menschlichkeit e.V.</a>'
+        );
+    });
+    
+    // Dashboard Widget hinzufügen
+    add_action('wp_dashboard_setup', function() {
+        wp_add_dashboard_widget(
+            'verein_menschlichkeit_dashboard_widget',
+            __('Verein Menschlichkeit', 'verein-menschlichkeit'),
+            function() {
+                ?>
+                <div class="dashboard-widget-verein">
+                    <h3><?php esc_html_e('Willkommen im Verein Menschlichkeit Theme', 'verein-menschlichkeit'); ?></h3>
+                    <p><?php esc_html_e('Hier sind einige wichtige Links und Informationen:', 'verein-menschlichkeit'); ?></p>
+                    <ul>
+                        <li><a href="<?php echo esc_url(admin_url('themes.php?page=theme-options')); ?>"><?php esc_html_e('Theme Optionen', 'verein-menschlichkeit'); ?></a></li>
+                        <li><a href="<?php echo esc_url(admin_url('customize.php')); ?>"><?php esc_html_e('Customizer', 'verein-menschlichkeit'); ?></a></li>
+                        <li><a href="<?php echo esc_url(admin_url('edit.php?post_type=team')); ?>"><?php esc_html_e('Team verwalten', 'verein-menschlichkeit'); ?></a></li>
+                        <li><a href="<?php echo esc_url(admin_url('edit.php?post_type=event')); ?>"><?php esc_html_e('Veranstaltungen verwalten', 'verein-menschlichkeit'); ?></a></li>
+                    </ul>
+                </div>
+                <?php
+            }
+        );
+    });
+    
+    // Admin Menü anpassen
+    add_action('admin_menu', function() {
+        // Theme Optionen Seite hinzufügen
+        add_theme_page(
+            __('Theme Optionen', 'verein-menschlichkeit'),
+            __('Theme Optionen', 'verein-menschlichkeit'),
+            'edit_theme_options',
+            'theme-options',
+            function() {
+                ?>
+                <div class="wrap">
+                    <div class="theme-options-header">
+                        <h1><?php esc_html_e('Theme Optionen', 'verein-menschlichkeit'); ?></h1>
+                        <p><?php esc_html_e('Verwalten Sie hier die grundlegenden Einstellungen Ihres Themes.', 'verein-menschlichkeit'); ?></p>
+                    </div>
+                    
+                    <div class="theme-options-section">
+                        <h2><?php esc_html_e('Dokumentation', 'verein-menschlichkeit'); ?></h2>
+                        <p><?php esc_html_e('Eine vollständige Dokumentation finden Sie in der README.md Datei im Theme-Ordner.', 'verein-menschlichkeit'); ?></p>
+                    </div>
+                    
+                    <div class="theme-options-section">
+                        <h2><?php esc_html_e('Support', 'verein-menschlichkeit'); ?></h2>
+                        <p><?php esc_html_e('Bei Fragen oder Problemen wenden Sie sich an das Entwicklerteam.', 'verein-menschlichkeit'); ?></p>
+                    </div>
+                </div>
+                <?php
+            }
+        );
+    });
+}
+add_action('admin_init', 'verein_menschlichkeit_admin_customizations');
+
+/**
+ * Theme Update Checker (für Custom Themes)
+ */
+function verein_menschlichkeit_update_checker() {
+    $theme_data = wp_get_theme();
+    $current_version = $theme_data->get('Version');
+    
+    // Prüfe auf Updates (Beispiel-Implementation)
+    $remote_version = wp_remote_get('https://api.verein-menschlichkeit.de/theme-version');
+    
+    if (!is_wp_error($remote_version)) {
+        $remote_version = wp_remote_retrieve_body($remote_version);
+        
+        if (version_compare($current_version, $remote_version, '<')) {
+            add_action('admin_notices', function() use ($remote_version) {
+                ?>
+                <div class="notice notice-info">
+                    <p>
+                        <?php printf(
+                            esc_html__('Eine neue Version (%s) des Verein Menschlichkeit Themes ist verfügbar.', 'verein-menschlichkeit'),
+                            esc_html($remote_version)
+                        ); ?>
+                    </p>
+                </div>
+                <?php
+            });
+        }
+    }
+}
+// add_action('admin_init', 'verein_menschlichkeit_update_checker'); // Nur aktivieren wenn Update-Server vorhanden
+
+/**
+ * Debugging Hilfsfunktionen (nur für Development)
+ */
+if (defined('WP_DEBUG') && WP_DEBUG) {
+    function verein_debug_log($message) {
+        if (is_array($message) || is_object($message)) {
+            error_log('[VEREIN THEME] ' . print_r($message, true));
+        } else {
+            error_log('[VEREIN THEME] ' . $message);
+        }
+    }
+    
+    // Debug-Informationen in Footer ausgeben
+    add_action('wp_footer', function() {
+        if (current_user_can('administrator')) {
+            $queries = get_num_queries();
+            $memory = size_format(memory_get_peak_usage());
+            $load_time = timer_stop();
+            
+            echo "<!-- DEBUG: {$queries} Queries, {$memory} Memory, {$load_time}s Load Time -->";
+        }
+    });
+}
 
 // Shortcode: Testimonials-Slider
 function verein_testimonials_shortcode($atts) {

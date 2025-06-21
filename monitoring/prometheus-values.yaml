@@ -1,0 +1,306 @@
+# Prometheus Monitoring Configuration für n8n Production
+# Kube-Prometheus-Stack Helm Values
+
+# Basis-Konfiguration
+fullnameOverride: "prometheus"
+nameOverride: "prometheus"
+
+# Prometheus-Server
+prometheus:
+  prometheusSpec:
+    # Retention & Storage
+    retention: 30d
+    retentionSize: 50GB
+    
+    # Storage
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: fast-ssd
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 100Gi
+    
+    # Ressourcen
+    resources:
+      requests:
+        cpu: "2"
+        memory: "4Gi"
+      limits:
+        cpu: "4"
+        memory: "8Gi"
+    
+    # Service Discovery
+    serviceDiscoveryNamespaceSelector:
+      matchLabels:
+        name: n8n-prod
+    
+    # Scrape-Konfiguration
+    additionalScrapeConfigs:
+      - job_name: 'n8n'
+        static_configs:
+          - targets: ['n8n.n8n-prod.svc.cluster.local:5678']
+        metrics_path: '/metrics'
+        scrape_interval: 30s
+        scrape_timeout: 10s
+      
+      - job_name: 'postgresql'
+        static_configs:
+          - targets: ['postgresql.n8n-prod.svc.cluster.local:9187']
+        scrape_interval: 30s
+      
+      - job_name: 'redis'
+        static_configs:
+          - targets: ['redis.n8n-prod.svc.cluster.local:9121']
+        scrape_interval: 30s
+      
+      - job_name: 'minio'
+        static_configs:
+          - targets: ['minio.n8n-prod.svc.cluster.local:9000']
+        metrics_path: '/minio/v2/metrics/cluster'
+        scrape_interval: 30s
+    
+    # Alert Rules
+    ruleSelector:
+      matchLabels:
+        app: n8n
+        role: alert-rules
+
+# Grafana
+grafana:
+  enabled: true
+  
+  # Admin-Konfiguration
+  adminPassword: "{{secrets.grafana.adminPassword}}"
+  
+  # Persistence
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClassName: fast-ssd
+  
+  # Ressourcen
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+    limits:
+      cpu: "2"
+      memory: "4Gi"
+  
+  # Ingress
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - grafana.menschlichkeit.at
+    tls:
+      - secretName: grafana-tls
+        hosts:
+          - grafana.menschlichkeit.at
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  
+  # Dashboard-Konfiguration
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+      - name: 'n8n-dashboards'
+        orgId: 1
+        folder: 'n8n'
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/n8n
+  
+  # Vorkonfigurierte Dashboards
+  dashboards:
+    n8n:
+      n8n-overview:
+        gnetId: 15486  # n8n Community Dashboard
+        revision: 1
+        datasource: Prometheus
+      
+      n8n-workflows:
+        json: |
+          {
+            "dashboard": {
+              "title": "n8n Workflow Performance",
+              "panels": [
+                {
+                  "title": "Workflow Executions per Minute",
+                  "type": "graph",
+                  "targets": [
+                    {
+                      "expr": "rate(n8n_workflow_executions_total[5m])",
+                      "legendFormat": "{{workflow_name}}"
+                    }
+                  ]
+                },
+                {
+                  "title": "Queue Processing Time",
+                  "type": "graph",
+                  "targets": [
+                    {
+                      "expr": "n8n_queue_waiting_time",
+                      "legendFormat": "{{queue_name}}"
+                    }
+                  ]
+                },
+                {
+                  "title": "Error Rate by Workflow",
+                  "type": "stat",
+                  "targets": [
+                    {
+                      "expr": "rate(n8n_workflow_executions_failed_total[5m])",
+                      "legendFormat": "{{workflow_name}}"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+      
+      business-kpis:
+        json: |
+          {
+            "dashboard": {
+              "title": "CiviCRM Business KPIs",
+              "panels": [
+                {
+                  "title": "Donations per Hour",
+                  "type": "stat",
+                  "targets": [
+                    {
+                      "expr": "increase(n8n_webhook_donations_total[1h])",
+                      "legendFormat": "Donations/Hour"
+                    }
+                  ]
+                },
+                {
+                  "title": "New Members per Day",
+                  "type": "graph",
+                  "targets": [
+                    {
+                      "expr": "increase(n8n_membership_applications_total[24h])",
+                      "legendFormat": "New Members"
+                    }
+                  ]
+                },
+                {
+                  "title": "PDF Generation Success Rate",
+                  "type": "gauge",
+                  "targets": [
+                    {
+                      "expr": "rate(n8n_pdf_generation_success_total[5m]) / rate(n8n_pdf_generation_total[5m]) * 100",
+                      "legendFormat": "Success Rate %"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+
+# Alertmanager
+alertmanager:
+  enabled: true
+  
+  # Konfiguration
+  config:
+    global:
+      smtp_smarthost: 'smtp.brevo.com:587'
+      smtp_from: 'alerts@menschlichkeit.at'
+      smtp_auth_username: "{{secrets.brevo.smtpUser}}"
+      smtp_auth_password: "{{secrets.brevo.smtpPassword}}"
+    
+    route:
+      group_by: ['alertname', 'cluster', 'service']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 12h
+      receiver: 'default'
+      routes:
+        - match:
+            severity: critical
+          receiver: 'critical-alerts'
+        - match:
+            severity: warning
+          receiver: 'warning-alerts'
+    
+    receivers:
+      - name: 'default'
+        email_configs:
+          - to: 'devops@menschlichkeit.at'
+            subject: '[ALERT] {{.GroupLabels.alertname}}'
+            body: |
+              {{ range .Alerts }}
+              Alert: {{ .Annotations.summary }}
+              Description: {{ .Annotations.description }}
+              {{ end }}
+      
+      - name: 'critical-alerts'
+        email_configs:
+          - to: 'devops@menschlichkeit.at,management@menschlichkeit.at'
+            subject: '[CRITICAL] {{.GroupLabels.alertname}}'
+            body: |
+              🚨 CRITICAL ALERT 🚨
+              {{ range .Alerts }}
+              Alert: {{ .Annotations.summary }}
+              Description: {{ .Annotations.description }}
+              Severity: {{ .Labels.severity }}
+              Instance: {{ .Labels.instance }}
+              {{ end }}
+        
+        slack_configs:
+          - api_url: "{{secrets.slack.webhookUrl}}"
+            channel: '#ops-alerts'
+            title: '🚨 Critical Alert: {{.GroupLabels.alertname}}'
+            text: |
+              {{ range .Alerts }}
+              *Alert:* {{ .Annotations.summary }}
+              *Description:* {{ .Annotations.description }}
+              *Severity:* {{ .Labels.severity }}
+              *Instance:* {{ .Labels.instance }}
+              {{ end }}
+      
+      - name: 'warning-alerts'
+        email_configs:
+          - to: 'devops@menschlichkeit.at'
+            subject: '[WARNING] {{.GroupLabels.alertname}}'
+
+# Service Monitors für automatische Service Discovery
+serviceMonitor:
+  # n8n ServiceMonitor
+  - name: n8n
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: n8n
+    endpoints:
+      - port: http
+        path: /metrics
+        interval: 30s
+
+# Node Exporter für Server-Metriken
+nodeExporter:
+  enabled: true
+
+# kube-state-metrics für Kubernetes-Metriken
+kubeStateMetrics:
+  enabled: true
+
+# Prometheus Operator
+prometheusOperator:
+  enabled: true
+  
+  # Ressourcen
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"

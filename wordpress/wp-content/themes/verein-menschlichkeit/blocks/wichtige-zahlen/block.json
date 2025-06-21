@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/wichtige-zahlen",
+  "title": "Wichtige Zahlen 2024 (Statistik)",
+  "category": "widgets",
+  "icon": "chart-line",
+  "description": "Animierte Statistik für wichtige Zahlen 2024.",
+  "attributes": {"zahlen": {"type": "array"}},
+  "editorScript": "verein-block-wichtige-zahlen"
+}

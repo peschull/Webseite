@@ -1,0 +1,369 @@
+{
+  "name": "F-12 Membership Application & Invoice",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "membership-apply",
+        "options": {}
+      },
+      "id": "webhook-membership-apply",
+      "name": "Membership Application Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.CIVICRM_BASE_URL }}/civicrm/extern/rest.php",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "entity",
+              "value": "Contact"
+            },
+            {
+              "name": "action",
+              "value": "get"
+            },
+            {
+              "name": "api_key",
+              "value": "={{ $env.CIVICRM_API_KEY }}"
+            },
+            {
+              "name": "key",
+              "value": "={{ $env.CIVICRM_SITE_KEY }}"
+            },
+            {
+              "name": "id",
+              "value": "={{ $json.contact_id }}"
+            },
+            {
+              "name": "json",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "id": "get-contact",
+      "name": "Get Contact Details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Calculate pro-rata membership fee\nconst membershipType = $input.first().json.membership_type || 'Regular';\nconst startDate = new Date($input.first().json.start_date || new Date());\nconst endDate = new Date(startDate.getFullYear(), 11, 31); // End of year\n\n// Annual fees by type\nconst annualFees = {\n  'Regular': 60.00,\n  'Student': 30.00,\n  'Senior': 45.00,\n  'Family': 100.00\n};\n\nconst annualFee = annualFees[membershipType] || 60.00;\n\n// Calculate remaining months\nconst monthsRemaining = 12 - startDate.getMonth();\nconst proRataAmount = (annualFee / 12) * monthsRemaining;\n\n// Generate unique membership ID\nconst membershipId = 'MEM-' + startDate.getFullYear() + '-' + String(Date.now()).slice(-6);\n\nreturn {\n  membership_type: membershipType,\n  annual_fee: annualFee,\n  pro_rata_amount: Math.round(proRataAmount * 100) / 100,\n  months_remaining: monthsRemaining,\n  start_date: startDate.toISOString().split('T')[0],\n  end_date: endDate.toISOString().split('T')[0],\n  membership_id: membershipId,\n  cex_id: 'CEX-' + Date.now()\n};"
+      },
+      "id": "calculate-membership-fee",
+      "name": "Calculate Pro-Rata Fee",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.CIVICRM_BASE_URL }}/civicrm/extern/rest.php",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "entity",
+              "value": "Membership"
+            },
+            {
+              "name": "action",
+              "value": "create"
+            },
+            {
+              "name": "api_key",
+              "value": "={{ $env.CIVICRM_API_KEY }}"
+            },
+            {
+              "name": "key",
+              "value": "={{ $env.CIVICRM_SITE_KEY }}"
+            },
+            {
+              "name": "contact_id",
+              "value": "={{ $node['Membership Application Webhook'].json.contact_id }}"
+            },
+            {
+              "name": "membership_type_id",
+              "value": "={{ $node['Calculate Pro-Rata Fee'].json.membership_type }}"
+            },
+            {
+              "name": "start_date",
+              "value": "={{ $node['Calculate Pro-Rata Fee'].json.start_date }}"
+            },
+            {
+              "name": "end_date",
+              "value": "={{ $node['Calculate Pro-Rata Fee'].json.end_date }}"
+            },
+            {
+              "name": "status_id",
+              "value": "Pending"
+            },
+            {
+              "name": "source",
+              "value": "Online Application"
+            },
+            {
+              "name": "json",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "id": "create-membership",
+      "name": "Create Membership (Pending)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.CIVICRM_BASE_URL }}/civicrm/extern/rest.php",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "entity",
+              "value": "Contribution"
+            },
+            {
+              "name": "action",
+              "value": "create"
+            },
+            {
+              "name": "api_key",
+              "value": "={{ $env.CIVICRM_API_KEY }}"
+            },
+            {
+              "name": "key",
+              "value": "={{ $env.CIVICRM_SITE_KEY }}"
+            },
+            {
+              "name": "contact_id",
+              "value": "={{ $node['Membership Application Webhook'].json.contact_id }}"
+            },
+            {
+              "name": "financial_type_id",
+              "value": "Membership Dues"
+            },
+            {
+              "name": "total_amount",
+              "value": "={{ $node['Calculate Pro-Rata Fee'].json.pro_rata_amount }}"
+            },
+            {
+              "name": "currency",
+              "value": "EUR"
+            },
+            {
+              "name": "contribution_status_id",
+              "value": "Pending"
+            },
+            {
+              "name": "source",
+              "value": "Membership Application"
+            },
+            {
+              "name": "cex_id",
+              "value": "={{ $node['Calculate Pro-Rata Fee'].json.cex_id }}"
+            },
+            {
+              "name": "json",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "id": "create-contribution",
+      "name": "Create Contribution (Pending)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "templateId": "membership-invoice",
+        "data": "={{ {\n  \"member_name\": $node['Get Contact Details'].json.values[0].display_name,\n  \"member_address\": $node['Get Contact Details'].json.values[0].street_address || '',\n  \"member_city\": $node['Get Contact Details'].json.values[0].city || '',\n  \"member_postal_code\": $node['Get Contact Details'].json.values[0].postal_code || '',\n  \"member_email\": $node['Get Contact Details'].json.values[0].email,\n  \"membership_type\": $node['Calculate Pro-Rata Fee'].json.membership_type,\n  \"annual_fee\": $node['Calculate Pro-Rata Fee'].json.annual_fee,\n  \"pro_rata_amount\": $node['Calculate Pro-Rata Fee'].json.pro_rata_amount,\n  \"months_remaining\": $node['Calculate Pro-Rata Fee'].json.months_remaining,\n  \"start_date\": $node['Calculate Pro-Rata Fee'].json.start_date,\n  \"end_date\": $node['Calculate Pro-Rata Fee'].json.end_date,\n  \"membership_id\": $node['Calculate Pro-Rata Fee'].json.membership_id,\n  \"invoice_date\": new Date().toLocaleDateString('de-AT'),\n  \"payment_due_date\": new Date(Date.now() + 14*24*60*60*1000).toLocaleDateString('de-AT'),\n  \"organization\": \"Menschlichkeit Österreich\",\n  \"iban\": \"AT12 3456 7890 1234 5678\",\n  \"bic\": \"BKAUATWW\",\n  \"reference\": $node['Calculate Pro-Rata Fee'].json.cex_id\n} }}",
+        "outputFormat": "binary"
+      },
+      "id": "generate-invoice-pdf",
+      "name": "Generate Membership Invoice",
+      "type": "n8n-nodes-craftmypdf.craftMyPdf",
+      "typeVersion": 1,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "mitgliedschaft@menschlichkeit.at",
+        "toEmail": "={{ $node['Get Contact Details'].json.values[0].email }}",
+        "subject": "Dein Mitgliedsbeitrag - Rechnung im Anhang",
+        "emailFormat": "html",
+        "html": "=Liebe/r {{ $node['Get Contact Details'].json.values[0].display_name }},\\n\\nvielen Dank für deine Mitgliedschaft bei Menschlichkeit Österreich!\\n\\nIm Anhang findest du die Rechnung für deinen Mitgliedsbeitrag {{ $node['Calculate Pro-Rata Fee'].json.membership_type }} in Höhe von € {{ $node['Calculate Pro-Rata Fee'].json.pro_rata_amount }}.\\n\\nDie Mitgliedschaft ist gültig vom {{ $node['Calculate Pro-Rata Fee'].json.start_date }} bis {{ $node['Calculate Pro-Rata Fee'].json.end_date }}.\\n\\nBitte überweise den Betrag innerhalb von 14 Tagen auf unser Konto:\\nIBAN: AT12 3456 7890 1234 5678\\nBIC: BKAUATWW\\nVerwendungszweck: {{ $node['Calculate Pro-Rata Fee'].json.cex_id }}\\n\\nSobald die Zahlung eingegangen ist, erhältst du weitere Informationen zu deinen Mitgliedsvorteilen.\\n\\nHerzliche Grüße,\\nDein Team von Menschlichkeit Österreich",
+        "attachments": "data",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "data"
+              }
+            ]
+          }
+        }
+      },
+      "id": "send-invoice-email",
+      "name": "Send Invoice Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1560, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.CIVICRM_BASE_URL }}/civicrm/extern/rest.php",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "entity",
+              "value": "Activity"
+            },
+            {
+              "name": "action",
+              "value": "create"
+            },
+            {
+              "name": "api_key",
+              "value": "={{ $env.CIVICRM_API_KEY }}"
+            },
+            {
+              "name": "key",
+              "value": "={{ $env.CIVICRM_SITE_KEY }}"
+            },
+            {
+              "name": "activity_type_id",
+              "value": "Membership Application"
+            },
+            {
+              "name": "source_contact_id",
+              "value": "={{ $node['Membership Application Webhook'].json.contact_id }}"
+            },
+            {
+              "name": "target_contact_id",
+              "value": "={{ $node['Membership Application Webhook'].json.contact_id }}"
+            },
+            {
+              "name": "subject",
+              "value": "Membership application submitted - {{ $node['Calculate Pro-Rata Fee'].json.membership_type }}"
+            },
+            {
+              "name": "details",
+              "value": "Amount: € {{ $node['Calculate Pro-Rata Fee'].json.pro_rata_amount }}, CEX-ID: {{ $node['Calculate Pro-Rata Fee'].json.cex_id }}"
+            },
+            {
+              "name": "activity_date_time",
+              "value": "={{ new Date().toISOString() }}"
+            },
+            {
+              "name": "json",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "id": "create-activity",
+      "name": "Create Application Activity",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1780, 300]
+    }
+  ],
+  "connections": {
+    "Membership Application Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Contact Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contact Details": {
+      "main": [
+        [
+          {
+            "node": "Calculate Pro-Rata Fee",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Pro-Rata Fee": {
+      "main": [
+        [
+          {
+            "node": "Create Membership (Pending)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Membership (Pending)": {
+      "main": [
+        [
+          {
+            "node": "Create Contribution (Pending)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Contribution (Pending)": {
+      "main": [
+        [
+          {
+            "node": "Generate Membership Invoice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Membership Invoice": {
+      "main": [
+        [
+          {
+            "node": "Send Invoice Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Invoice Email": {
+      "main": [
+        [
+          {
+            "node": "Create Application Activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "errorWorkflow": {
+      "id": "F-08_error"
+    },
+    "timezone": "Europe/Vienna",
+    "executionOrder": "v1"
+  }
+}

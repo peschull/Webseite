@@ -1,0 +1,509 @@
+{
+  "name": "F-15: Member Portal Access & User Management",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "member-portal-access",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-portal-access",
+      "name": "Webhook Portal Access",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "contact",
+        "operation": "get",
+        "contactId": "={{ $json.contact_id }}"
+      },
+      "id": "get-contact",
+      "name": "Get Contact Details",
+      "type": "n8n-nodes-base.civicrm",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "credentials": {
+        "civicrmOAuth2Api": {
+          "id": "civicrm-oauth",
+          "name": "CiviCRM OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "membership",
+        "operation": "get",
+        "contactId": "={{ $json.contact_id }}",
+        "additionalFields": {
+          "membership_type_id": "={{ $json.membership_type_id }}"
+        }
+      },
+      "id": "get-membership",
+      "name": "Get Membership Details",
+      "type": "n8n-nodes-base.civicrm",
+      "typeVersion": 1,
+      "position": [680, 300],
+      "credentials": {
+        "civicrmOAuth2Api": {
+          "id": "civicrm-oauth",
+          "name": "CiviCRM OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.membership_status }}",
+              "rightValue": "Current",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combineOperation": "all"
+        }
+      },
+      "id": "check-membership-status",
+      "name": "Check Membership Status",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $vars.NEXTCLOUD_API_URL }}/ocs/v1.php/cloud/users",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "OCS-APIRequest",
+              "value": "true"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "userid",
+              "value": "member_{{ $json.membership_id }}"
+            },
+            {
+              "name": "password",
+              "value": "={{ $vars.GENERATE_TEMP_PASSWORD }}"
+            },
+            {
+              "name": "displayName",
+              "value": "={{ $json.display_name }}"
+            },
+            {
+              "name": "email",
+              "value": "={{ $json.email }}"
+            },
+            {
+              "name": "groups[]",
+              "value": "members"
+            }
+          ]
+        }
+      },
+      "id": "create-nextcloud-user",
+      "name": "Create Nextcloud User",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1120, 200],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "nextcloud-admin",
+          "name": "Nextcloud Admin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $vars.WORDPRESS_API_URL }}/wp-json/wp/v2/users",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $vars.WORDPRESS_JWT_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "username",
+              "value": "member_{{ $json.membership_id }}"
+            },
+            {
+              "name": "email",
+              "value": "={{ $json.email }}"
+            },
+            {
+              "name": "password",
+              "value": "={{ $vars.GENERATE_TEMP_PASSWORD }}"
+            },
+            {
+              "name": "name",
+              "value": "={{ $json.display_name }}"
+            },
+            {
+              "name": "roles",
+              "value": "[\"member\"]"
+            },
+            {
+              "name": "meta",
+              "value": "={{ {\n  \"membership_id\": $json.membership_id,\n  \"membership_start\": $json.membership_start_date,\n  \"membership_end\": $json.membership_end_date,\n  \"membership_type\": $json.membership_type,\n  \"civicrm_contact_id\": $json.contact_id\n} }}"
+            }
+          ]
+        }
+      },
+      "id": "create-wordpress-user",
+      "name": "Create WordPress User",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1120, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "wordpress-jwt",
+          "name": "WordPress JWT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $vars.TELEGRAM_BOT_API_URL }}/bot{{ $vars.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "{{ $vars.TELEGRAM_MEMBER_CHANNEL_ID }}"
+            },
+            {
+              "name": "text",
+              "value": "🎉 Neues Mitglied im Portal!\n\n👤 Name: {{ $json.display_name }}\n🆔 Mitgliedsnummer: {{ $json.membership_id }}\n📧 E-Mail: {{ $json.email }}\n📅 Beigetreten: {{ DateTime.now().toFormat('dd.MM.yyyy HH:mm') }}\n\nZugang zum Mitgliederportal wurde eingerichtet! ✅"
+            },
+            {
+              "name": "parse_mode",
+              "value": "Markdown"
+            }
+          ]
+        }
+      },
+      "id": "notify-telegram",
+      "name": "Notify Telegram Channel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1120, 400]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $vars.SMTP_FROM_EMAIL }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "Ihre Zugangsdaten für den Mitgliederbereich 🔐",
+        "emailType": "html",
+        "message": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Mitgliederbereich Zugangsdaten</title>\n    <style>\n        .credentials-container {\n            max-width: 600px;\n            margin: 0 auto;\n            font-family: Arial, sans-serif;\n            line-height: 1.6;\n        }\n        .header {\n            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);\n            color: white;\n            padding: 30px;\n            text-align: center;\n            border-radius: 10px 10px 0 0;\n        }\n        .content {\n            background: white;\n            padding: 30px;\n            border: 1px solid #ddd;\n        }\n        .credentials-box {\n            background: #f8f9fa;\n            border: 2px solid #28a745;\n            padding: 20px;\n            border-radius: 10px;\n            margin: 20px 0;\n            text-align: center;\n        }\n        .portal-links {\n            background: #e3f2fd;\n            padding: 20px;\n            border-radius: 10px;\n            margin: 20px 0;\n        }\n        .cta-button {\n            display: inline-block;\n            background: #007bff;\n            color: white;\n            padding: 15px 30px;\n            text-decoration: none;\n            border-radius: 5px;\n            margin: 10px 5px;\n            font-weight: bold;\n        }\n        .security-notice {\n            background: #fff3cd;\n            border: 1px solid #ffeaa7;\n            padding: 15px;\n            border-radius: 5px;\n            margin: 20px 0;\n        }\n        .footer {\n            background: #f8f9fa;\n            padding: 20px;\n            text-align: center;\n            font-size: 12px;\n            color: #666;\n            border-radius: 0 0 10px 10px;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"credentials-container\">\n        <div class=\"header\">\n            <h1>🔐 Ihre Zugangsdaten sind bereit!</h1>\n            <p>Willkommen im exklusiven Mitgliederbereich</p>\n        </div>\n        \n        <div class=\"content\">\n            <h2>Liebe/r {{ $json.display_name }},</h2>\n            \n            <p>Ihr Zugang zu unserem Mitgliederbereich wurde erfolgreich eingerichtet! Sie haben nun Zugriff auf alle exklusiven Inhalte und Services.</p>\n            \n            <div class=\"credentials-box\">\n                <h3>🎯 Ihre Zugangsdaten:</h3>\n                <table style=\"width: 100%; margin: 15px 0;\">\n                    <tr>\n                        <td style=\"text-align: right; padding: 5px; font-weight: bold;\">Benutzername:</td>\n                        <td style=\"text-align: left; padding: 5px; font-family: monospace; background: #e9ecef;\">member_{{ $json.membership_id }}</td>\n                    </tr>\n                    <tr>\n                        <td style=\"text-align: right; padding: 5px; font-weight: bold;\">E-Mail:</td>\n                        <td style=\"text-align: left; padding: 5px; font-family: monospace; background: #e9ecef;\">{{ $json.email }}</td>\n                    </tr>\n                    <tr>\n                        <td style=\"text-align: right; padding: 5px; font-weight: bold;\">Temporäres Passwort:</td>\n                        <td style=\"text-align: left; padding: 5px; font-family: monospace; background: #e9ecef;\">{{ $vars.GENERATE_TEMP_PASSWORD }}</td>\n                    </tr>\n                </table>\n            </div>\n            \n            <div class=\"portal-links\">\n                <h3>🚀 Ihre Portale:</h3>\n                <div style=\"text-align: center;\">\n                    <a href=\"{{ $vars.MEMBER_PORTAL_URL }}/login\" class=\"cta-button\">\n                        🌐 Haupt-Mitgliederbereich\n                    </a>\n                    <a href=\"{{ $vars.NEXTCLOUD_URL }}/login\" class=\"cta-button\">\n                        ☁️ Cloud-Speicher\n                    </a>\n                    <a href=\"{{ $vars.FORUM_URL }}/login\" class=\"cta-button\">\n                        💬 Mitglieder-Forum\n                    </a>\n                </div>\n            </div>\n            \n            <div class=\"security-notice\">\n                <h4>🔒 Wichtige Sicherheitshinweise:</h4>\n                <ul>\n                    <li><strong>Ändern Sie Ihr Passwort</strong> sofort nach dem ersten Login</li>\n                    <li>Verwenden Sie ein starkes, einzigartiges Passwort</li>\n                    <li>Teilen Sie Ihre Zugangsdaten niemals mit anderen</li>\n                    <li>Melden Sie sich nach der Nutzung wieder ab</li>\n                    <li>Bei Problemen kontaktieren Sie sofort unseren Support</li>\n                </ul>\n            </div>\n            \n            <h3>🌟 Was Sie im Mitgliederbereich erwartet:</h3>\n            <ul>\n                <li>📊 <strong>Transparenz-Dashboard:</strong> Aktuelle Projektberichte und Finanzübersichten</li>\n                <li>📅 <strong>Veranstaltungskalender:</strong> Exklusive Events und Mitgliederversammlungen</li>\n                <li>💬 <strong>Community-Forum:</strong> Austausch mit anderen Mitgliedern</li>\n                <li>📚 <strong>Wissensdatenbank:</strong> Hintergrundmaterial und Studien</li>\n                <li>☁️ <strong>Cloud-Speicher:</strong> 5GB persönlicher Speicherplatz</li>\n                <li>🎁 <strong>Mitglieder-Shop:</strong> Exklusive Produkte mit Rabatt</li>\n                <li>📞 <strong>Direktkontakt:</strong> Bevorzugter Support-Kanal</li>\n            </ul>\n            \n            <div style=\"background: #d1ecf1; padding: 20px; border-radius: 10px; margin: 20px 0;\">\n                <h4>💡 Erste Schritte nach dem Login:</h4>\n                <ol>\n                    <li>Profil vervollständigen und Passwort ändern</li>\n                    <li>Benachrichtigungseinstellungen anpassen</li>\n                    <li>Aktuellen Transparenzbericht ansehen</li>\n                    <li>Im Forum vorstellen (optional)</li>\n                    <li>Kommende Veranstaltungen erkunden</li>\n                </ol>\n            </div>\n            \n            <p><strong>Support bei Problemen:</strong></p>\n            <ul>\n                <li>📧 <a href=\"mailto:support@menschlichkeit.at\">support@menschlichkeit.at</a></li>\n                <li>📞 +43 1 234 5678 (Mo-Fr, 9-17 Uhr)</li>\n                <li>💬 Live-Chat im Mitgliederbereich</li>\n                <li>❓ <a href=\"{{ $vars.MEMBER_PORTAL_URL }}/hilfe\">Hilfe-Center</a></li>\n            </ul>\n            \n            <p>Wir freuen uns darauf, Sie bald in unserem Mitgliederbereich begrüßen zu dürfen!</p>\n            \n            <p>Mit herzlichen Grüßen,<br>\n            <strong>Ihr Mitgliederservice-Team</strong></p>\n        </div>\n        \n        <div class=\"footer\">\n            <p>Diese E-Mail enthält vertrauliche Zugangsdaten. Bitte behandeln Sie sie entsprechend sicher.<br>\n            <a href=\"{{ $vars.WEBSITE_URL }}/impressum\">Impressum</a> | \n            <a href=\"{{ $vars.WEBSITE_URL }}/datenschutz\">Datenschutz</a></p>\n        </div>\n    </div>\n</body>\n</html>"
+      },
+      "id": "send-credentials-email",
+      "name": "Send Portal Credentials Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1340, 300],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-config",
+          "name": "SMTP Configuration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $vars.SMTP_FROM_EMAIL }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "Mitgliedschaft nicht aktiv - Kein Portalzugang",
+        "emailType": "html",
+        "message": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Mitgliedschaftsstatus</title>\n</head>\n<body>\n    <h2>❌ Mitgliedschaftsstatus: Nicht aktiv</h2>\n    \n    <p>Liebe/r {{ $json.display_name }},</p>\n    \n    <p>wir haben festgestellt, dass Ihre Mitgliedschaft derzeit nicht aktiv ist. Daher können wir Ihnen leider noch keinen Zugang zum Mitgliederbereich gewähren.</p>\n    \n    <div style=\"background-color: #f8d7da; padding: 15px; border-radius: 5px; margin: 20px 0;\">\n        <h3>Status-Details:</h3>\n        <ul>\n            <li><strong>Mitgliedsnummer:</strong> {{ $json.membership_id }}</li>\n            <li><strong>Aktueller Status:</strong> {{ $json.membership_status }}</li>\n            <li><strong>Grund:</strong> {{ $json.status_reason || 'Zahlung ausstehend oder Mitgliedschaft abgelaufen' }}</li>\n        </ul>\n    </div>\n    \n    <p>Mögliche Lösungen:</p>\n    <ul>\n        <li>✅ Ausstehende Mitgliedsbeiträge begleichen</li>\n        <li>✅ Mitgliedschaft erneuern</li>\n        <li>✅ Kontakt mit unserem Mitgliederservice aufnehmen</li>\n    </ul>\n    \n    <p>Sobald Ihre Mitgliedschaft aktiviert ist, erhalten Sie automatisch Ihre Zugangsdaten für den Mitgliederbereich.</p>\n    \n    <p>Bei Fragen wenden Sie sich gerne an:</p>\n    <p>📧 <a href=\"mailto:mitglieder@menschlichkeit.at\">mitglieder@menschlichkeit.at</a><br>\n    📞 +43 1 234 5678</p>\n    \n    <p>Mit freundlichen Grüßen,<br>\n    Ihr Team von Menschlichkeit Österreich</p>\n</body>\n</html>"
+      },
+      "id": "send-inactive-notification",
+      "name": "Send Inactive Status Notification",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1340, 500],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-config",
+          "name": "SMTP Configuration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "resource": "activity",
+        "additionalFields": {
+          "activity_type_id": "53",
+          "activity_date_time": "={{ $now }}",
+          "status_id": "2",
+          "source_contact_id": "1",
+          "target_contact_id": "={{ $json.contact_id }}",
+          "subject": "Portalzugang eingerichtet für {{ $json.display_name }}",
+          "details": "Member portal access created successfully. WordPress user: member_{{ $json.membership_id }}, Nextcloud user created, credentials sent via email.",
+          "assignee_contact_id": "1"
+        }
+      },
+      "id": "create-portal-activity",
+      "name": "Create Portal Access Activity",
+      "type": "n8n-nodes-base.civicrm",
+      "typeVersion": 1,
+      "position": [1560, 300],
+      "credentials": {
+        "civicrmOAuth2Api": {
+          "id": "civicrm-oauth",
+          "name": "CiviCRM OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $vars.PROMETHEUS_PUSHGATEWAY_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "text/plain"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "string",
+        "body": "member_portal_access_created_total{status=\"{{ $json.membership_status }}\",member_id=\"{{ $json.membership_id }}\"} 1"
+      },
+      "id": "update-metrics",
+      "name": "Update Prometheus Metrics",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1780, 400]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  \"success\": true,\n  \"message\": \"Portal access created successfully\",\n  \"member_id\": $json.membership_id,\n  \"username\": \"member_\" + $json.membership_id,\n  \"portals\": {\n    \"main\": $vars.MEMBER_PORTAL_URL,\n    \"nextcloud\": $vars.NEXTCLOUD_URL,\n    \"forum\": $vars.FORUM_URL\n  },\n  \"created_at\": $now\n} }}"
+      },
+      "id": "respond-success",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2000, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  \"success\": false,\n  \"message\": \"Portal access denied - membership not active\",\n  \"member_id\": $json.membership_id,\n  \"status\": $json.membership_status,\n  \"reason\": \"Membership must be active to create portal access\",\n  \"contact_support\": \"mitglieder@menschlichkeit.at\"\n} }}"
+      },
+      "id": "respond-inactive",
+      "name": "Respond Inactive",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2000, 500]
+    }
+  ],
+  "connections": {
+    "Webhook Portal Access": {
+      "main": [
+        [
+          {
+            "node": "Get Contact Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contact Details": {
+      "main": [
+        [
+          {
+            "node": "Get Membership Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Membership Details": {
+      "main": [
+        [
+          {
+            "node": "Check Membership Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Membership Status": {
+      "main": [
+        [
+          {
+            "node": "Create Nextcloud User",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create WordPress User",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notify Telegram Channel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Inactive Status Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Nextcloud User": {
+      "main": [
+        [
+          {
+            "node": "Send Portal Credentials Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create WordPress User": {
+      "main": [
+        [
+          {
+            "node": "Send Portal Credentials Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Telegram Channel": {
+      "main": [
+        [
+          {
+            "node": "Send Portal Credentials Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Portal Credentials Email": {
+      "main": [
+        [
+          {
+            "node": "Create Portal Access Activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Inactive Status Notification": {
+      "main": [
+        [
+          {
+            "node": "Update Prometheus Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Portal Access Activity": {
+      "main": [
+        [
+          {
+            "node": "Update Prometheus Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Prometheus Metrics": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond Inactive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2025-06-21T10:00:00.000Z",
+      "updatedAt": "2025-06-21T10:00:00.000Z",
+      "id": "member-portal",
+      "name": "Member Portal"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2025-06-21T10:00:00.000Z",
+  "versionId": "1"
+}

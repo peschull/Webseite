@@ -1,0 +1,14 @@
+/* Button Block – Basis-Styles */
+.button-block {
+  padding: 1em 2em;
+  background: #007cba;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.button-block:hover {
+  background: #005a8c;
+}

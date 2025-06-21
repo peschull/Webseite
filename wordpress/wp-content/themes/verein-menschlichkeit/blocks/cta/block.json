@@ -1,0 +1,16 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/cta",
+  "title": "Call to Action",
+  "category": "widgets",
+  "icon": "megaphone",
+  "description": "Auffälliger Call-to-Action-Block für Engagement und Spenden.",
+  "supports": { "align": ["wide", "full"] },
+  "attributes": {
+    "text": { "type": "string", "default": "Jetzt mitmachen!" },
+    "url": { "type": "string", "default": "/mitglied-werden" },
+    "backgroundColor": { "type": "string", "default": "#2563eb" },
+    "textColor": { "type": "string", "default": "#fff" }
+  },
+  "editorScript": "verein-block-cta"
+}

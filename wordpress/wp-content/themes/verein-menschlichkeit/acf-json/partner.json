@@ -1,0 +1,22 @@
+{
+  "key": "group_partner",
+  "title": "Partner",
+  "fields": [
+    {
+      "key": "field_partner",
+      "label": "Partner",
+      "name": "partner",
+      "type": "repeater",
+      "sub_fields": [
+        { "key": "field_name", "label": "Name", "name": "name", "type": "text" },
+        { "key": "field_logo", "label": "Logo", "name": "logo", "type": "image", "return_format": "array" },
+        { "key": "field_url", "label": "URL", "name": "url", "type": "url" }
+      ]
+    }
+  ],
+  "location": [
+    [
+      { "param": "page_template", "operator": "==", "value": "partner.php" }
+    ]
+  ]
+}

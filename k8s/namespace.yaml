@@ -1,0 +1,27 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: n8n-prod
+  labels:
+    name: n8n-prod
+    app.kubernetes.io/part-of: civicrm-n8n-integration
+    app.kubernetes.io/managed-by: helm
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    name: monitoring
+    app.kubernetes.io/part-of: observability-stack
+    app.kubernetes.io/managed-by: helm
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: civicrm-prod
+  labels:
+    name: civicrm-prod
+    app.kubernetes.io/part-of: civicrm-n8n-integration
+    app.kubernetes.io/managed-by: helm

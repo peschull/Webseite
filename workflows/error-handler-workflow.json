@@ -1,0 +1,188 @@
+{
+  "name": "Error Handler Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "error-trigger",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "rate-limit-check",
+              "leftValue": "={{ $json.error.httpCode }}",
+              "rightValue": "429",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "check-error-type",
+      "name": "Check Error Type",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "id": "rate-limit-wait",
+      "name": "Rate Limit Wait",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [680, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://api.atlassian.com/ex/jira/{{ $env.JIRA_CLOUD_ID }}/rest/api/3/issue",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "jiraApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Basic {{ $env.JIRA_AUTH_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "={{ {\n  \"project\": {\n    \"key\": \"MHOPS\"\n  },\n  \"summary\": \"Workflow Error: \" + $json.workflow.name,\n  \"description\": \"Error in workflow execution:\\n\\nError: \" + $json.error.message + \"\\n\\nWorkflow: \" + $json.workflow.name + \"\\n\\nNode: \" + $json.node.name + \"\\n\\nTimestamp: \" + new Date().toISOString(),\n  \"issuetype\": {\n    \"name\": \"Bug\"\n  },\n  \"priority\": {\n    \"name\": \"High\"\n  }\n} }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "create-jira-ticket",
+      "name": "Create Jira Ticket",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 400]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.CIVICRM_BASE_URL }}/civicrm/extern/rest.php",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "entity",
+              "value": "Contribution"
+            },
+            {
+              "name": "action",
+              "value": "create"
+            },
+            {
+              "name": "api_key",
+              "value": "={{ $env.CIVICRM_API_KEY }}"
+            },
+            {
+              "name": "key",
+              "value": "={{ $env.CIVICRM_SITE_KEY }}"
+            },
+            {
+              "name": "id",
+              "value": "={{ $json.workflow.execution.data.contribution_id }}"
+            },
+            {
+              "name": "custom_workflow_error",
+              "value": "={{ $json.error.message }}"
+            },
+            {
+              "name": "json",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "update-civicrm-error",
+      "name": "Update CiviCRM with Error",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Check Error Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Error Type": {
+      "main": [
+        [
+          {
+            "node": "Rate Limit Wait",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Jira Ticket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rate Limit Wait": {
+      "main": [
+        [
+          {
+            "node": "Update CiviCRM with Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Jira Ticket": {
+      "main": [
+        [
+          {
+            "node": "Update CiviCRM with Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "timezone": "Europe/Vienna"
+  }
+}

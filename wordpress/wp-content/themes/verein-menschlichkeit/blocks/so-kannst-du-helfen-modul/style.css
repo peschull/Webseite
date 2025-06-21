@@ -1,0 +1,73 @@
+.so-kannst-du-helfen-modul {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+.helfen-titel {
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 2rem;
+    color: #333;
+}
+.helfen-liste {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+}
+.helfen-item {
+    background: #f7f7f7;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    padding: 1.5rem 1.2rem;
+    max-width: 320px;
+    min-width: 220px;
+    flex: 1 1 220px;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.5s cubic-bezier(.4,0,.2,1);
+}
+.helfen-item.visible {
+    opacity: 1;
+    transform: none;
+}
+.helfen-icon img {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
+}
+.helfen-content h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1.2em;
+    color: #222;
+}
+.helfen-content p {
+    margin: 0 0 1rem 0;
+    color: #555;
+}
+.helfen-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    color: var(--wp--preset--color--primary, #007cba);
+    text-decoration: underline;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+.helfen-link:hover {
+    color: var(--wp--preset--color--primary-dark, #005a87);
+}
+@media (max-width: 700px) {
+    .helfen-liste {
+        flex-direction: column;
+        gap: 1.2rem;
+    }
+    .helfen-item {
+        max-width: 100%;
+    }
+    .helfen-titel {
+        font-size: 1.3em;
+    }
+}

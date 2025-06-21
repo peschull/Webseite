@@ -1,0 +1,11 @@
+.dokumentensammlung {
+    background: #f7fafd;
+    border-left: 4px solid #00b4d8;
+    padding: 1.2em 1em;
+    margin: 1em 0;
+}
+.dokumentenliste {
+    list-style: disc inside;
+    margin: 0;
+    padding: 0;
+}

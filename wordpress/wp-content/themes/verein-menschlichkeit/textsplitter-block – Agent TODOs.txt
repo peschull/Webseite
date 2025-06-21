@@ -1,0 +1,91 @@
+# textsplitter-block – Agent TODOs
+
+<!--
+  Format: 
+  - [x] ID  Summary
+        file:   relative/path
+        why:    1-Satz-Begründung
+        how:    Kurzanleitung (max 3 Schritte, imperative)
+        done:   objektives Erfolgskriterium
+        test:   (optional) Befehl für Agent, um das Kriterium zu verifizieren
+-->
+
+## 🟢 Quick Wins
+
+- [x] CORE-01  Escape & i18n im PHP-Template
+      file:   template.php
+      why:    Sicherheit & Übersetzbarkeit
+      how:    >-
+        1. Umfasse alle statischen Strings mit __("…", 'textsplitter').
+        2. Ersetze direkte Echo-Ausgaben durch esc_html()/esc_url().
+      done:   `template.php` enthält 0 un-escaped echoes bei `npm run lint:php`.
+      test:   vendor/bin/phpcs template.php --standard=WPCS
+
+- [x] CORE-02  Repeater korrekt ausgeben
+      file:   fields.php
+      why:    Platzhalter durch echte Repeater-Daten ersetzen
+      how:    Implementiere while( have_rows('paragraphs') )-Schleife → wp_kses_post().
+      done:   Aufruf im Frontend liefert echten Inhalt, Lighthouse zeigt kein "dummy".
+      test:   wp eval-file tests/assert-repeater.php
+
+- [x] CORE-03  Basis-Styles hinzufügen
+      file:   src/style.scss
+      why:    Lesbarkeit & Grund-UX
+      how:    Füge `.textsplitter{padding:4rem 2rem;background-size:cover;color:#fff}` + h2-Clamp-Font.
+      done:   `npm run build` erzeugt `.textsplitter`-Regel in build/style.css.
+
+## ⚙️ Build & Core
+
+- [x] BUILD-01  NPM-Setup & WP-Scripts
+      file:   package.json
+      why:    Build-Pipeline für Edit/Save
+      how:    `npm init -y` → `npm i -D @wordpress/scripts` → scripts-Eintrag ("start","build").
+      done:   `npm run build` exits 0 und erzeugt /build.
+
+- [x] BUILD-02  Edit-Komponente (TSX)
+      file:   src/edit.tsx
+      why:    Block soll im Gutenberg-Editor sichtbar/editierbar sein
+      how:    Erstelle funktionale Komponente mit RichText, MediaUpload, InspectorControls.
+      done:   Editor zeigt Block-UI ohne React-Fehler in Konsole.
+
+- [x] BUILD-03  Save-Komponente (TSX)
+      file:   src/save.tsx
+      why:    Frontend-HTML aus React-Save sicherstellen
+      how:    Spiegele Markup aus `template.php` via `RichText.Content`.
+      done:   Editor-Preview ≙ Frontend-Ausgabe (snapshot-Vergleich).
+
+## 🔒 Hardening
+
+- [x] SEC-01  ESLint + Prettier in CI
+      file:   .eslintrc.cjs, .prettierrc
+      why:    Konsistenter Code-Style & Fehlerprävention
+      how:    Konfiguriere eslint-config-wordpress + prettier-plugin.
+      done:   `npm run lint` liefert keine Fehler.
+
+- [x] SEC-02  Playwright-E2E
+      file:   tests/e2e/block.spec.ts
+      why:    Regressionstests für Block-Interaktion
+      how:    Öffne Editor → füge Block ein → ändere Titel → veröffentliche → prüfe HTML.
+      done:   `npm run test:e2e` grüner Durchlauf.
+
+## ♿ Accessibility
+
+- [x] A11Y-01  ARIA-Label für Bild-Upload-Button
+      file:   src/edit.tsx
+      why:    Screen-Reader-Kompatibilität
+      how:    `aria-label={__('Hintergrundbild wählen', 'textsplitter')}` hinzufügen.
+      done:   axe-core CLI meldet 0 a11y-Violations für Upload-Button.
+
+## 📚 Docs
+
+- [x] DOC-01  README Quick-Start
+      file:   README.md
+      why:    Onboarding neue Devs < 90 Sek.
+      how:    Sektionen: Install, Dev-Server, Build, Release.
+      done:   README enthält Shell-Blocks, keinen Lorem Ipsum.
+
+---
+
+> **Hinweis für Agenten:**  
+> Jede Checkbox darf erst abgehakt werden, wenn **alle** Bedingungen unter `done:` erfüllt **und** (falls vorhanden) der Befehl unter `test:` ohne Fehler ausgeführt wurde.  
+> Verwende Konventions-Commits (`feat:`, `fix:`, `chore:`) – der Release-Workflow erkennt die Semantik für `semantic-release`.

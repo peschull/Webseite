@@ -1,0 +1,47 @@
+{
+  "contribution": {
+    "id": "12345",
+    "contact_id": "67890",
+    "total_amount": "100.00",
+    "currency": "EUR",
+    "contribution_status_id": "1",
+    "contribution_type_id": "1",
+    "receive_date": "2025-06-21",
+    "source": "Website Donation",
+    "payment_instrument": "Credit Card",
+    "trxn_id": "stripe_ch_1234567890",
+    "invoice_id": "INV-2025-001",
+    "non_deductible_amount": "0.00",
+    "fee_amount": "3.50",
+    "net_amount": "96.50",
+    "cex_id": "CEX-2024-001"
+  },
+  "contact": {
+    "id": "67890",
+    "contact_type": "Individual",
+    "display_name": "Max Mustermann",
+    "first_name": "Max",
+    "last_name": "Mustermann",
+    "email": "max.mustermann@example.com",
+    "phone": "+43 1 234 5678",
+    "street_address": "Musterstraße 123",
+    "city": "Wien",
+    "postal_code": "1010",
+    "country": "Austria",
+    "preferred_language": "de_DE",
+    "do_not_email": false,
+    "do_not_mail": false,
+    "external_identifier": "hubspot_12345"
+  },
+  "webhook_payload": {
+    "id": "12345",
+    "entity": "Contribution",
+    "action": "create",
+    "timestamp": "2025-06-21T10:30:00Z",
+    "data": {
+      "id": "12345",
+      "contact_id": "67890",
+      "total_amount": "100.00"
+    }
+  }
+}

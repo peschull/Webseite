@@ -1,0 +1,20 @@
+/* Grundlegendes CSS für den Wichtige Zahlen 2024-Block */
+.block-wichtige-zahlen-2024 {
+    display: flex;
+    gap: 2em;
+    background: #f8f8f8;
+    padding: 1em;
+    border-radius: 8px;
+}
+.block-wichtige-zahlen-2024 .zahl {
+    text-align: center;
+}
+.block-wichtige-zahlen-2024 .wert {
+    font-size: 2em;
+    font-weight: bold;
+    color: #0073aa;
+}
+.block-wichtige-zahlen-2024 .beschreibung {
+    display: block;
+    color: #555;
+}

@@ -1,0 +1,12 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/veranstaltungen",
+  "title": "Veranstaltungen",
+  "category": "widgets",
+  "icon": "calendar",
+  "description": "Liste kommender Veranstaltungen mit Datum, Ort, Link.",
+  "attributes": {
+    "events": { "type": "array", "default": [] }
+  },
+  "editorScript": "verein-block-veranstaltungen"
+}

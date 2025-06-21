@@ -1,0 +1,13 @@
+/* Grundlegendes CSS für den Statuten Accordion-Block */
+.block-statuten-accordion {
+    padding: 1em;
+    background: #f6f6f6;
+    border-radius: 8px;
+}
+.block-statuten-accordion details {
+    margin-bottom: 0.5em;
+}
+.block-statuten-accordion summary {
+    font-weight: bold;
+    cursor: pointer;
+}

@@ -1,0 +1,24 @@
+{
+  "contact": {
+    "id": "67890",
+    "contact_type": "Individual",
+    "display_name": "Anna Beispiel",
+    "first_name": "Anna",
+    "last_name": "Beispiel",
+    "email": "anna.beispiel@test.com",
+    "phone": "+43 664 123 4567",
+    "street_address": "Testgasse 456",
+    "city": "Graz",
+    "postal_code": "8010",
+    "country": "Austria",
+    "preferred_language": "de_DE",
+    "do_not_email": false,
+    "do_not_mail": false,
+    "external_identifier": "hubspot_67890",
+    "custom_fields": {
+      "donor_category": "regular",
+      "communication_preference": "email",
+      "interests": ["environment", "education"]
+    }
+  }
+}

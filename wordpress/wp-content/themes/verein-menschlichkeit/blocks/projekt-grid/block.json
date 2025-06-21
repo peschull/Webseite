@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/projekt-grid",
+  "title": "Projekt-Grid mit Filter",
+  "category": "widgets",
+  "icon": "screenoptions",
+  "description": "Projektübersicht als Grid mit Filter nach Thema/Ort.",
+  "attributes": {"projekte": {"type": "array"}},
+  "editorScript": "verein-block-projekt-grid"
+}

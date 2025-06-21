@@ -1,0 +1,13 @@
+{
+  "apiVersion": 2,
+  "name": "verein/barrierefreiheits-modul",
+  "title": "Barrierefreiheits-Modul",
+  "category": "widgets",
+  "icon": "universal-access",
+  "description": "Ein Block für Barrierefreiheits-Informationen oder -Funktionen.",
+  "supports": {
+    "html": false
+  },
+  "editorScript": "file:./block.js",
+  "style": "file:./style.css"
+}

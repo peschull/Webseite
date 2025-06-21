@@ -1,0 +1,13 @@
+{
+  "apiVersion": 2,
+  "name": "verein/budgetverlauf-visualisiert",
+  "title": "Budgetverlauf Visualisiert",
+  "category": "widgets",
+  "icon": "chart-bar",
+  "description": "Ein Block für die Visualisierung des Budgetverlaufs.",
+  "supports": {
+    "html": false
+  },
+  "editorScript": "file:./block.js",
+  "style": "file:./style.css"
+}

@@ -1,0 +1,215 @@
+name: n8n Workflow CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Nightly export at 2:00 AM UTC
+    - cron: '0 2 * * *'
+
+env:
+  NODE_VERSION: '20'
+  N8N_VERSION: '1.41.0'
+
+jobs:
+  export-workflows:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Install n8n CLI
+        run: npm install -g n8n@${{ env.N8N_VERSION }}
+        
+      - name: Export workflows
+        run: |
+          n8n export:workflow --all --output workflows --decrypted
+        env:
+          N8N_ENCRYPTION_KEY: ${{ secrets.N8N_ENCRYPTION_KEY }}
+          N8N_DB_TYPE: postgres
+          N8N_DB_POSTGRESDB_HOST: ${{ secrets.N8N_DB_HOST }}
+          N8N_DB_POSTGRESDB_DATABASE: ${{ secrets.N8N_DB_NAME }}
+          N8N_DB_POSTGRESDB_USER: ${{ secrets.N8N_DB_USER }}
+          N8N_DB_POSTGRESDB_PASSWORD: ${{ secrets.N8N_DB_PASSWORD }}
+          
+      - name: Commit exported workflows
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add workflows/*.json
+          if git diff --staged --quiet; then
+            echo "No workflow changes to commit"
+          else
+            git commit -m "ci: nightly workflow export [$(date +'%Y-%m-%d %H:%M:%S')]"
+            git push
+          fi
+
+  test-workflows:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: n8n_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Install dependencies
+        run: |
+          npm install -g n8n@${{ env.N8N_VERSION }}
+          npm install --production=false
+          
+      - name: Setup test environment
+        run: |
+          cp .env.test.example .env.test
+          
+      - name: Start n8n in test mode
+        run: |
+          n8n start --tunnel &
+          sleep 30
+        env:
+          N8N_ENCRYPTION_KEY: test_encryption_key_12345678901234567890
+          N8N_DB_TYPE: postgres
+          N8N_DB_POSTGRESDB_HOST: localhost
+          N8N_DB_POSTGRESDB_DATABASE: n8n_test
+          N8N_DB_POSTGRESDB_USER: postgres
+          N8N_DB_POSTGRESDB_PASSWORD: postgres
+          N8N_QUEUE_MODE: redis
+          N8N_REDIS_HOST: localhost
+          N8N_REDIS_PORT: 6379
+          
+      - name: Import test workflows
+        run: |
+          n8n import:workflow --input workflows --yes
+          
+      - name: Run workflow tests
+        run: |
+          # Test CiviCRM webhook endpoint
+          curl -X POST http://localhost:5678/webhook-test/civicrm-contribution \
+               -H "Content-Type: application/json" \
+               -d @tests/payloads/contribution.json \
+               --fail-with-body
+               
+          # Wait for workflow execution
+          sleep 10
+          
+          # Check workflow execution status
+          npm run test:workflows
+          
+      - name: Validate PDF generation
+        run: |
+          # Check if test PDF was generated and has minimum size
+          test -f test-outputs/receipt.pdf
+          size=$(stat -f%z test-outputs/receipt.pdf 2>/dev/null || stat -c%s test-outputs/receipt.pdf)
+          [ "$size" -gt 51200 ] # 50KB minimum
+          
+      - name: Stop n8n
+        run: pkill -f n8n || true
+
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+          
+      - name: Check for secrets
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: main
+          head: HEAD
+
+  deploy-staging:
+    runs-on: ubuntu-latest
+    needs: [test-workflows, security-scan]
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Deploy to staging
+        run: |
+          echo "Deploying to staging environment..."
+          # Add deployment logic here
+          
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: [test-workflows, security-scan]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: Release v${{ github.run_number }}
+          body: |
+            Automated release from main branch
+            
+            Changes:
+            ${{ github.event.head_commit.message }}
+          draft: false
+          prerelease: false
+          
+      - name: Deploy to production
+        run: |
+          echo "Deploying to production environment..."
+          # Add production deployment logic here

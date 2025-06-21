@@ -1,0 +1,16 @@
+/* style.css für drag-and-drop-umfrage Block */
+.drag-and-drop-umfrage-block {
+    border: 1px dashed #aaa;
+    padding: 1.5em;
+    background: #f7f7fa;
+    border-radius: 8px;
+    margin-bottom: 2em;
+}
+.drag-and-drop-umfrage-block h2 {
+    margin-top: 0;
+    color: #2a3a4a;
+}
+.drag-items, .drop-zones {
+    margin-top: 1em;
+    min-height: 40px;
+}

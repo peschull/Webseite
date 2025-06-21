@@ -1,0 +1,31 @@
+{
+  "contact_id": 12345,
+  "membership_id": "MEM-2024-001",
+  "membership_type_id": 1,
+  "display_name": "Maria Mustermann",
+  "email": "maria.mustermann@example.com",
+  "membership_type": "Standard Mitgliedschaft",
+  "membership_start_date": "2024-06-21",
+  "membership_end_date": "2025-06-21",
+  "membership_status": "Current",
+  "portal_access_requested": true,
+  "preferred_username": "maria.mustermann",
+  "phone": "+43 1 234 5678",
+  "emergency_contact": {
+    "name": "Max Mustermann",
+    "phone": "+43 1 234 5679",
+    "relationship": "Partner"
+  },
+  "nextcloud_username": "maria.mustermann.ngo",
+  "telegram_invite": {
+    "group_id": "TG001",
+    "invite_link": "https://t.me/+AbCdEfGhIjKlMnOp",
+    "sent_date": "2024-06-21T11:00:00.000Z"
+  },
+  "mentor_assignment": {
+    "mentor_id": 98765,
+    "mentor_name": "Anna Mentor",
+    "mentor_email": "anna.mentor@menschlichkeit.at",
+    "assigned_date": "2024-06-21T12:00:00.000Z"
+  }
+}

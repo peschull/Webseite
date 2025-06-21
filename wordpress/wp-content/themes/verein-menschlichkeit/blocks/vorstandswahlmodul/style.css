@@ -1,0 +1,12 @@
+/* Grundlegendes CSS für den Vorstandswahlmodul-Block */
+.block-vorstandswahlmodul {
+    padding: 1em;
+    background: #f3f7fa;
+    border-radius: 8px;
+}
+.block-vorstandswahlmodul .wahl {
+    min-height: 100px;
+    background: #fff;
+    border: 1px solid #b3d4fc;
+    border-radius: 4px;
+}

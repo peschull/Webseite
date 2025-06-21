@@ -1,0 +1,33 @@
+{
+  "contact_id": 12345,
+  "membership_id": "MEM-2024-001",
+  "display_name": "Maria Mustermann",
+  "email": "maria.mustermann@example.com",
+  "membership_type": "Standard Mitgliedschaft",
+  "membership_start_date": "2024-06-21",
+  "membership_end_date": "2025-06-21",
+  "trigger_date": "2024-06-21T10:30:00.000Z",
+  "welcome_package_requested": true,
+  "newsletter_subscription": true,
+  "preferred_language": "de",
+  "address": {
+    "street": "Musterstraße 123",
+    "city": "Wien",
+    "postal_code": "1010",
+    "country": "Austria"
+  },
+  "welcome_sequence": {
+    "day_0": {
+      "template": "welcome-immediate",
+      "subject": "Willkommen bei Menschlichkeit Österreich!"
+    },
+    "day_7": {
+      "template": "welcome-week-1",
+      "subject": "Ihre ersten Schritte als Mitglied"
+    },
+    "day_30": {
+      "template": "welcome-month-1",
+      "subject": "Ihr erster Monat - Feedback erwünscht"
+    }
+  }
+}

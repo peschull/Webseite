@@ -1,0 +1,22 @@
+.dsgvo-checker-block {
+    background: #f7fafd;
+    border-left: 4px solid #00b4d8;
+    padding: 1.2em 1em;
+    margin: 1em 0;
+}
+.dsgvo-checklist {
+    list-style: none;
+    padding: 0;
+}
+.dsgvo-check-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5em;
+}
+.check-status {
+    font-size: 1.2em;
+    margin-right: 0.5em;
+}
+.check-text {
+    font-weight: bold;
+}

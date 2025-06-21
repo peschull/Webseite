@@ -1,0 +1,28 @@
+{
+  "key": "group_team",
+  "title": "Team",
+  "fields": [
+    {
+      "key": "field_funktion",
+      "label": "Funktion",
+      "name": "funktion",
+      "type": "text"
+    },
+    {
+      "key": "field_bild",
+      "label": "Bild",
+      "name": "bild",
+      "type": "image",
+      "return_format": "array"
+    }
+  ],
+  "location": [
+    [
+      {
+        "param": "post_type",
+        "operator": "==",
+        "value": "team"
+      }
+    ]
+  ]
+}

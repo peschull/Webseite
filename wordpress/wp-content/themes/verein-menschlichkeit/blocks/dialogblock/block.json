@@ -1,0 +1,11 @@
+{
+  "apiVersion": 2,
+  "name": "verein/dialogblock",
+  "title": "Dialogblock",
+  "category": "widgets",
+  "icon": "format-chat",
+  "description": "Ein Block für Dialoge zwischen mehreren Partnern.",
+  "editorScript": "file:./block.js",
+  "style": "file:./style.css",
+  "editorStyle": "file:./editor.css"
+}

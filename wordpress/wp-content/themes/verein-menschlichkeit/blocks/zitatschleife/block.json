@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/zitatschleife",
+  "title": "Zitatschleife mit Carousel",
+  "category": "widgets",
+  "icon": "format-quote",
+  "description": "Carousel für Zitate mit Autorenbild.",
+  "attributes": {"zitate": {"type": "array"}},
+  "editorScript": "verein-block-zitatschleife"
+}

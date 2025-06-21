@@ -1,0 +1,204 @@
+{
+  "name": "Token Refresh Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 2 * * *"
+            }
+          ]
+        }
+      },
+      "id": "nightly-cron",
+      "name": "Nightly Token Refresh",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://graph.facebook.com/v23.0/oauth/access_token",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "fb_exchange_token"
+            },
+            {
+              "name": "client_id",
+              "value": "={{ $env.FB_APP_ID }}"
+            },
+            {
+              "name": "client_secret",
+              "value": "={{ $env.FB_APP_SECRET }}"
+            },
+            {
+              "name": "fb_exchange_token",
+              "value": "={{ $env.FB_SHORT_TOKEN }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "refresh-fb-token",
+      "name": "Refresh Facebook Token",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://www.linkedin.com/oauth/v2/accessToken",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            },
+            {
+              "name": "LinkedIn-Version",
+              "value": "202506"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "refresh_token"
+            },
+            {
+              "name": "refresh_token",
+              "value": "={{ $env.LINKEDIN_REFRESH_TOKEN }}"
+            },
+            {
+              "name": "client_id",
+              "value": "={{ $env.LINKEDIN_CLIENT_ID }}"
+            },
+            {
+              "name": "client_secret",
+              "value": "={{ $env.LINKEDIN_CLIENT_SECRET }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "refresh-linkedin-token",
+      "name": "Refresh LinkedIn Token",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 400]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "id": "merge-tokens",
+      "name": "Merge Token Responses",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/{{ $env.GITHUB_REPO }}/actions/variables",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.GITHUB_TOKEN }}"
+            },
+            {
+              "name": "Accept",
+              "value": "application/vnd.github.v3+json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "FB_PAGE_TOKEN"
+            },
+            {
+              "name": "value",
+              "value": "={{ $node['Refresh Facebook Token'].json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "update-github-secrets",
+      "name": "Update GitHub Secrets",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "Nightly Token Refresh": {
+      "main": [
+        [
+          {
+            "node": "Refresh Facebook Token",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Refresh LinkedIn Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Refresh Facebook Token": {
+      "main": [
+        [
+          {
+            "node": "Merge Token Responses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Refresh LinkedIn Token": {
+      "main": [
+        [
+          {
+            "node": "Merge Token Responses",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Token Responses": {
+      "main": [
+        [
+          {
+            "node": "Update GitHub Secrets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "timezone": "Europe/Vienna"
+  }
+}

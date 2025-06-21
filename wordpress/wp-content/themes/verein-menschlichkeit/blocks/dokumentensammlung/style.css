@@ -1,0 +1,23 @@
+.dokumentensammlung {
+    background: #e3f6fc;
+    border-left: 4px solid #00b4d8;
+    padding: 1.2em 1em;
+    margin: 1em 0;
+    border-radius: 6px;
+}
+.dokumentenliste {
+    list-style: disc inside;
+    margin: 0;
+    padding: 0;
+}
+.dokumentenliste li {
+    margin-bottom: 0.5em;
+}
+.dokumentenliste a {
+    color: #007cba;
+    text-decoration: underline;
+    font-weight: bold;
+}
+.dokumentenliste a:hover {
+    color: #005a87;
+}

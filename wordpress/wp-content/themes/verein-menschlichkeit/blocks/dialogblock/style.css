@@ -1,0 +1,30 @@
+.dialogblock {
+    background: #e3f6fc;
+    border-left: 4px solid #00b4d8;
+    padding: 1.2em 1em;
+    margin: 1em 0;
+    border-radius: 6px;
+}
+.dialog-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7em;
+}
+.dialog-message {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5em;
+}
+.dialog-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.dialog-name {
+    color: #00b4d8;
+    font-weight: bold;
+}
+.dialog-text {
+    color: #222;
+}

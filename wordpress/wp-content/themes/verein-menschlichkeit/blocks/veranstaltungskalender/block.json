@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/veranstaltungskalender",
+  "title": "Veranstaltungskalender mit Filter",
+  "category": "widgets",
+  "icon": "calendar",
+  "description": "Kalender mit Filter und Link zu Einzelseiten.",
+  "attributes": {"events": {"type": "array"}},
+  "editorScript": "verein-block-veranstaltungskalender"
+}

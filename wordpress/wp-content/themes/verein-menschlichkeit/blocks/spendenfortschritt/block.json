@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/spendenfortschritt",
+  "title": "Spendenfortschritt (animierter Balken)",
+  "category": "widgets",
+  "icon": "chart-bar",
+  "description": "Animierter Balken für Spendenfortschritt.",
+  "attributes": {"ziel": {"type": "number"}, "stand": {"type": "number"}},
+  "editorScript": "verein-block-spendenfortschritt"
+}

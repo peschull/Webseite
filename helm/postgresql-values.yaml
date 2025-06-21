@@ -1,0 +1,159 @@
+# PostgreSQL 15 Helm Values für n8n Production
+# Bitnami PostgreSQL Chart
+
+# Basis-Konfiguration
+fullnameOverride: "postgresql"
+nameOverride: "postgresql"
+
+# Authentifizierung
+auth:
+  postgresPassword: "{{secrets.postgresql.rootPassword}}"
+  username: "n8n"
+  password: "{{secrets.postgresql.password}}"
+  database: "n8n"
+
+# Primärer Server
+primary:
+  persistence:
+    enabled: true
+    size: 100Gi
+    storageClass: "fast-ssd"
+  
+  resources:
+    requests:
+      cpu: "2"
+      memory: "4Gi"
+    limits:
+      cpu: "4"
+      memory: "8Gi"
+  
+  # PostgreSQL-Konfiguration
+  pgHbaConfiguration: |
+    local all all trust
+    host all all 127.0.0.1/32 md5
+    host all all ::1/128 md5
+    host all all 10.0.0.0/8 md5
+    host all all 172.16.0.0/12 md5
+    host all all 192.168.0.0/16 md5
+  
+  configuration: |
+    max_connections = 200
+    shared_buffers = 1GB
+    effective_cache_size = 3GB
+    maintenance_work_mem = 256MB
+    checkpoint_completion_target = 0.9
+    wal_buffers = 16MB
+    default_statistics_target = 100
+    random_page_cost = 1.1
+    effective_io_concurrency = 200
+    work_mem = 10MB
+    min_wal_size = 1GB
+    max_wal_size = 4GB
+    max_worker_processes = 8
+    max_parallel_workers_per_gather = 4
+    max_parallel_workers = 8
+    max_parallel_maintenance_workers = 4
+    
+    # Backup & Archivierung
+    archive_mode = on
+    archive_command = 'test ! -f /backup/wal/%f && cp %p /backup/wal/%f'
+    max_wal_senders = 3
+    wal_level = replica
+    
+    # Logging
+    log_destination = 'stderr'
+    log_statement = 'all'
+    log_duration = on
+    log_min_duration_statement = 1000
+
+# Backup-Konfiguration
+backup:
+  enabled: true
+  cronjob:
+    schedule: "0 */6 * * *"  # Alle 6 Stunden
+    historyLimit: 10
+    restartPolicy: OnFailure
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+  
+  # PITR (Point-in-Time Recovery)
+  pitr:
+    enabled: true
+    retention: "7d"
+    s3:
+      bucket: "backup-bucket"
+      region: "eu-central-1"
+      endpoint: "minio.n8n-prod.svc.cluster.local:9000"
+      accessKey: "{{secrets.minio.accessKey}}"
+      secretKey: "{{secrets.minio.secretKey}}"
+
+# Monitoring
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    namespace: monitoring
+    interval: 30s
+    labels:
+      app: postgresql
+      release: prometheus
+
+# Service-Konfiguration
+service:
+  type: ClusterIP
+  ports:
+    postgresql: 5432
+
+# Sicherheit
+networkPolicy:
+  enabled: true
+  allowExternal: false
+  ingressRules:
+    primaryAccessOnlyFrom:
+      enabled: true
+      namespaceSelector:
+        matchLabels:
+          name: n8n-prod
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: n8n
+
+# Pod-Sicherheit
+podSecurityContext:
+  enabled: true
+  fsGroup: 1001
+  runAsUser: 1001
+  runAsGroup: 1001
+
+containerSecurityContext:
+  enabled: true
+  runAsUser: 1001
+  runAsGroup: 1001
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  capabilities:
+    drop:
+      - ALL
+
+# Readiness & Liveness Probes
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1

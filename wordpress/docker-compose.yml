@@ -1,0 +1,203 @@
+version: '3.8'
+
+services:
+  # WordPress
+  wordpress:
+    image: wordpress:6.4-php8.2-apache
+    container_name: verein-wordpress
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: wordpress-db
+      WORDPRESS_DB_USER: wp_user
+      WORDPRESS_DB_PASSWORD: wp_secure_password_2024
+      WORDPRESS_DB_NAME: verein_menschlichkeit
+      WORDPRESS_HTTPS: false
+      WP_DEBUG: true
+      WP_DEBUG_LOG: true
+      WP_DEBUG_DISPLAY: false
+      N8N_WEBHOOK_BASE_URL: http://n8n:5678/webhook
+      N8N_API_KEY: your_n8n_api_key_here
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./wordpress/wp-content:/var/www/html/wp-content
+      - ./wordpress/wp-config.php:/var/www/html/wp-config.php
+    depends_on:
+      - wordpress-db
+    networks:
+      - verein-network
+
+  # WordPress Database
+  wordpress-db:
+    image: mysql:8.0
+    container_name: verein-wordpress-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: verein_menschlichkeit
+      MYSQL_USER: wp_user
+      MYSQL_PASSWORD: wp_secure_password_2024
+      MYSQL_ROOT_PASSWORD: root_secure_password_2024
+    volumes:
+      - wordpress_db_data:/var/lib/mysql
+      - ./wordpress/init-db:/docker-entrypoint-initdb.d
+    networks:
+      - verein-network
+
+  # n8n Workflow Engine
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: verein-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      N8N_BASIC_AUTH_ACTIVE: true
+      N8N_BASIC_AUTH_USER: admin
+      N8N_BASIC_AUTH_PASSWORD: n8n_secure_password_2024
+      N8N_HOST: localhost
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+      WEBHOOK_URL: http://localhost:5678/
+      GENERIC_TIMEZONE: Europe/Vienna
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: n8n-db
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: n8n
+      DB_POSTGRESDB_USER: n8n_user
+      DB_POSTGRESDB_PASSWORD: n8n_secure_password_2024
+      N8N_EXECUTION_DATA_SAVE_ON_ERROR: all
+      N8N_EXECUTION_DATA_SAVE_ON_SUCCESS: all
+      N8N_EXECUTION_DATA_SAVE_MANUAL_EXECUTIONS: true
+      N8N_LOG_LEVEL: info
+      EXECUTIONS_PROCESS: main
+      EXECUTIONS_MODE: queue
+      QUEUE_BULL_REDIS_HOST: redis
+      QUEUE_BULL_REDIS_PORT: 6379
+      QUEUE_BULL_REDIS_PASSWORD: redis_secure_password_2024
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./workflows:/home/node/.n8n/workflows
+      - ./templates:/home/node/.n8n/templates
+    depends_on:
+      - n8n-db
+      - redis
+    networks:
+      - verein-network
+
+  # n8n Database
+  n8n-db:
+    image: postgres:15
+    container_name: verein-n8n-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: n8n
+      POSTGRES_USER: n8n_user
+      POSTGRES_PASSWORD: n8n_secure_password_2024
+    volumes:
+      - n8n_db_data:/var/lib/postgresql/data
+    networks:
+      - verein-network
+
+  # Redis for n8n Queue
+  redis:
+    image: redis:7-alpine
+    container_name: verein-redis
+    restart: unless-stopped
+    command: redis-server --requirepass redis_secure_password_2024
+    volumes:
+      - redis_data:/data
+    networks:
+      - verein-network
+
+  # CiviCRM Database (separate from WordPress)
+  civicrm-db:
+    image: mysql:8.0
+    container_name: verein-civicrm-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: civicrm
+      MYSQL_USER: civicrm_user
+      MYSQL_PASSWORD: civicrm_secure_password_2024
+      MYSQL_ROOT_PASSWORD: civicrm_root_password_2024
+    volumes:
+      - civicrm_db_data:/var/lib/mysql
+    networks:
+      - verein-network
+
+  # MinIO for File Storage
+  minio:
+    image: minio/minio:latest
+    container_name: verein-minio
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minio_admin
+      MINIO_ROOT_PASSWORD: minio_secure_password_2024
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - verein-network
+
+  # Prometheus for Monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: verein-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/alert_rules.yml:/etc/prometheus/alert_rules.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    networks:
+      - verein-network
+
+  # Grafana for Dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: verein-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: grafana_secure_password_2024
+      GF_INSTALL_PLUGINS: grafana-piechart-panel
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - verein-network
+
+volumes:
+  wordpress_data:
+    driver: local
+  wordpress_db_data:
+    driver: local
+  n8n_data:
+    driver: local
+  n8n_db_data:
+    driver: local
+  redis_data:
+    driver: local
+  civicrm_db_data:
+    driver: local
+  minio_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  verein-network:
+    driver: bridge

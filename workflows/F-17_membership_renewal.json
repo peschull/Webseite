@@ -1,0 +1,460 @@
+{
+  "name": "F-17: Membership Renewal Reminder System",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 6 * * *"
+            }
+          ]
+        }
+      },
+      "id": "cron-trigger",
+      "name": "Daily Renewal Check",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "membership",
+        "operation": "getAll",
+        "returnAll": true,
+        "filters": {
+          "status_id": ["1", "2", "3"],
+          "is_test": 0
+        }
+      },
+      "id": "get-memberships",
+      "name": "Get All Memberships",
+      "type": "n8n-nodes-base.civicrm",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "credentials": {
+        "civicrmOAuth2Api": {
+          "id": "civicrm-oauth",
+          "name": "CiviCRM OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Renewal reminder system\nconst memberships = $input.all();\nconst today = new Date();\nconst reminders = [];\n\nfor (const membership of memberships) {\n  const data = membership.json;\n  const endDate = new Date(data.end_date);\n  const daysUntilExpiry = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));\n  \n  // Determine reminder stage based on days until expiry\n  let reminderStage = null;\n  let priority = 'normal';\n  let templateType = 'renewal';\n  \n  if (daysUntilExpiry <= 0) {\n    // Expired\n    reminderStage = 'expired';\n    priority = 'urgent';\n    templateType = 'expired';\n  } else if (daysUntilExpiry <= 7) {\n    // Final reminder - 7 days or less\n    reminderStage = 'final';\n    priority = 'urgent';\n    templateType = 'final_reminder';\n  } else if (daysUntilExpiry <= 30) {\n    // Second reminder - 30 days\n    reminderStage = 'second';\n    priority = 'high';\n    templateType = 'second_reminder';\n  } else if (daysUntilExpiry <= 60) {\n    // First reminder - 60 days\n    reminderStage = 'first';\n    priority = 'normal';\n    templateType = 'first_reminder';\n  } else if (daysUntilExpiry <= 90) {\n    // Early renewal offer - 90 days\n    reminderStage = 'early_offer';\n    priority = 'low';\n    templateType = 'early_renewal';\n  }\n  \n  if (reminderStage) {\n    // Check if reminder was already sent recently\n    const lastReminderDate = new Date(data.last_renewal_reminder || '2000-01-01');\n    const daysSinceLastReminder = Math.ceil((today - lastReminderDate) / (1000 * 60 * 60 * 24));\n    \n    // Only send reminder if enough time has passed\n    let shouldSend = false;\n    switch (reminderStage) {\n      case 'expired':\n        shouldSend = daysSinceLastReminder >= 3; // Every 3 days for expired\n        break;\n      case 'final':\n        shouldSend = daysSinceLastReminder >= 2; // Every 2 days for final\n        break;\n      case 'second':\n        shouldSend = daysSinceLastReminder >= 7; // Weekly for second\n        break;\n      case 'first':\n        shouldSend = daysSinceLastReminder >= 14; // Bi-weekly for first\n        break;\n      case 'early_offer':\n        shouldSend = daysSinceLastReminder >= 30; // Monthly for early offer\n        break;\n    }\n    \n    if (shouldSend) {\n      reminders.push({\n        membership_id: data.id,\n        contact_id: data.contact_id,\n        display_name: data.display_name,\n        email: data.email,\n        membership_type: data.membership_type,\n        start_date: data.start_date,\n        end_date: data.end_date,\n        days_until_expiry: daysUntilExpiry,\n        reminder_stage: reminderStage,\n        priority: priority,\n        template_type: templateType,\n        membership_fee: data.membership_fee || 0,\n        payment_method: data.payment_method || 'not_set',\n        auto_renew: data.auto_renew || false,\n        renewal_url: `${$vars.WEBSITE_URL}/mitgliedschaft/erneuern?id=${data.id}&token=${data.renewal_token}`,\n        phone: data.phone,\n        address: data.address\n      });\n    }\n  }\n}\n\n// Sort by priority and days until expiry\nconst priorityOrder = { urgent: 1, high: 2, normal: 3, low: 4 };\nreminders.sort((a, b) => {\n  if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {\n    return priorityOrder[a.priority] - priorityOrder[b.priority];\n  }\n  return a.days_until_expiry - b.days_until_expiry;\n});\n\nreturn reminders.map(reminder => ({ json: reminder }));"
+      },
+      "id": "process-renewals",
+      "name": "Process Renewal Reminders",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.template_type }}",
+              "rightValue": "expired",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combineOperation": "all"
+        }
+      },
+      "id": "check-expired",
+      "name": "Check if Expired",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $vars.SMTP_FROM_EMAIL }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "🚨 Ihre Mitgliedschaft ist abgelaufen - Jetzt erneuern!",
+        "emailType": "html",
+        "message": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Mitgliedschaft abgelaufen</title>\n    <style>\n        .expired-container {\n            max-width: 600px;\n            margin: 0 auto;\n            font-family: Arial, sans-serif;\n            line-height: 1.6;\n        }\n        .urgent-header {\n            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);\n            color: white;\n            padding: 25px;\n            text-align: center;\n            border-radius: 10px 10px 0 0;\n        }\n        .content {\n            background: white;\n            padding: 30px;\n            border: 1px solid #ddd;\n        }\n        .expired-notice {\n            background: #f8d7da;\n            border: 2px solid #dc3545;\n            padding: 20px;\n            border-radius: 10px;\n            margin: 20px 0;\n            text-align: center;\n        }\n        .renewal-cta {\n            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);\n            color: white;\n            padding: 25px;\n            border-radius: 10px;\n            text-align: center;\n            margin: 25px 0;\n        }\n        .renew-button {\n            display: inline-block;\n            background: #ffc107;\n            color: #212529;\n            padding: 15px 40px;\n            text-decoration: none;\n            border-radius: 5px;\n            font-weight: bold;\n            font-size: 18px;\n            margin: 15px 0;\n        }\n        .benefits-reminder {\n            background: #e3f2fd;\n            padding: 20px;\n            border-radius: 10px;\n            margin: 20px 0;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"expired-container\">\n        <div class=\"urgent-header\">\n            <h1>🚨 Mitgliedschaft abgelaufen!</h1>\n            <p>Handeln Sie jetzt, um Ihre Vorteile zu behalten</p>\n        </div>\n        \n        <div class=\"content\">\n            <h2>Liebe/r {{ $json.display_name }},</h2>\n            \n            <div class=\"expired-notice\">\n                <h3>⏰ Ihre Mitgliedschaft ist abgelaufen</h3>\n                <p><strong>Ablaufdatum:</strong> {{ DateTime.fromISO($json.end_date).toFormat('dd.MM.yyyy') }}</p>\n                <p><strong>Tage seit Ablauf:</strong> {{ Math.abs($json.days_until_expiry) }} Tage</p>\n                <p><strong>Mitgliedsnummer:</strong> {{ $json.membership_id }}</p>\n            </div>\n            \n            <p>Ihre Mitgliedschaft bei Menschlichkeit Österreich ist vor {{ Math.abs($json.days_until_expiry) }} Tagen abgelaufen. </p>\n            \n            <p><strong>Das bedeutet:</strong></p>\n            <ul>\n                <li>❌ Kein Zugang mehr zum Mitgliederbereich</li>\n                <li>❌ Keine Einladungen zu exklusiven Veranstaltungen</li>\n                <li>❌ Kein Quartalsmagazin mehr</li>\n                <li>❌ Keine Mitglieder-Rabatte</li>\n                <li>❌ Verlust aller Mitgliedsvorteile</li>\n            </ul>\n            \n            <div class=\"renewal-cta\">\n                <h3>🔄 Jetzt erneuern und alles zurückbekommen!</h3>\n                <p>Reaktivieren Sie Ihre Mitgliedschaft mit nur einem Klick:</p>\n                <a href=\"{{ $json.renewal_url }}\" class=\"renew-button\">\n                    💳 Jetzt für {{ $json.membership_fee }}€ erneuern\n                </a>\n                <p><small>Ihre Mitgliedschaft wird sofort reaktiviert</small></p>\n            </div>\n            \n            <div class=\"benefits-reminder\">\n                <h4>🌟 Das bekommen Sie zurück:</h4>\n                <ul>\n                    <li>📰 Quartalsmagazin \"Menschlichkeit\" (Wert: 20€)</li>\n                    <li>🎪 Exklusive Veranstaltungen (Wert: 100€+)</li>\n                    <li>🛍️ 10% Rabatt auf alle Produkte</li>\n                    <li>🔐 Vollzugang zum Mitgliederbereich</li>\n                    <li>📞 Persönlicher Mitgliederservice</li>\n                    <li>📊 Transparente Projektberichte</li>\n                    <li>🤝 Mitgestaltung unserer Arbeit</li>\n                </ul>\n                <p><strong>Gesamtwert: Über 200€ pro Jahr!</strong></p>\n            </div>\n            \n            <div style=\"background: #fff3cd; padding: 20px; border-radius: 10px; margin: 20px 0;\">\n                <h4>⚡ Sonderangebot für Sie:</h4>\n                <p>Da Sie langjähriges Mitglied sind, erhalten Sie bei Erneuerung innerhalb der nächsten 7 Tage:</p>\n                <ul>\n                    <li>🎁 Kostenloses Willkommenspaket im Wert von 25€</li>\n                    <li>📚 Exklusives Jahrbuch 2024 gratis dazu</li>\n                    <li>🏆 VIP-Status für das nächste Jahr</li>\n                </ul>\n            </div>\n            \n            <h3>💳 Einfache Erneuerung in 3 Schritten:</h3>\n            <ol>\n                <li>Klicken Sie auf den Erneuerungs-Button oben</li>\n                <li>Wählen Sie Ihre bevorzugte Zahlungsart</li>\n                <li>Bestätigen Sie - fertig!</li>\n            </ol>\n            \n            <p><strong>Haben Sie Fragen oder Probleme?</strong></p>\n            <p>Rufen Sie uns an: <strong>+43 1 234 5678</strong><br>\n            Oder schreiben Sie uns: <a href=\"mailto:mitglieder@menschlichkeit.at\">mitglieder@menschlichkeit.at</a></p>\n            \n            <p>Wir hoffen sehr, Sie bald wieder als aktives Mitglied begrüßen zu dürfen!</p>\n            \n            <p>Mit herzlichen Grüßen,<br>\n            <strong>Ihr Team von Menschlichkeit Österreich</strong></p>\n            \n            <div style=\"text-align: center; margin: 30px 0;\">\n                <a href=\"{{ $json.renewal_url }}\" class=\"renew-button\">\n                    🚀 Mitgliedschaft jetzt erneuern\n                </a>\n            </div>\n        </div>\n    </div>\n</body>\n</html>"
+      },
+      "id": "send-expired-email",
+      "name": "Send Expired Membership Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1120, 200],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-config",
+          "name": "SMTP Configuration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.template_type }}",
+              "rightValue": "final_reminder",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combineOperation": "all"
+        }
+      },
+      "id": "check-final-reminder",
+      "name": "Check Final Reminder",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [900, 500]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $vars.SMTP_FROM_EMAIL }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "⏰ LETZTE CHANCE: Ihre Mitgliedschaft läuft in {{ $json.days_until_expiry }} Tagen ab!",
+        "emailType": "html",
+        "message": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Letzte Chance - Mitgliedschaft erneuern</title>\n</head>\n<body>\n    <div style=\"max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;\">\n        <div style=\"background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%); color: white; padding: 25px; text-align: center; border-radius: 10px 10px 0 0;\">\n            <h1>⏰ LETZTE CHANCE!</h1>\n            <p>Ihre Mitgliedschaft läuft bald ab</p>\n        </div>\n        \n        <div style=\"background: white; padding: 30px; border: 1px solid #ddd;\">\n            <h2>Liebe/r {{ $json.display_name }},</h2>\n            \n            <div style=\"background: #fff3cd; border: 2px solid #ffc107; padding: 20px; border-radius: 10px; text-align: center; margin: 20px 0;\">\n                <h3>⚠️ Nur noch {{ $json.days_until_expiry }} Tage!</h3>\n                <p><strong>Ablaufdatum:</strong> {{ DateTime.fromISO($json.end_date).toFormat('dd.MM.yyyy') }}</p>\n                <p><strong>Mitgliedsnummer:</strong> {{ $json.membership_id }}</p>\n            </div>\n            \n            <p>Ihre Mitgliedschaft bei Menschlichkeit Österreich läuft in nur {{ $json.days_until_expiry }} Tagen ab!</p>\n            \n            <div style=\"background: #28a745; color: white; padding: 20px; border-radius: 10px; text-align: center; margin: 25px 0;\">\n                <h3>🚀 Jetzt mit einem Klick erneuern!</h3>\n                <a href=\"{{ $json.renewal_url }}\" style=\"display: inline-block; background: #ffc107; color: #212529; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 15px 0;\">\n                    💳 Für {{ $json.membership_fee }}€ jetzt erneuern\n                </a>\n            </div>\n            \n            <h3>🎁 Bonus bei sofortiger Erneuerung:</h3>\n            <ul>\n                <li>🆓 Keine Unterbrechung Ihrer Mitgliedsvorteile</li>\n                <li>📦 Kostenloses Überraschungspaket</li>\n                <li>🏆 Treue-Bonus: 15% Rabatt im Mitglieder-Shop</li>\n            </ul>\n            \n            <p>Verpassen Sie nicht den Zugang zu:</p>\n            <ul>\n                <li>📰 Exklusives Quartalsmagazin</li>\n                <li>🎪 Mitglieder-Veranstaltungen</li>\n                <li>🔐 Digitaler Mitgliederbereich</li>\n                <li>📊 Transparente Projektberichte</li>\n            </ul>\n            \n            <p><strong>Fragen? Wir helfen gerne:</strong><br>\n            📞 +43 1 234 5678<br>\n            📧 <a href=\"mailto:mitglieder@menschlichkeit.at\">mitglieder@menschlichkeit.at</a></p>\n            \n            <p>Herzliche Grüße,<br>\n            Ihr Team von Menschlichkeit Österreich</p>\n        </div>\n    </div>\n</body>\n</html>"
+      },
+      "id": "send-final-reminder",
+      "name": "Send Final Reminder Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1120, 400],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-config",
+          "name": "SMTP Configuration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.template_type }}",
+              "rightValue": "second_reminder",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combineOperation": "all"
+        }
+      },
+      "id": "check-second-reminder",
+      "name": "Check Second Reminder",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [900, 700]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $vars.SMTP_FROM_EMAIL }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "🔔 Erinnerung: Ihre Mitgliedschaft läuft in {{ $json.days_until_expiry }} Tagen ab",
+        "emailType": "html",
+        "message": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Mitgliedschaft erneuern</title>\n</head>\n<body>\n    <div style=\"max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;\">\n        <div style=\"background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: white; padding: 25px; text-align: center; border-radius: 10px 10px 0 0;\">\n            <h1>🔔 Freundliche Erinnerung</h1>\n            <p>Zeit für die Mitgliedschaftserneuerung</p>\n        </div>\n        \n        <div style=\"background: white; padding: 30px; border: 1px solid #ddd;\">\n            <h2>Liebe/r {{ $json.display_name }},</h2>\n            \n            <p>Ihre Mitgliedschaft bei Menschlichkeit Österreich läuft in {{ $json.days_until_expiry }} Tagen ab.</p>\n            \n            <div style=\"background: #e3f2fd; padding: 20px; border-radius: 10px; margin: 20px 0;\">\n                <h3>📅 Mitgliedschaftsdetails:</h3>\n                <ul>\n                    <li><strong>Mitgliedsnummer:</strong> {{ $json.membership_id }}</li>\n                    <li><strong>Aktueller Status:</strong> Aktiv</li>\n                    <li><strong>Ablaufdatum:</strong> {{ DateTime.fromISO($json.end_date).toFormat('dd.MM.yyyy') }}</li>\n                    <li><strong>Erneuerungsgebühr:</strong> {{ $json.membership_fee }}€</li>\n                </ul>\n            </div>\n            \n            <div style=\"text-align: center; margin: 25px 0;\">\n                <a href=\"{{ $json.renewal_url }}\" style=\"display: inline-block; background: #28a745; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;\">\n                    🔄 Jetzt erneuern\n                </a>\n            </div>\n            \n            <h3>🌟 Warum Ihre Mitgliedschaft wertvoll ist:</h3>\n            <ul>\n                <li>🎯 Direkter Einfluss auf unsere Projekte</li>\n                <li>📊 Vollständige Transparenz über Mittelverwendung</li>\n                <li>🤝 Gemeinschaft gleichgesinnter Menschen</li>\n                <li>📰 Exklusive Inhalte und Berichte</li>\n                <li>🎪 Zugang zu besonderen Veranstaltungen</li>\n            </ul>\n            \n            <p>Die Erneuerung dauert nur 2 Minuten und kann bequem online durchgeführt werden.</p>\n            \n            <p>Bei Fragen stehen wir gerne zur Verfügung:</p>\n            <p>📞 +43 1 234 5678<br>\n            📧 <a href=\"mailto:mitglieder@menschlichkeit.at\">mitglieder@menschlichkeit.at</a></p>\n            \n            <p>Vielen Dank für Ihre Unterstützung!</p>\n            \n            <p>Herzliche Grüße,<br>\n            Ihr Team von Menschlichkeit Österreich</p>\n        </div>\n    </div>\n</body>\n</html>"
+      },
+      "id": "send-second-reminder",
+      "name": "Send Second Reminder Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1120, 600],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-config",
+          "name": "SMTP Configuration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.template_type }}",
+              "rightValue": "first_reminder",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combineOperation": "all"
+        }
+      },
+      "id": "check-first-reminder",
+      "name": "Check First Reminder",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [900, 900]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $vars.SMTP_FROM_EMAIL }}",
+        "toEmail": "{{ $json.email }}",
+        "subject": "💌 Ihre Mitgliedschaft läuft in {{ $json.days_until_expiry }} Tagen ab - Jetzt erneuern",
+        "emailType": "html",
+        "message": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <title>Mitgliedschaft läuft ab</title>\n</head>\n<body>\n    <div style=\"max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;\">\n        <div style=\"background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%); color: white; padding: 25px; text-align: center; border-radius: 10px 10px 0 0;\">\n            <h1>💌 Mitgliedschaftserneuerung</h1>\n            <p>Bleiben Sie Teil unserer Gemeinschaft</p>\n        </div>\n        \n        <div style=\"background: white; padding: 30px; border: 1px solid #ddd;\">\n            <h2>Liebe/r {{ $json.display_name }},</h2>\n            \n            <p>Ihre Mitgliedschaft bei Menschlichkeit Österreich läuft in {{ $json.days_until_expiry }} Tagen ab. Wir möchten Sie rechtzeitig daran erinnern, damit Sie keine Unterbrechung Ihrer Mitgliedsvorteile erleben.</p>\n            \n            <div style=\"background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;\">\n                <h3>📋 Ihre Mitgliedschaft:</h3>\n                <p><strong>Mitgliedsnummer:</strong> {{ $json.membership_id }}<br>\n                <strong>Mitgliedschaftstyp:</strong> {{ $json.membership_type }}<br>\n                <strong>Ablaufdatum:</strong> {{ DateTime.fromISO($json.end_date).toFormat('dd.MM.yyyy') }}<br>\n                <strong>Erneuerungsgebühr:</strong> {{ $json.membership_fee }}€</p>\n            </div>\n            \n            <div style=\"text-align: center; margin: 25px 0;\">\n                <a href=\"{{ $json.renewal_url }}\" style=\"display: inline-block; background: #28a745; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;\">\n                    🔄 Mitgliedschaft erneuern\n                </a>\n            </div>\n            \n            <h3>🌟 Das erwartet Sie auch im nächsten Jahr:</h3>\n            <ul>\n                <li>📰 4x jährlich unser Magazin \"Menschlichkeit\"</li>\n                <li>🎪 Exklusive Mitgliederveranstaltungen</li>\n                <li>🔐 Zugang zum digitalen Mitgliederbereich</li>\n                <li>📊 Quartalsweise Transparenzberichte</li>\n                <li>💬 Mitspracherecht bei wichtigen Entscheidungen</li>\n                <li>🛍️ 10% Rabatt im Mitglieder-Shop</li>\n            </ul>\n            \n            <p>Die Erneuerung ist ganz einfach: Klicken Sie auf den Button oben und folgen Sie den Anweisungen. Der gesamte Prozess dauert nur wenige Minuten.</p>\n            \n            <div style=\"background: #e8f5e8; padding: 15px; border-radius: 5px; margin: 20px 0;\">\n                <p><strong>💡 Tipp:</strong> Richten Sie eine automatische Verlängerung ein, um in Zukunft keine Erinnerungen mehr zu benötigen!</p>\n            </div>\n            \n            <p>Haben Sie Fragen oder benötigen Sie Hilfe? Kontaktieren Sie uns gerne:</p>\n            <p>📞 +43 1 234 5678 (Mo-Fr, 9-17 Uhr)<br>\n            📧 <a href=\"mailto:mitglieder@menschlichkeit.at\">mitglieder@menschlichkeit.at</a></p>\n            \n            <p>Vielen Dank für Ihre bisherige Unterstützung und wir freuen uns auf ein weiteres Jahr mit Ihnen!</p>\n            \n            <p>Mit herzlichen Grüßen,<br>\n            <strong>Ihr Team von Menschlichkeit Österreich</strong></p>\n        </div>\n    </div>\n</body>\n</html>"
+      },
+      "id": "send-first-reminder",
+      "name": "Send First Reminder Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1120, 800],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-config",
+          "name": "SMTP Configuration"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "contact",
+        "operation": "update",
+        "contactId": "={{ $json.contact_id }}",
+        "updateFields": {
+          "custom_fields": {
+            "last_renewal_reminder": "={{ $now }}",
+            "renewal_reminder_count": "={{ $json.renewal_reminder_count ? $json.renewal_reminder_count + 1 : 1 }}",
+            "renewal_reminder_type": "={{ $json.template_type }}"
+          }
+        }
+      },
+      "id": "update-reminder-log",
+      "name": "Update Reminder Log",
+      "type": "n8n-nodes-base.civicrm",
+      "typeVersion": 1,
+      "position": [1340, 500],
+      "credentials": {
+        "civicrmOAuth2Api": {
+          "id": "civicrm-oauth",
+          "name": "CiviCRM OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $vars.PROMETHEUS_PUSHGATEWAY_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "text/plain"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "string",
+        "body": "membership_renewal_reminder_sent_total{type=\"{{ $json.template_type }}\",priority=\"{{ $json.priority }}\",days_until_expiry=\"{{ $json.days_until_expiry }}\"} 1"
+      },
+      "id": "update-metrics",
+      "name": "Update Prometheus Metrics",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1560, 500]
+    }
+  ],
+  "connections": {
+    "Daily Renewal Check": {
+      "main": [
+        [
+          {
+            "node": "Get All Memberships",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Memberships": {
+      "main": [
+        [
+          {
+            "node": "Process Renewal Reminders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Renewal Reminders": {
+      "main": [
+        [
+          {
+            "node": "Check if Expired",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check Final Reminder",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check Second Reminder",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check First Reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Expired": {
+      "main": [
+        [
+          {
+            "node": "Send Expired Membership Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Check Final Reminder": {
+      "main": [
+        [
+          {
+            "node": "Send Final Reminder Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Check Second Reminder": {
+      "main": [
+        [
+          {
+            "node": "Send Second Reminder Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Check First Reminder": {
+      "main": [
+        [
+          {
+            "node": "Send First Reminder Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Send Expired Membership Email": {
+      "main": [
+        [
+          {
+            "node": "Update Reminder Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Final Reminder Email": {
+      "main": [
+        [
+          {
+            "node": "Update Reminder Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Second Reminder Email": {
+      "main": [
+        [
+          {
+            "node": "Update Reminder Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send First Reminder Email": {
+      "main": [
+        [
+          {
+            "node": "Update Reminder Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Reminder Log": {
+      "main": [
+        [
+          {
+            "node": "Update Prometheus Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2025-06-21T10:00:00.000Z",
+      "updatedAt": "2025-06-21T10:00:00.000Z",
+      "id": "membership-renewal",
+      "name": "Membership Renewal"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2025-06-21T10:00:00.000Z",
+  "versionId": "1"
+}

@@ -1,0 +1,12 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/team",
+  "title": "Team-Grid",
+  "category": "widgets",
+  "icon": "groups",
+  "description": "Teammitglieder als Grid mit Bild, Name, Funktion.",
+  "attributes": {
+    "mitglieder": { "type": "array", "default": [] }
+  },
+  "editorScript": "verein-block-team"
+}

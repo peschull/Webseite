@@ -1,0 +1,127 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: n8n-alert-rules
+  namespace: monitoring
+  labels:
+    app: n8n
+    role: alert-rules
+    prometheus: kube-prometheus
+spec:
+  groups:
+    - name: n8n-workflows
+      rules:
+        # Workflow-Fehlerrate zu hoch
+        - alert: WorkflowHighErrorRate
+          expr: rate(n8n_workflow_executions_failed_total[5m]) / rate(n8n_workflow_executions_total[5m]) > 0.05
+          for: 2m
+          labels:
+            severity: critical
+            service: n8n
+          annotations:
+            summary: "Hohe Fehlerrate bei n8n Workflows"
+            description: "Workflow {{ $labels.workflow_name }} hat eine Fehlerrate von {{ $value | humanizePercentage }} in den letzten 5 Minuten"
+        
+        # Queue-Verarbeitung zu langsam
+        - alert: QueueProcessingSlowdown
+          expr: n8n_queue_waiting_time > 120
+          for: 1m
+          labels:
+            severity: warning
+            service: n8n
+          annotations:
+            summary: "n8n Queue-Verarbeitung verlangsamt"
+            description: "Queue {{ $labels.queue_name }} hat eine Wartezeit von {{ $value }}s"
+        
+        # Keine Workflow-Ausführungen (System-Ausfall)
+        - alert: NoWorkflowExecutions
+          expr: rate(n8n_workflow_executions_total[10m]) == 0
+          for: 5m
+          labels:
+            severity: critical
+            service: n8n
+          annotations:
+            summary: "Keine n8n Workflow-Ausführungen"
+            description: "Seit 10 Minuten wurden keine Workflows ausgeführt - möglicher Systemausfall"
+        
+        # Spenden-Workflow Fehler
+        - alert: DonationWorkflowFailure
+          expr: rate(n8n_workflow_executions_failed_total{workflow_name=~".*donation.*"}[5m]) > 0
+          for: 0m
+          labels:
+            severity: critical
+            service: n8n
+            business_impact: high
+          annotations:
+            summary: "Spenden-Workflow Fehler"
+            description: "Der kritische Spenden-Workflow {{ $labels.workflow_name }} ist fehlgeschlagen"
+        
+        # PDF-Generierung fehlgeschlagen
+        - alert: PDFGenerationFailure
+          expr: rate(n8n_pdf_generation_failed_total[5m]) > 0
+          for: 1m
+          labels:
+            severity: warning
+            service: n8n
+          annotations:
+            summary: "PDF-Generierung fehlgeschlagen"
+            description: "{{ $value }} PDF-Generierungen sind in den letzten 5 Minuten fehlgeschlagen"
+
+    - name: infrastructure
+      rules:
+        # PostgreSQL-Verbindung verloren
+        - alert: PostgreSQLDown
+          expr: up{job="postgresql"} == 0
+          for: 1m
+          labels:
+            severity: critical
+            service: postgresql
+          annotations:
+            summary: "PostgreSQL ist nicht erreichbar"
+            description: "PostgreSQL-Instanz {{ $labels.instance }} ist seit 1 Minute nicht erreichbar"
+        
+        # Redis-Verbindung verloren
+        - alert: RedisDown
+          expr: up{job="redis"} == 0
+          for: 1m
+          labels:
+            severity: critical
+            service: redis
+          annotations:
+            summary: "Redis ist nicht erreichbar"
+            description: "Redis-Instanz {{ $labels.instance }} ist seit 1 Minute nicht erreichbar"
+        
+        # MinIO Storage-Probleme
+        - alert: MinIODown
+          expr: up{job="minio"} == 0
+          for: 2m
+          labels:
+            severity: critical
+            service: minio
+          annotations:
+            summary: "MinIO Storage ist nicht erreichbar"
+            description: "MinIO-Instanz {{ $labels.instance }} ist seit 2 Minuten nicht erreichbar"
+
+    - name: business-kpis
+      rules:
+        # Niedrige Spendenaktivität
+        - alert: LowDonationActivity
+          expr: rate(n8n_webhook_donations_total[1h]) < 0.1
+          for: 2h
+          labels:
+            severity: warning
+            service: business
+          annotations:
+            summary: "Niedrige Spendenaktivität"
+            description: "Nur {{ $value }} Spenden in der letzten Stunde - möglicherweise ein Problem mit dem Spendenformular"
+        
+        # Externe API-Fehler
+        - alert: ExternalAPIFailure
+          expr: rate(n8n_external_api_errors_total[5m]) > 0.1
+          for: 2m
+          labels:
+            severity: warning
+            service: external-apis
+          annotations:
+            summary: "Externe API-Fehler"
+            description: "API {{ $labels.api_name }} hat {{ $value }} Fehler pro Sekunde in den letzten 5 Minuten"

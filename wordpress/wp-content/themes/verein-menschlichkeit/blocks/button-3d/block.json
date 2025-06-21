@@ -1,0 +1,13 @@
+{
+  "apiVersion": 2,
+  "name": "verein/button-3d",
+  "title": "3D-Button",
+  "category": "widgets",
+  "icon": "button",
+  "description": "Ein Block für einen 3D-Button.",
+  "supports": {
+    "html": false
+  },
+  "editorScript": "file:./block.js",
+  "style": "file:./style.css"
+}

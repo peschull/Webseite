@@ -1,0 +1,23 @@
+msgid "Verein Menschlichkeit"
+msgstr "Verein Menschlichkeit"
+
+msgid "Zum Inhalt springen"
+msgstr "Zum Inhalt springen"
+
+msgid "Hauptmenü"
+msgstr "Hauptmenü"
+
+msgid "Suche nach:"
+msgstr "Suche nach:"
+
+msgid "Suche …"
+msgstr "Suche …"
+
+msgid "Suchen"
+msgstr "Suchen"
+
+msgid "Impressum & Datenschutz"
+msgstr "Impressum & Datenschutz"
+
+msgid "CiviCRM Formular"
+msgstr "CiviCRM Formular"

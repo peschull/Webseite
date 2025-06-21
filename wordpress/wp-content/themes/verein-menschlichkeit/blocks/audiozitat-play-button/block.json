@@ -1,0 +1,13 @@
+{
+  "apiVersion": 2,
+  "name": "verein/audiozitat-play-button",
+  "title": "Audiozitat Play-Button",
+  "category": "widgets",
+  "icon": "controls-play",
+  "description": "Ein Block für einen Play-Button zu Audiozitaten.",
+  "supports": {
+    "html": false
+  },
+  "editorScript": "file:./block.js",
+  "style": "file:./style.css"
+}

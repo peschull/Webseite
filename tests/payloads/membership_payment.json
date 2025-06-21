@@ -1,0 +1,30 @@
+{
+  "contact_id": 12345,
+  "membership_id": "MEM-2024-001",
+  "membership_type": "Standard Mitgliedschaft",
+  "membership_type_id": 1,
+  "start_date": "2024-06-21",
+  "fee_amount": 120.00,
+  "total_amount": 120.00,
+  "currency": "EUR",
+  "contribution_type_id": 1,
+  "financial_type_id": 2,
+  "payment_instrument_id": 1,
+  "payment_method": "SEPA",
+  "sepa_mandate": {
+    "iban": "AT611904300234573201",
+    "bic": "BKAUATWW",
+    "mandate_id": "MAND-001",
+    "signed_date": "2024-06-21"
+  },
+  "transaction_id": "TXN-20240621-001",
+  "invoice_id": "INV-20240621-001",
+  "display_name": "Maria Mustermann",
+  "email": "maria.mustermann@example.com",
+  "membership_fee": 120.00,
+  "status": "completed",
+  "payment_date": "2024-06-21T10:30:00.000Z",
+  "payer_name": "Maria Mustermann",
+  "payer_email": "maria.mustermann@example.com",
+  "cex_id": "CEX-2024-001"
+}

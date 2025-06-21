@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "verein-menschlichkeit/werte-block",
+  "title": "Unsere Werte-Block",
+  "category": "widgets",
+  "icon": "star-filled",
+  "description": "Block für Werte mit Icons und Animation.",
+  "attributes": {"werte": {"type": "array"}},
+  "editorScript": "verein-block-werte-block"
+}

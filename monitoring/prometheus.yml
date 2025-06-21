@@ -1,0 +1,59 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # n8n Main Instance
+  - job_name: 'n8n-main'
+    static_configs:
+      - targets: ['n8n-main:5678']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # n8n Workers
+  - job_name: 'n8n-workers'
+    static_configs:
+      - targets: 
+        - 'n8n-worker-default:5678'
+        - 'n8n-worker-email:5678'
+        - 'n8n-worker-accounting:5678'
+        - 'n8n-worker-social:5678'
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # Redis Metrics
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    metrics_path: '/metrics'
+
+  # PostgreSQL Metrics  
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+
+  # MinIO Metrics
+  - job_name: 'minio'
+    static_configs:
+      - targets: ['minio:9000']
+    metrics_path: '/minio/v2/metrics/cluster'
+
+  # Container/System Metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  # Self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
